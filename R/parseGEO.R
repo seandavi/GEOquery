@@ -205,16 +205,16 @@ parseGEO <- function(con) {
   ret <- switch(as.character(first.entity[1]),
                 sample= {
                   txt <- readLines(con)
-                  return(parseGSM(txt))
+                  parseGSM(txt)
                 },
                 series= parseGSE(con),
                 dataset= {
                   txt <- readLines(con)
-                  return(parseGDS(txt))
+                  parseGDS(txt)
                 },
                 platform= {
                   txt <- readLines(con)
-                  return(parseGPL(txt))
+                  parseGPL(txt)
                 },
                 )
   return(ret)
