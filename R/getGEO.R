@@ -15,8 +15,9 @@ getGEO <- function(GEO=NULL,
   } else {
     con <- file(filename,'r')
   }
-  return(parseGEO(con))
+  ret <- parseGEO(con)
   close(con)
+  return(ret)
 }
                    
                    

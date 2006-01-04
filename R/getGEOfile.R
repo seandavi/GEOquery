@@ -3,6 +3,7 @@ getGEOfile <- function(GEO,destdir=tempdir(),
   {
     amount <- match.arg(amount)
     geotype <- toupper(substr(GEO,1,3))
+    mode <- 'wb'
     if (geotype == 'GDS') {
       gdsurl <- 'ftp://ftp.ncbi.nih.gov/pub/geo/data/gds/soft_gz/'
       myurl <- paste(gdsurl,GEO,'.soft.gz',sep="")
@@ -17,18 +18,21 @@ getGEOfile <- function(GEO,destdir=tempdir(),
       gseurl <- "http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
       myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&view=',amount,sep='')
       destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
+      mode <- 'w'
     }
     if (geotype == 'GPL') {
       gseurl <- "http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
       myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&view=',amount,sep='')
       destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
+      mode <- 'w'
     }
     if (geotype == 'GSM') {
       gseurl <- "http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
       myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&view=',amount,sep='')
       destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
+      mode <- 'w'
     }
-    download.file(myurl,destfile)
+    download.file(myurl,destfile,mode=mode)
     writeLines('File stored at: ')
     writeLines(destfile)
     invisible(destfile)
