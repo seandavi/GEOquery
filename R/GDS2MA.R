@@ -32,7 +32,9 @@
       expr <- as.matrix(Table(GDS)[,inc.columns])
     }
     rownames(expr) <- Table(GDS)$ID
-    pheno <- new('phenoData',pData=Columns(gds),varLabels=as.list(colnames(Columns(gds))))
+    pheno <- new('phenoData',
+                 pData=Columns(GDS),
+                 varLabels=as.list(colnames(Columns(GDS))))
     eset <- new('exprSet',exprs=expr,phenoData=pheno)
     return(eset)
   }
