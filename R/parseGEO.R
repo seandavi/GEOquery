@@ -122,7 +122,7 @@ parseGSE <- function(con) {
   nextEntity <- ""
   while(!finished) {
     line <- readLines(con,1)
-    if(length(lines)==0) finished <- TRUE
+    if(length(line)==0) finished <- TRUE
     a[lines] <- line
     lines <- lines+1
     b <- grep('^\\^(SAMPLE|PLATFORM)',line,value=TRUE,perl=TRUE)
