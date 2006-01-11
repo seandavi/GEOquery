@@ -9,7 +9,6 @@ getGEO <- function(GEO=NULL,
     GEO <- toupper(GEO)
     filename <- getGEOfile(GEO,destdir=destdir)
   }
-  writeLines(filename)
   if(length(grep('\\.gz$',filename,perl=TRUE))>0) {
     con <- gzfile(filename,'r')
   } else {

@@ -36,5 +36,6 @@
                  pData=Columns(GDS),
                  varLabels=as.list(colnames(Columns(GDS))))
     eset <- new('exprSet',exprs=expr,phenoData=pheno)
+    geneNames(eset) <- Table(GDS)$ID_REF
     return(eset)
   }
