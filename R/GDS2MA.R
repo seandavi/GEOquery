@@ -32,10 +32,13 @@
       expr <- as.matrix(Table(GDS)[,inc.columns])
     }
     rownames(expr) <- Table(GDS)$ID
+    tmp <- Columns(GDS)
+    rownames(tmp) <- as.character(tmp$sample)
     pheno <- new('phenoData',
-                 pData=Columns(GDS),
+                 pData=tmp,
                  varLabels=as.list(colnames(Columns(GDS))))
     eset <- new('exprSet',exprs=expr,phenoData=pheno)
+    sampleNames
     geneNames(eset) <- Table(GDS)$ID_REF
     return(eset)
   }
