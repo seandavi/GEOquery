@@ -1,0 +1,7 @@
+1.5.5
+	* Added GSElimits to getGEO to allow for parsing of large datasets in pieces
+	* fixed vignette to include Biobase-compliant exprSet
+	* changed vignette in the GSE2eSet section to use "match" for more safely dealing with probeset ordering differences between GPLs and GSMs
+
+1.5.4
+	* Fixed GDS2eSet to be Biobase-compliant
