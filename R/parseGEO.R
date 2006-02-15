@@ -111,9 +111,10 @@ parseGPL <- function(txt) {
 	return(gsm)
 }
 
-parseGSE <- function(con) {
+parseGSE <- function(con,GSElimits) {
   gsmlist <- list()
   gpllist <- list()
+  GSMcount <- 0
   writeLines('Parsing....')
   ## This gets the header information for the GSE
   lines <- 1
@@ -145,16 +146,35 @@ parseGSE <- function(con) {
       b <- grep('^\\^(SAMPLE|PLATFORM)',line,value=TRUE,perl=TRUE)
     }
     if(length(b)>0 | finished) {
-      writeLines(b)
       lines <- 1
       #new SAMPLE
       if(length(grep('SAMPLE',nextEntity))>0) {
         accession <- strsplit(nextEntity,' = ')[[1]][2]
-        gsmlist[[accession]] <- parseGSM(a)
+        GSMcount <- GSMcount+1
+        # Look to see if limits should be used, otherwise, proceed
+        if(is.null(GSElimits)) {
+          gsmlist[[accession]] <- parseGSM(a)
+          writeLines(b)
+        } else {
+          if((GSMcount>=GSElimits[1]) &
+             (GSMcount<=GSElimits[2])) {
+            gsmlist[[accession]] <- parseGSM(a)
+            writeLines(b)
+          } else {
+            cat('Skipping sample',GSMcount,': Accession',accession,'at user request\n')
+          }
+        }
       }
       if(length(grep('PLATFORM',nextEntity))>0) {
         accession <- strsplit(nextEntity,' = ')[[1]][2]
         gpllist[[accession]] <- parseGPL(a)
+      }
+      if(!is.null(GSElimits)) {
+        if(GSMcount+1>GSElimits[2]) {
+                                        # end if beyond GSElimits[2]
+          cat('Stopping here at user request\n')
+          finished <- TRUE
+        }
       }
       if(!finished) {
         nextEntity <- b
@@ -200,14 +220,14 @@ findFirstEntity <- function(con) {
   }
 }
 
-parseGEO <- function(con) {
+parseGEO <- function(con,GSElimits) {
   first.entity <- findFirstEntity(con)
   ret <- switch(as.character(first.entity[1]),
                 sample= {
                   txt <- readLines(con)
                   parseGSM(txt)
                 },
-                series= parseGSE(con),
+                series= parseGSE(con,GSElimits),
                 dataset= {
                   txt <- readLines(con)
                   parseGDS(txt)

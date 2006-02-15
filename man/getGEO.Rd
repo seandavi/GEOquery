@@ -9,7 +9,7 @@
   the GEO SOFT format easily accessible.
 }
 \usage{
-getGEO(GEO = NULL, filename = NULL, destdir = tempdir())
+getGEO(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits=NULL)
 }
 \arguments{
   \item{GEO}{A character string representing a GEO object for download
@@ -22,6 +22,11 @@ getGEO(GEO = NULL, filename = NULL, destdir = tempdir())
     different directory if you want to save the file for later use.
     Doing so is a good idea if you have a slow connection, as some of
     the GEO files are HUGE!}
+  \item{GSElimits}{This argument can be used to load only a contiguous
+    subset of the GSMs from a GSE.  It should be specified as a vector
+    of length 2 specifying the start and end (inclusive) GSMs to load.
+    This could be useful for splitting up large GSEs into more
+    manageable parts, for example.}
 }
 \details{
   getGEO functions to download and parse information available from NCBI
