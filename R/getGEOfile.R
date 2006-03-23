@@ -11,7 +11,7 @@ getGEOfile <- function(GEO,destdir=tempdir(),
     }
     if (geotype == 'GSE' & amount=='full') {
       gseurl <- 'ftp://ftp.ncbi.nih.gov/pub/geo/data/geo/by_series/'
-      myurl <- paste(gseurl,GEO,'_family.soft.gz',sep="")
+      myurl <- paste(gseurl,GEO,'/',GEO,'_family.soft.gz',sep="")
       destfile <- file.path(destdir,paste(GEO,'.soft.gz',sep=""))
     }
     if (geotype == 'GSE' & amount!='full' & amount!='table') {
