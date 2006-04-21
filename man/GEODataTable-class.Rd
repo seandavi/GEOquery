@@ -5,36 +5,29 @@
 \alias{Table,GEODataTable-method}
 \alias{show,GEODataTable-method}
 
-\title{Class "GEODataTable" }
-\description{Class for storage of column information and data table from
-GEO objects}
+\title{Class "GEODataTable"}
+\description{Contains the column descriptions and data for the datatable
+  part of a GEO object}
 \section{Objects from the Class}{
-  Objects can be created by calls of the form \code{new("GEODataTable",
-    ...)}.
+Objects can be created by calls of the form \code{new("GEODataTable", ...)}.
 }
 \section{Slots}{
-  \describe{
-    \item{\code{columns}:}{Object of class \code{"data.frame"} that
-      holds the column descriptions, one row for each column in the table}
-    \item{\code{table}:}{Object of class \code{"data.frame"} that
-      contains the actual data from a GEO data table (i.e., numbers)}
+	 \describe{
+    \item{\code{columns}:}{Object of class \code{"data.frame"}
+      containing information about the columns in the datatable}
+    \item{\code{table}:}{Object of class \code{"data.frame"} containing
+      the actual data}
   }
 }
 \section{Methods}{
   \describe{
-    \item{Columns}{\code{signature(object = "GEODataTable")}: return the
-      columns slot from the GEODataTable (i.e., the column descriptions)}
-    \item{Table}{\code{signature(object = "GEODataTable")}: return the
-      data part of the data table}
-    \item{show}{\code{signature(object = "GEODataTable")}: show method
-      for GEODataTables }
-  }
+    \item{Columns}{\code{signature(object = "GEODataTable")}: get the
+      column portion of the GEODataTable}
+    \item{Table}{\code{signature(object = "GEODataTable")}: get the
+      table portion of the GEODataTable}
+    \item{show}{\code{signature(object = "GEODataTable")}: convenience
+      show method}
+	 }
 }
-\author{Sean Davis}
-
-\seealso{
-  \code{\link{GEOData-class}}
-}
-\examples{
-}
+\author{ Sean Davis}
 \keyword{classes}
