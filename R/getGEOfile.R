@@ -5,7 +5,7 @@ getGEOfile <- function(GEO,destdir=tempdir(),
     geotype <- toupper(substr(GEO,1,3))
     mode <- 'wb'
     if (geotype == 'GDS') {
-      gdsurl <- 'ftp://ftp.ncbi.nih.gov/pub/geo/data/gds/soft_gz/'
+      gdsurl <- 'ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SOFT/GDS/'
       myurl <- paste(gdsurl,GEO,'.soft.gz',sep="")
       destfile <- file.path(destdir,paste(GEO,'.soft.gz',sep=""))
     }
