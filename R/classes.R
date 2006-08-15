@@ -1,4 +1,6 @@
-# Generic GEO classes:
+### $Id$
+
+### Generic GEO classes:
 
 setClass("GEODataTable",
          representation(
