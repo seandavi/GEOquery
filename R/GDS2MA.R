@@ -7,10 +7,11 @@
     ord.table <- match(Table(GDS)[,1],Table(GPL)[,1])
                                         # exclude non-numeric columns
     inc.columns <- grep('GSM',colnames(Table(GDS)))
+    mat <- suppressWarnings(as.matrix(apply(Table(GDS)[ord.table,inc.columns],2,function(x) {as.numeric(as.character(x))})))
     if(do.log2) {
-      M <- as.matrix(log2(Table(GDS)[ord.table,inc.columns]))
+      M <- log2(mat)
     } else {
-      M <- as.matrix(Table(GDS)[ord.table,inc.columns])
+      M <- mat
     }
     MA <- new('MAList',list(M=M,
                             A=NULL,
@@ -26,10 +27,11 @@
     require(Biobase)
                                         # exclude non-numeric columns
     inc.columns <- grep('GSM',colnames(Table(GDS)))
+    mat <- suppressWarnings(as.matrix(apply(Table(GDS)[,inc.columns],2,function(x) {as.numeric(as.character(x))})))
     if(do.log2) {
-      expr <- as.matrix(log2(Table(GDS)[,inc.columns]))
+      expr <- log2(mat)
     } else {
-      expr <- as.matrix(Table(GDS)[,inc.columns])
+      expr <- mat
     }
     rownames(expr) <- Table(GDS)$ID
     tmp <- Columns(GDS)
