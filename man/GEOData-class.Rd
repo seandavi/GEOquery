@@ -36,6 +36,6 @@ Objects can be created by calls of the form \code{new("GEOData", ...)}.
 }
 \author{ Sean Davis }
 \seealso{
-	\code{\link{GDS-class}},	\code{\link{GPL-class}},	\code{\link{GSM-class}},	\code{\link{GEODataTable-class}},	\code{\link{dataTable-class}},
+	\code{\link{GDS-class}},	\code{\link{GPL-class}},	\code{\link{GSM-class}},	\code{\link{GEODataTable-class}},
 }
 \keyword{classes}

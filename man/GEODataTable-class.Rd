@@ -1,8 +1,11 @@
 \name{GEODataTable-class}
 \docType{class}
 \alias{GEODataTable-class}
+\alias{Accession,GEODataTable-method}
 \alias{Columns,GEODataTable-method}
+\alias{Meta,GEODataTable-method}
 \alias{Table,GEODataTable-method}
+\alias{dataTable,GEODataTable-method}
 \alias{show,GEODataTable-method}
 
 \title{Class "GEODataTable"}

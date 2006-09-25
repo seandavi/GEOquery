@@ -19,7 +19,7 @@ setClass("GEOData",
                         header="list"
                         ),
          prototype=list(
-           header=list(),
+           header=list()
          )
          )
 
