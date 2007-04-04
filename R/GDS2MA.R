@@ -27,20 +27,25 @@
     require(Biobase)
                                         # exclude non-numeric columns
     inc.columns <- grep('GSM',colnames(Table(GDS)))
-    mat <- suppressWarnings(as.matrix(apply(Table(GDS)[,inc.columns],2,function(x) {as.numeric(as.character(x))})))
+    mat <- suppressWarnings(as.matrix(apply(Table(GDS)[,inc.columns],2,
+                                            function(x) {as.numeric(as.character(x))})))
     if(do.log2) {
       expr <- log2(mat)
     } else {
       expr <- mat
     }
-    rownames(expr) <- Table(GDS)$ID
+    rownames(expr) <- Table(GDS)$ID_REF
     tmp <- Columns(GDS)
     rownames(tmp) <- as.character(tmp$sample)
-    pheno <- new('phenoData',
-                 pData=tmp,
-                 varLabels=as.list(colnames(Columns(GDS))))
-    eset <- new('exprSet',exprs=expr,phenoData=pheno)
-    sampleNames
-    geneNames(eset) <- Table(GDS)$ID_REF
+    pheno <- new("AnnotatedDataFrame",data=tmp)
+    mabstract=ifelse(is.null(Meta(GDS)$description),"",Meta(GDS)$description)
+    mpubmedids=ifelse(is.null(Meta(GDS)$pubmed_id),"",Meta(GDS)$pubmed_id)
+    mtitle=ifelse(is.null(Meta(GDS)$title),"",Meta(GDS)$title)
+    eset <- new('ExpressionSet',exprs=expr,phenoData=pheno,
+                experimentData=new("MIAME",
+                  abstract=mabstract,
+                  title=mtitle,
+                  pubMedIds=mpubmedids,
+                  other=Meta(GDS)))
     return(eset)
   }
