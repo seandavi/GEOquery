@@ -9,7 +9,8 @@ Depends: methods
 Suggests: limma,Biobase
 biocViews: Microarray, DataImport, OneChannel, TwoChannel, SAGE
 Description: The NCBI Gene Expression Omnibus (GEO) is a public repository of
-microarray data (>130,000 experiments).  Given the rich and varied nature of
-these data, it is only natural to want to apply BioConductor tools to these
-data.  GEOquery is the bridge between GEO and BioConductor.
+             microarray data (>130,000 experiments).  Given the rich
+             and varied nature of these data, it is only natural to
+             want to apply BioConductor tools to these data.  GEOquery
+             is the bridge between GEO and BioConductor.
 License: GPL version 2
