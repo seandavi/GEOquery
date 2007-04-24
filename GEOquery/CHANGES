@@ -1,0 +1,16 @@
+1.7.2
+	* Changes to GDS2MA and GDS2eSet to deal with "null" in the GDS datatable
+
+1.7.1
+	* change made to getGEOfile to reflect new GDS location at GEO
+
+1.7.0
+	* Version bump for bioC
+
+1.5.5
+	* Added GSElimits to getGEO to allow for parsing of large datasets in pieces
+	* fixed vignette to include Biobase-compliant exprSet
+	* changed vignette in the GSE2eSet section to use "match" for more safely dealing with probeset ordering differences between GPLs and GSMs
+
+1.5.4
+	* Fixed GDS2eSet to be Biobase-compliant
