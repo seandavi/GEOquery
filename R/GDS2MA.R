@@ -23,9 +23,13 @@
   }
 
 "GDS2eSet" <-
-  function(GDS,do.log2=FALSE) {
+  function(GDS,do.log2=FALSE,GPL=NULL) {
     require(Biobase)
                                         # exclude non-numeric columns
+    if(is.null(GPL)) {
+      GPL <- getGEO(Meta(GDS)$platform)
+    }
+    ord.table <- match(Table(GDS)[,1],Table(GPL)[,1])
     inc.columns <- grep('GSM',colnames(Table(GDS)))
     mat <- suppressWarnings(as.matrix(apply(Table(GDS)[,inc.columns],2,
                                             function(x) {as.numeric(as.character(x))})))
@@ -41,7 +45,13 @@
     mabstract=ifelse(is.null(Meta(GDS)$description),"",Meta(GDS)$description)
     mpubmedids=ifelse(is.null(Meta(GDS)$pubmed_id),"",Meta(GDS)$pubmed_id)
     mtitle=ifelse(is.null(Meta(GDS)$title),"",Meta(GDS)$title)
+    dt <- Table(GPL)
+    rownames(dt) <- dt$ID
+    featuredata <- new('AnnotatedDataFrame',data=dt,
+                       varMetadata=data.frame(Column=Columns(GPL)[,1],
+                         labelDescription=Columns(GPL)[,2]))
     eset <- new('ExpressionSet',exprs=expr,phenoData=pheno,
+                featureData=featuredata,
                 experimentData=new("MIAME",
                   abstract=mabstract,
                   title=mtitle,
