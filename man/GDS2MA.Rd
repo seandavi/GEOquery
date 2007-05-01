@@ -8,16 +8,17 @@
 }
 \usage{
 GDS2MA(GDS,do.log2=FALSE,GPL=NULL)
-GDS2eSet(GDS,do.log2=FALSE)
+GDS2eSet(GDS,do.log2=FALSE,GPL=NULL)
 }
 \arguments{
   \item{GDS}{The GDS datastructure returned by getGEO}
   \item{do.log2}{Boolean, should the data in the GDS be log2 transformed
-  before inserting into the new data structure}
+    before inserting into the new data structure}
   \item{GPL}{Either a GPL data structure (from a call to getGEO) or
     NULL.  If NULL, this will cause a call to getGEO to produce a GPL.
     The gene information from the GPL is then used to construct the
-    \code{genes} slot of the resulting limma \code{MAList} object.}
+    \code{genes} slot of the resulting limma \code{MAList} object or the
+    \code{featureData} slot of the \code{ExpressionSet} instance. }
 }
 \details{
   This function just rearranges one data structure into another.  For
@@ -26,7 +27,7 @@ GDS2eSet(GDS,do.log2=FALSE)
 }
 \value{
   \item{GDS2MA}{A limma MAList}
-  \item{GDS2eSet}{A exprSet object}
+  \item{GDS2eSet}{An ExpressionSet object}
 }
 \references{See the limma and exprSet help in the appropriate packages}
 \author{Sean Davis}
