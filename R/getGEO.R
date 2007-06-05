@@ -1,7 +1,28 @@
+getGSEMatrix <- function(acc,filename) {
+  if(is.null(GEO) & is.null(filename)) {
+    stop("You must supply either a filename of a GSE Matrix file or a GSE accession")
+  }
+  if(!is.null(filename)) {
+    if(length(grep('\\.gz$',filename,perl=TRUE))>0) {
+      require(R.utils)
+      tmp <- tempfile()
+      gunzip(filename,tmp)
+      con <- file(tmp,'r')
+    } else {
+      con <- file(filename,'r')
+    }
+    dat <- parseGSEMatrix(con)
+    a <- list(dat$eset)
+    names(a) <- as.character(dat$GPL)
+    return(a)
+  }
+}
+  
+
 getGEO <- function(GEO=NULL,
                    filename=NULL,
                    destdir=tempdir(),
-                   GSElimits=NULL) {
+                   GSElimits=NULL,GSEMatrix=FALSE) {
   filename <- filename
   if(!is.null(GSElimits)) {
     if(length(GSElimits)!=2) {
@@ -13,7 +34,13 @@ getGEO <- function(GEO=NULL,
   }
   if(is.null(filename)) {
     GEO <- toupper(GEO)
+    if(GSEMatrix) {
+      return(getAndParseGSEMatrices(GEO))
+    }
     filename <- getGEOfile(GEO,destdir=destdir)
+  }
+  if(!is.null(filename) & GSEMatrix) {
+    stop("Currently, getting GSEmatrix from local files is not supported")
   }
   if(length(grep('\\.gz$',filename,perl=TRUE))>0) {
     con <- gzfile(filename,'r')
@@ -23,6 +50,4 @@ getGEO <- function(GEO=NULL,
   ret <- parseGEO(con,GSElimits)
   close(con)
   return(ret)
-}
-                   
-                   
+}       

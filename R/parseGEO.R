@@ -228,6 +228,26 @@ findFirstEntity <- function(con) {
   }
 }
 
+parseGPL2 <- function(con) {
+  txt <- vector('character')
+  i <- 0
+  while(i <- i+1) {
+    txt[i] <- readLines(con,1)
+    if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
+  }
+  cols <- parseGeoColumns(txt)
+  meta <- parseGeoMeta(txt)
+  dat1 <- read.delim(con,sep="\t",header=TRUE,nrows=10)
+  colclasses <- apply(dat1,2,class)
+  dat2 <- read.delim(con,sep="\t",colClasses=colclasses,header=FALSE)
+  colnames(dat2) <- colnames(dat1)
+  dat3 <- rbind(dat1,dat2)
+  geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
+  gsm <- new('GPL',
+             header=meta,
+             dataTable = geoDataTable)
+}
+
 parseGEO <- function(con,GSElimits) {
   first.entity <- findFirstEntity(con)
   ret <- switch(as.character(first.entity[1]),
@@ -241,10 +261,89 @@ parseGEO <- function(con,GSElimits) {
                   parseGDS(txt)
                 },
                 platform= {
-                  txt <- readLines(con)
-                  parseGPL(txt)
+                  parseGPL2(con)
                 },
                 )
   return(ret)
 }
-	
+
+txtGrab <- function(regex,x) {
+  x <- as.character(x)
+  a <- regexpr(regex,x,perl=TRUE)
+  return(substr(x,a,a+attr(a,'match.length')-1))
+}
+
+getAndParseGSEMatrices <- function(GEO) {
+  require(RCurl)
+  require(R.utils)
+  GEO <- toupper(GEO)
+  a <- getURL(sprintf('ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SeriesMatrix/%s/',GEO))
+  b <- read.table(textConnection(a,'r'))
+  b <- as.character(b[,ncol(b)])
+  writeLines(sprintf('Found %d file(s)',length(b)))
+  ret <- list()
+  for(i in 1:length(b)) {
+    writeLines(b[i])
+    tmp <- tempdir()
+    download.file(sprintf('ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SeriesMatrix/%s/%s',GEO,b[i]),destfile=file.path(tmp,b[i]))
+    tmpfile <- tempfile()
+    gunzip(file.path(tmp,b[i]),tmpfile)
+    con <- file(tmpfile,'r')
+    ret[[b[i]]] <- parseGSEMatrix(con)$eset
+    close(con)
+  }
+  return(ret)
+}
+    
+  
+
+parseGSEMatrix <- function(con) {
+  require(Biobase)
+  i <- 0
+  while(i <- i+1) {
+    a <- readLines(con,1)
+    if(length(grep('^!Series_',a,ignore.case=TRUE))==0) {
+      break
+    }
+  }
+  seek(con,where=0)
+  header <- read.table(con,sep="\t",header=FALSE,nrows=i-1)
+  i <- 0
+  seekloc <- 0
+  while(1) {
+    a <- readLines(con,1)
+    if(length(grep('^!Sample_',a,ignore.case=TRUE))==0) {
+      if(i==0) {
+        seekloc <- seek(con)
+        next
+      } else {
+        break
+      }
+    }
+    i <- i+1
+  }
+  seek(con,seekloc)
+  tmpdat <- read.table(con,sep="\t",header=FALSE,nrows=i)
+  sampledat <- data.frame(t(tmpdat[,-1]))
+  colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
+  readLines(con,1)
+  colClasses <- c('character',rep('numeric',nrow(sampledat)))
+  datamat <- as.matrix(read.delim(con,sep="\t",header=TRUE,row.names=1,
+                                  colClasses=colClasses,comment.char=""))
+  datamat <- datamat[1:(nrow(datamat)-1),]
+  rownames(sampledat) <- colnames(datamat)
+  GPL=as.character(sampledat[1,grep('platform_id',colnames(sampledat),ignore.case=TRUE)])
+  gpl <- getGEO(GPL)
+  vmd <- Columns(gpl)
+  rownames(vmd) <- colnames(Table(gpl))
+  dat <- Table(gpl)
+  rownames(dat) <- as.character(dat$ID)
+  dat <- dat[match(rownames(datamat),rownames(dat)),]
+  fd <- new('AnnotatedDataFrame',data=dat,varMetadata=vmd)
+  eset <- new('ExpressionSet',
+              phenoData=as(sampledat,'AnnotatedDataFrame'),
+              annotation=GPL,
+              featureData=fd,
+              exprs=datamat)
+  return(list(GPL=as.character(sampledat[1,grep('platform_id',colnames(sampledat),ignore.case=TRUE)]),eset=eset))
+}
