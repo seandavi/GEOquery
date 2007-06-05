@@ -9,7 +9,8 @@
   the GEO SOFT format easily accessible.
 }
 \usage{
-getGEO(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits=NULL)
+getGEO(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits=NULL,
+GSEMatrix=FALSE)
 }
 \arguments{
   \item{GEO}{A character string representing a GEO object for download
@@ -27,6 +28,10 @@ getGEO(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits=NULL)
     of length 2 specifying the start and end (inclusive) GSMs to load.
     This could be useful for splitting up large GSEs into more
     manageable parts, for example.}
+  \item{GSEMatris}{A boolean telling GEOquery whether or not to use GSE
+    Series Matrix files from GEO.  The parsing of these files can be
+    many orders-of-magnitude faster than parsing the GSE SOFT format
+    files.  Defaults to FALSE, meaning that the SOFT format parsing will occur.}
 }
 \details{
   getGEO functions to download and parse information available from NCBI
