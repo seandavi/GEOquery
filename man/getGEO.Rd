@@ -28,7 +28,7 @@ GSEMatrix=FALSE)
     of length 2 specifying the start and end (inclusive) GSMs to load.
     This could be useful for splitting up large GSEs into more
     manageable parts, for example.}
-  \item{GSEMatris}{A boolean telling GEOquery whether or not to use GSE
+  \item{GSEMatrix}{A boolean telling GEOquery whether or not to use GSE
     Series Matrix files from GEO.  The parsing of these files can be
     many orders-of-magnitude faster than parsing the GSE SOFT format
     files.  Defaults to FALSE, meaning that the SOFT format parsing will occur.}
@@ -87,7 +87,10 @@ GSEMatrix=FALSE)
 
 }
 \value{
-  An object of the appropriate class (GDS, GPL, GSM, or GSE) is returned.
+  An object of the appropriate class (GDS, GPL, GSM, or GSE) is
+  returned.  If the GSEMatrix option is used, then a list of
+  ExpressionSet objects is returned, one for each SeriesMatrix file
+  associated with the GSE accesion.  
 }
 \author{Sean Davis}
 \section{Warning }{Some of the files that are downloaded, particularly

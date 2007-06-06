@@ -103,10 +103,23 @@ GSMList(gse)[[1]]
 names(GPLList(gse))
 @ 
 
-\section{Converting to BioConductor exprSets and limma MALists}
-GEO datasets are (unlike some of the other GEO entities), quite similar to the \Rpackage{limma} data structure \Rclass{MAList} and to the \Rpackage{Biobase} data structure \Rclass{exprSet}.  Therefore, there are two functions, \Rfunction{GDS2MA} and \Rfunction{GDS2eSet} that accomplish that task.  
+\section{Converting to BioConductor ExpressionSets and limma MALists}
+GEO datasets are (unlike some of the other GEO entities), quite similar to the \Rpackage{limma} data structure \Rclass{MAList} and to the \Rpackage{Biobase} data structure \Rclass{ExpressionSet}.  Therefore, there are two functions, \Rfunction{GDS2MA} and \Rfunction{GDS2eSet} that accomplish that task.  
 
-\subsection{Converting GDS to an exprSet}
+\subsection{Getting GSE Series Matrix files as an ExpressionSet}
+GEO Series are collections of related experiments.  In addition to being
+available as SOFT format files, which are quite large, NCBI GEO has prepared a
+simpler format file based on tab-delimited text.  The \Rfunction{getGEO}
+function can handle this format and will parse very large GSEs quite quickly.
+The data structure returned from this parsing is a list of ExpressionSets.  As
+an example, we download and parse GSE2553.
+<<>>=  
+gse2553 <- getGEO('GSE2553',GSEMatrix=TRUE)
+gse2553
+pData(phenoData(gse2553[[1]]))[1:5,c(1,6,8)]
+@ 
+
+\subsection{Converting GDS to an ExpressionSet}
 
 Taking our \Robject{gds} object from above, we can simply do:
 
@@ -114,7 +127,7 @@ Taking our \Robject{gds} object from above, we can simply do:
 eset <- GDS2eSet(gds,do.log2=TRUE)
 @ 
 
-Now, \Robject{eset} is an \Rclass{exprSet} that contains the same information as in the GEO dataset, including the sample information, which we can see here:
+Now, \Robject{eset} is an \Rclass{ExpressionSet} that contains the same information as in the GEO dataset, including the sample information, which we can see here:
 
 <<>>=
 eset
@@ -123,7 +136,7 @@ pData(eset)
 
 \subsection{Converting GDS to an MAList}
 
-No annotation information (called platform information by GEO) was retrieved from because \Rclass{exprSet} does not contain slots for gene information, typically.  However, it is easy to obtain this information.  First, we need to know what platform this GDS used.  Then, another call to \Rfunction{getGEO} will get us what we need.
+No annotation information (called platform information by GEO) was retrieved from because \Rclass{ExpressionSet} does not contain slots for gene information, typically.  However, it is easy to obtain this information.  First, we need to know what platform this GDS used.  Then, another call to \Rfunction{getGEO} will get us what we need.
 
 <<>>=
 #get the platform from the GDS metadata
@@ -132,7 +145,7 @@ Meta(gds)$platform
 gpl <- getGEO("GPL5")
 @ 
 
-So, \Robject{gpl} now contains the information for GPL5 from GEO.  Unlike \Rclass{exprSet}, the limma \Rclass{MAList} does store gene annotation information, so we can use our newly created \Robject{gpl} of class \Rclass{GPL} in a call to \Rfunction{GDS2MA} like so:
+So, \Robject{gpl} now contains the information for GPL5 from GEO.  Unlike \Rclass{ExpressionSet}, the limma \Rclass{MAList} does store gene annotation information, so we can use our newly created \Robject{gpl} of class \Rclass{GPL} in a call to \Rfunction{GDS2MA} like so:
 
 <<>>=
 MA <- GDS2MA(gds,GPL=gpl)
@@ -142,6 +155,8 @@ MA
 Now, \Robject{MA} is of class \Rclass{MAList} and contains not only the data, but the sample information and gene information associated with GDS1.
 
 \subsection{Converting GSE to an exprSet}
+First, make sure that using the method described above for using GSE Series Matrix files is not sufficient for the task, as it is much faster and simpler.  If it is not (i.e., other columns from each GSM are needed), then this method will be needed.  
+
 Converting a \Rclass{GSE} object to an \Rclass{exprSet} object currently takes a bit of R data manipulation due to the varied data that can be stored in a \Rclass{GSE} and the underlying \Rclass{GSM} and \Rclass{GPL} objects.  However, using a simple example will hopefully be illustrative of the technique.  
 
 First, we need to make sure that all of the \Rclass{GSMs} are from the same platform:
@@ -195,5 +210,11 @@ So, using a combination of \Rfunction{lapply} on the GSMList, one can extract as
 
 \section{Conclusion}
 The GEOquery package provides a bridge to the vast array resources contained in the NCBI GEO repositories.  By maintaining the full richness of the GEO data rather than focusing on getting only the ``numbers'', it is possible to integrate GEO data into current Bioconductor data structures and to perform analyses on that data quite quickly and easily.  These tools will hopefully open GEO data more fully to the array community at large.  
+
+\section{sessionInfo}
+<<>>=
+sessionInfo()
+@
+
 
 \end{document}
