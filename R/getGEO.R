@@ -1,24 +1,3 @@
-getGSEMatrix <- function(acc,filename) {
-  if(is.null(GEO) & is.null(filename)) {
-    stop("You must supply either a filename of a GSE Matrix file or a GSE accession")
-  }
-  if(!is.null(filename)) {
-    if(length(grep('\\.gz$',filename,perl=TRUE))>0) {
-      require(R.utils)
-      tmp <- tempfile()
-      gunzip(filename,tmp)
-      con <- file(tmp,'r')
-    } else {
-      con <- file(filename,'r')
-    }
-    dat <- parseGSEMatrix(con)
-    a <- list(dat$eset)
-    names(a) <- as.character(dat$GPL)
-    return(a)
-  }
-}
-  
-
 getGEO <- function(GEO=NULL,
                    filename=NULL,
                    destdir=tempdir(),
