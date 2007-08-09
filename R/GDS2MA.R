@@ -7,7 +7,7 @@
     ord.table <- match(Table(GDS)[,1],Table(GPL)[,1])
                                         # exclude non-numeric columns
     inc.columns <- grep('GSM',colnames(Table(GDS)))
-    mat <- suppressWarnings(as.matrix(apply(Table(GDS)[ord.table,inc.columns],2,function(x) {as.numeric(as.character(x))})))
+    mat <- suppressWarnings(as.matrix(apply(Table(GDS)[,inc.columns],2,function(x) {as.numeric(as.character(x))})))
     if(do.log2) {
       M <- log2(mat)
     } else {
@@ -16,7 +16,7 @@
     MA <- new('MAList',list(M=M,
                             A=NULL,
                             targets=Columns(GDS),
-                            genes=Table(GPL),
+                            genes=Table(GPL)[ord.table,],
                             notes=Meta(GDS)
                             ))
     return(MA)
@@ -38,7 +38,7 @@
     } else {
       expr <- mat
     }
-    rownames(expr) <- Table(GDS)$ID_REF
+    rownames(expr) <- as.character(Table(GDS)$ID_REF)
     tmp <- Columns(GDS)
     rownames(tmp) <- as.character(tmp$sample)
     pheno <- new("AnnotatedDataFrame",data=tmp)
@@ -46,8 +46,8 @@
     mpubmedids=ifelse(is.null(Meta(GDS)$pubmed_id),"",Meta(GDS)$pubmed_id)
     mtitle=ifelse(is.null(Meta(GDS)$title),"",Meta(GDS)$title)
     dt <- Table(GPL)
-    rownames(dt) <- dt$ID
-    featuredata <- new('AnnotatedDataFrame',data=dt,
+    rownames(dt) <- as.character(dt$ID)
+    featuredata <- new('AnnotatedDataFrame',data=dt[ord.table,],
                        varMetadata=data.frame(Column=Columns(GPL)[,1],
                          labelDescription=Columns(GPL)[,2]))
     eset <- new('ExpressionSet',exprs=expr,phenoData=pheno,
