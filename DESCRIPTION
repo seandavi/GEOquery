@@ -1,11 +1,11 @@
 Package: GEOquery
 Type: Package
 Title: Get data from NCBI Gene Expression Omnibus (GEO)
-Version: 2.1.8
-Date: 2007-08-08
+Version: 2.1.9
+Date: 2007-09-21
 Author: Sean Davis <sdavis2@mail.nih.gov>
 Maintainer: Sean Davis <sdavis2@mail.nih.gov>
-Depends: methods,R.utils,Biobase,RCurl
+Depends: methods,Biobase,RCurl
 Suggests: limma
 biocViews: Microarray, DataImport, OneChannel, TwoChannel, SAGE
 Description: The NCBI Gene Expression Omnibus (GEO) is a public repository of
