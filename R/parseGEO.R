@@ -275,10 +275,11 @@ txtGrab <- function(regex,x) {
 
 getAndParseGSEMatrices <- function(GEO) {
   require(RCurl)
-  require(R.utils)
   GEO <- toupper(GEO)
   a <- getURL(sprintf('ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SeriesMatrix/%s/',GEO))
-  b <- read.table(textConnection(a,'r'))
+  tmpcon <- textConnection(a,'r')
+  b <- read.table(tmpcon)
+  close(tmpcon)
   b <- as.character(b[,ncol(b)])
   writeLines(sprintf('Found %d file(s)',length(b)))
   ret <- list()
