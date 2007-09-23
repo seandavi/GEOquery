@@ -14,6 +14,10 @@ getGEO <- function(GEO=NULL,
   if(is.null(filename)) {
     GEO <- toupper(GEO)
     if(GSEMatrix) {
+      if(.Platform$OS.type=='windows') {
+        warning('GSEMatrix parsing not currently supported on Windows')
+        return(NULL)
+      }
       return(getAndParseGSEMatrices(GEO))
     }
     filename <- getGEOfile(GEO,destdir=destdir)
