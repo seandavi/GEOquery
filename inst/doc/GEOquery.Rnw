@@ -112,11 +112,13 @@ available as SOFT format files, which are quite large, NCBI GEO has prepared a
 simpler format file based on tab-delimited text.  The \Rfunction{getGEO}
 function can handle this format and will parse very large GSEs quite quickly.
 The data structure returned from this parsing is a list of ExpressionSets.  As
-an example, we download and parse GSE2553.
+an example, we download and parse GSE2553.  Unfortunately, GSEMatrix parsing is not currently available on windows.
 <<>>=  
-gse2553 <- getGEO('GSE2553',GSEMatrix=TRUE)
-gse2553
-pData(phenoData(gse2553[[1]]))[1:5,c(1,6,8)]
+if(.Platform$OS.type!='windows') {
+  gse2553 <- getGEO('GSE2553',GSEMatrix=TRUE)
+  show(gse2553)
+  show(pData(phenoData(gse2553[[1]]))[1:5,c(1,6,8)])
+}
 @ 
 
 \subsection{Converting GDS to an ExpressionSet}
