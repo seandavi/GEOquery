@@ -5,7 +5,7 @@
 %\VignettePackage{GEOquery}
 \documentclass[12pt,fullpage]{article}
 
-\usepackage{amsmath,epsfig,psfig,pstricks,fullpage}
+\usepackage{amsmath,epsfig,pstricks,fullpage}
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage[authoryear,round]{natbib}
