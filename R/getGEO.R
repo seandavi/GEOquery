@@ -14,10 +14,13 @@ getGEO <- function(GEO=NULL,
   if(is.null(filename)) {
     GEO <- toupper(GEO)
     if(GSEMatrix) {
-      if(.Platform$OS.type=='windows') {
-        warning('GSEMatrix parsing not currently supported on Windows')
-        return(NULL)
-      }
+### I was having problems with gunzip on Windows, which is why
+###  I added the lines below.  I'm giving it another try to see if
+###  something has changed with gunzip.  
+#      if(.Platform$OS.type=='windows') {
+#        warning('GSEMatrix parsing not currently supported on Windows')
+#        return(NULL)
+#      }
       return(getAndParseGSEMatrices(GEO))
     }
     filename <- getGEOfile(GEO,destdir=destdir)
