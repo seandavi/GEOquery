@@ -10,7 +10,7 @@
 }
 \usage{
 getGEO(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits=NULL,
-GSEMatrix=FALSE)
+GSEMatrix=TRUE)
 }
 \arguments{
   \item{GEO}{A character string representing a GEO object for download
@@ -31,7 +31,9 @@ GSEMatrix=FALSE)
   \item{GSEMatrix}{A boolean telling GEOquery whether or not to use GSE
     Series Matrix files from GEO.  The parsing of these files can be
     many orders-of-magnitude faster than parsing the GSE SOFT format
-    files.  Defaults to FALSE, meaning that the SOFT format parsing will occur.}
+    files.  Defaults to TRUE, meaning that the SOFT format parsing will
+    not occur; set to FALSE if you for some reason need other columns
+    from the GSE records.}
 }
 \details{
   getGEO functions to download and parse information available from NCBI
