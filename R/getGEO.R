@@ -1,7 +1,7 @@
 getGEO <- function(GEO=NULL,
                    filename=NULL,
                    destdir=tempdir(),
-                   GSElimits=NULL,GSEMatrix=FALSE) {
+                   GSElimits=NULL,GSEMatrix=TRUE) {
   filename <- filename
   if(!is.null(GSElimits)) {
     if(length(GSElimits)!=2) {
