@@ -20,7 +20,7 @@
 \begin{document}
 \title{Using the GEOquery package}
 \maketitle
-\begin{center}$^\ddagger$Cancer Genetics Branch\\ National Human Genome Research Institute\\ National Institutes of Health
+\begin{center}$^\ddagger$Genetics Branch\\ National Cancer Institute\\ National Institutes of Health
 \end{center}
 
 
@@ -28,7 +28,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Overview of GEO} 
 
-The NCBI Gene Expression Omnibus (GEO) serves as a public repository for a wide range of high-throughput experimental data. These data include single and dual channel microarray-based experiments measuring mRNA, genomic DNA, and protein abundance, as well as non-array techniques such as serial analysis of gene expression (SAGE), and mass spectrometry proteomic data.  Currently, 65,000 samples and nearly 2000 different platforms are represented in GEO!
+The NCBI Gene Expression Omnibus (GEO) serves as a public repository for a wide range of high-throughput experimental data. These data include single and dual channel microarray-based experiments measuring mRNA, genomic DNA, and protein abundance, as well as non-array techniques such as serial analysis of gene expression (SAGE), and mass spectrometry proteomic data.  Currently, nearly 200,000 samples and over 4000 different platforms are represented in GEO!
 
 At the most basic level of organization of GEO, there are four basic entity types.  The first three (Sample, Platform, and Series) are supplied by users; the fourth, the dataset, is compiled and curated by GEO staff from the user-submitted data.\footnote{See \url{http://www.ncbi.nih.gov/geo} for more information}
 
@@ -40,7 +40,7 @@ A Platform record describes the list of elements on the array (e.g., cDNAs, olig
 A Sample record describes the conditions under which an individual Sample was handled, the manipulations it underwent, and the abundance measurement of each element derived from it. Each Sample record is assigned a unique and stable GEO accession number (GSMxxx). A Sample entity must reference only one Platform and may be included in multiple Series.
 \subsection{Series}
 
-A Series record defines a set of related Samples considered to be part of a group, how the Samples are related, and if and how they are ordered. A Series provides a focal point and description of the experiment as a whole. Series records may also contain tables describing extracted data, summary conclusions, or analyses. Each Series record is assigned a unique and stable GEO accession number (GSExxx).
+A Series record defines a set of related Samples considered to be part of a group, how the Samples are related, and if and how they are ordered. A Series provides a focal point and description of the experiment as a whole. Series records may also contain tables describing extracted data, summary conclusions, or analyses. Each Series record is assigned a unique and stable GEO accession number (GSExxx).  Series records are available in a couple of formats which are handled by GEOquery independently.  The smaller and new GSEMatrix files are quite fast to parse; a simple flag is used by GEOquery to choose to use GSEMatrix files (see below).
 \subsection{Datasets}
 
 GEO DataSets (GDSxxx) are curated sets of GEO Sample data. A GDS record represents a collection of biologically and statistically comparable GEO Samples and forms the basis of GEO's suite of data display and analysis tools. Samples within a GDS refer to the same Platform, that is, they share a common set of probe elements. Value measurements for each Sample within a GDS are assumed to be calculated in an equivalent manner, that is, considerations such as background processing and normalization are consistent across the dataset. Information reflecting experimental design is provided through GDS subsets.
@@ -93,7 +93,7 @@ Columns(gds)
 The \Rclass{GSE} is the most confusing of the GEO entities.  A GSE entry can represent an arbitrary number of samples run on an arbitrary number of platforms.  The \Rclass{GSE} has a metadata section, just like the other classes.  However, it doesn't have a GEODataTable.  Instead, it contains two lists, accessible using \Rmethod{GPLList} and {GSMList}, that are each lists of \Rclass{GPL} and \Rclass{GSM} objects.  To show an example:
 
 <<>>=
-gse <- getGEO("GSE462")
+gse <- getGEO("GSE462",GSEMatrix=FALSE)
 Meta(gse)
 # names of all the GSM objects contained in the GSE
 names(GSMList(gse))
@@ -102,6 +102,8 @@ GSMList(gse)[[1]]
 # and the names of the GPLs represented
 names(GPLList(gse))
 @ 
+
+See below for an additional, preferred method of obtaining GSE information.
 
 \section{Converting to BioConductor ExpressionSets and limma MALists}
 GEO datasets are (unlike some of the other GEO entities), quite similar to the \Rpackage{limma} data structure \Rclass{MAList} and to the \Rpackage{Biobase} data structure \Rclass{ExpressionSet}.  Therefore, there are two functions, \Rfunction{GDS2MA} and \Rfunction{GDS2eSet} that accomplish that task.  
@@ -157,7 +159,7 @@ MA
 Now, \Robject{MA} is of class \Rclass{MAList} and contains not only the data, but the sample information and gene information associated with GDS1.
 
 \subsection{Converting GSE to an exprSet}
-First, make sure that using the method described above for using GSE Series Matrix files is not sufficient for the task, as it is much faster and simpler.  If it is not (i.e., other columns from each GSM are needed), then this method will be needed.  
+First, make sure that using the method described above in the section ``Getting GSE Series Matrix files as an ExpressionSet'' for using GSE Series Matrix files is not sufficient for the task, as it is much faster and simpler.  If it is not (i.e., other columns from each GSM are needed), then this method will be needed.  
 
 Converting a \Rclass{GSE} object to an \Rclass{exprSet} object currently takes a bit of R data manipulation due to the varied data that can be stored in a \Rclass{GSE} and the underlying \Rclass{GSM} and \Rclass{GPL} objects.  However, using a simple example will hopefully be illustrative of the technique.  
 
@@ -192,19 +194,17 @@ data.matrix <- log2(do.call('cbind',lapply(GSMList(gse),function(x)
 data.matrix[1:5,]
 @ 
 
-Note that we do a ``match'' to make sure that the values and the platform information are in the same order.  Finally, to make the \Rclass{exprSet} object:
+Note that we do a ``match'' to make sure that the values and the platform information are in the same order.  Finally, to make the \Rclass{ExpressionSet} object:
 
 <<>>=
 require(Biobase)
-# go through the necessary steps to make a compliant exprSet
+# go through the necessary steps to make a compliant ExpressionSet
 rownames(data.matrix) <- probesets
 colnames(data.matrix) <- names(GSMList(gse))
 pdata <- data.frame(samples=names(GSMList(gse)))
 rownames(pdata) <- names(GSMList(gse))
-pheno <- new('phenoData',
-             pData=pdata,
-             varLabels=as.list('samples'))
-eset2 <- new('exprSet',exprs=data.matrix,phenoData=pheno)
+pheno <- as(pdata,"AnnotatedDataFrame")
+eset2 <- new('ExpressionSet',exprs=data.matrix,phenoData=pheno)
 eset2
 @ 
 
@@ -214,8 +214,8 @@ So, using a combination of \Rfunction{lapply} on the GSMList, one can extract as
 The GEOquery package provides a bridge to the vast array resources contained in the NCBI GEO repositories.  By maintaining the full richness of the GEO data rather than focusing on getting only the ``numbers'', it is possible to integrate GEO data into current Bioconductor data structures and to perform analyses on that data quite quickly and easily.  These tools will hopefully open GEO data more fully to the array community at large.  
 
 \section{sessionInfo}
-<<>>=
-sessionInfo()
+<<results=tex,echo=false>>=
+toLatex(sessionInfo())
 @
 
 
