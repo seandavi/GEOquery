@@ -10,13 +10,12 @@
 }
 \usage{
 parseGEO(con, GSElimits)
-parseGPL(txt)
-parseGDS(txt)
+parseGPL(con)
+parseGDS(con)
 parseGSE(con, GSElimits)
-parseGSM(txt)
+parseGSM(con)
 }
 \arguments{
-  \item{txt}{The text from a GEO SOFT format file}
   \item{con}{A connection that contains the body of a GEO SOFT format file}
   \item{GSElimits}{Used to limit the number of GSMs parsed into the GSE
     object; useful for memory management for large GSEs.}

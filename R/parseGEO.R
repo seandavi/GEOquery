@@ -1,28 +1,18 @@
-parseGeoData <- function(txt) {
-	# Get the stuff between table_begin and table_end
-	# Arguments:
-	#    txt: text associated with a single entity
-	# Returns:
-	#    data.frame containing just the table and associated
-	#    column names
-		
-	# Get start and end of data table
-	# Thanks to GEO folks for adding table_begin and end
-	tbl.start <- grep('!\\w+_table_begin',txt,perl=TRUE)+1
-	tbl.end <- grep('!\\w+_table_end',txt,perl=TRUE)-1
-        if(length(tbl.end)==0) {
-          tbl.end <- length(txt)
-        }
-#       This is slower, but correctly deals with column types
-        txtcon <- textConnection(txt[tbl.start:tbl.end])
-        ret <- read.delim(txtcon,header=TRUE,sep="\t",na.strings="NULL")
-        close(txtcon)
-        return(ret)
-	# Grab first line after table_begin for column names
-#	tbl.colnames <- strsplit(txt[tbl.start],"\t")[[1]]
-#	tbl.tmp <- do.call('rbind',strsplit(txt[(tbl.start+1):tbl.end],"\t"))
-#	colnames(tbl.tmp) <- tbl.colnames
-#	return(data.frame(tbl.tmp))
+parseGEO <- function(con,GSElimits) {
+  first.entity <- findFirstEntity(con)
+  ret <- switch(as.character(first.entity[1]),
+                sample= {
+                  parseGSM(con)
+                },
+                series= parseGSE(con,GSElimits),
+                dataset= {
+                  parseGDS(con)
+                },
+                platform= {
+                  parseGPL(con)
+                },
+                )
+  return(ret)
 }
 
 parseGeoMeta <- function(txt) {
@@ -93,29 +83,20 @@ parseGeoColumns <- function(txt) {
     	return(cols)
 }
 
-parseGeoDataTable <- function(txt) {
-	cols <- parseGeoColumns(txt)
-	tab <- parseGeoData(txt)
-	return(new('GEODataTable',columns=cols,table=tab))
-}
-
-parseGSM <- function(txt) {
-  geoDataTable <- parseGeoDataTable(txt)
+parseGSM <- function(con) {
+  txt <- vector('character')
+  i <- 0
+  while(i <- i+1) {
+    txt[i] <- readLines(con,1)
+    if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
+  }
+  cols <- parseGeoColumns(txt)
   meta <- parseGeoMeta(txt)
+  dat3 <- fastTabRead(con)
+  geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
   gsm <- new('GSM',
              header=meta,
              dataTable = geoDataTable)
-  return(gsm)
-}
-
-parseGPL <- function(txt) {
-	geoDataTable <- parseGeoDataTable(txt)
-	meta <- parseGeoMeta(txt)
-	gsm <- new('GPL',
-			  header=meta,
-			  dataTable = geoDataTable)
-		
-	return(gsm)
 }
 
 parseGSE <- function(con,GSElimits) {
@@ -198,22 +179,6 @@ parseGSE <- function(con,GSElimits) {
 }
 
 
-parseGDS <- function(txt) {
-  writeLines("parsing geodata")
-  tab <- parseGeoData(txt)
-  writeLines("parsing subsets")
-  cols <- parseGDSSubsets(txt)
-  
-  writeLines("ready to return")
-  return(new('GDS',
-             header=parseGeoMeta(txt),
-             dataTable=new('GEODataTable',
-               table=tab,
-               columns=cols
-               )
-             ))
-	}
-
 findFirstEntity <- function(con) {
   while(TRUE) {
     line <- readLines(con,1)
@@ -228,7 +193,43 @@ findFirstEntity <- function(con) {
   }
 }
 
-parseGPL2 <- function(con) {
+fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
+                        colClasses=NULL,...) {
+  ### Need to read tables quickly, so guess the colclasses on the
+  ### fly.  This is a bit dangerous since the first rows might not
+  ### be representative of the entire set, but it is SO MUCH FASTER
+  ### than the alternative, I have to do it.
+  dat3 <- data.frame(NULL)
+  if(is.null(colClasses)) {
+    dat1 <- read.delim(con,sep=sep,header=TRUE,nrows=sampleRows,...)
+    colclasses <- apply(dat1,2,class)
+    dat2 <- read.delim(con,sep=sep,colClasses=colclasses,header=FALSE,...)
+    colnames(dat2) <- colnames(dat1)
+    dat3 <- rbind(dat1,dat2)
+  } else {
+    dat3 <- read.delim(con,sep=sep,colClasses=colClasses,header=header,...)
+  }
+  return(dat3)
+}
+
+parseGDS <- function(con) {
+    txt <- vector('character')
+    i <- 0
+    while(i <- i+1) {
+      txt[i] <- readLines(con,1)
+      if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
+    }
+    cols <- parseGDSSubsets(txt)
+    meta <- parseGeoMeta(txt)
+    dat3 <- fastTabRead(con)
+    geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
+    gds <- new('GDS',
+               header=meta,
+               dataTable = geoDataTable)
+  }
+
+
+parseGPL <- function(con) {
   txt <- vector('character')
   i <- 0
   while(i <- i+1) {
@@ -237,34 +238,11 @@ parseGPL2 <- function(con) {
   }
   cols <- parseGeoColumns(txt)
   meta <- parseGeoMeta(txt)
-  dat1 <- read.delim(con,sep="\t",header=TRUE,nrows=10)
-  colclasses <- apply(dat1,2,class)
-  dat2 <- read.delim(con,sep="\t",colClasses=colclasses,header=FALSE)
-  colnames(dat2) <- colnames(dat1)
-  dat3 <- rbind(dat1,dat2)
+  dat3 <- fastTabRead(con)
   geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
-  gsm <- new('GPL',
+  gpl <- new('GPL',
              header=meta,
              dataTable = geoDataTable)
-}
-
-parseGEO <- function(con,GSElimits) {
-  first.entity <- findFirstEntity(con)
-  ret <- switch(as.character(first.entity[1]),
-                sample= {
-                  txt <- readLines(con)
-                  parseGSM(txt)
-                },
-                series= parseGSE(con,GSElimits),
-                dataset= {
-                  txt <- readLines(con)
-                  parseGDS(txt)
-                },
-                platform= {
-                  parseGPL2(con)
-                },
-                )
-  return(ret)
 }
 
 txtGrab <- function(regex,x) {
