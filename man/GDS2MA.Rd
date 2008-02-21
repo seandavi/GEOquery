@@ -1,10 +1,10 @@
 \name{Converting}
 \alias{GDS2MA}
 \alias{GDS2eSet}
-\title{Convert a GDS datastructure to a BioConductor datastructure}
+\title{Convert a GDS data structure to a BioConductor data structure}
 \description{
   Functions to take a GDS data structure from getGEO and coerce it to
-  limma MALists or exprSets.  
+  limma MALists or ExpressionSets.  
 }
 \usage{
 GDS2MA(GDS,do.log2=FALSE,GPL=NULL)
@@ -23,13 +23,13 @@ GDS2eSet(GDS,do.log2=FALSE,GPL=NULL)
 \details{
   This function just rearranges one data structure into another.  For
   GDS, it also deals appropriately with making the "targets" list item
-  for the limma data structure and the phenoData slot of exprSets.  
+  for the limma data structure and the phenoData slot of ExpressionSets.
 }
 \value{
   \item{GDS2MA}{A limma MAList}
   \item{GDS2eSet}{An ExpressionSet object}
 }
-\references{See the limma and exprSet help in the appropriate packages}
+\references{See the limma and ExpressionSet help in the appropriate packages}
 \author{Sean Davis}
 \examples{
 

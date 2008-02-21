@@ -158,10 +158,10 @@ MA
 
 Now, \Robject{MA} is of class \Rclass{MAList} and contains not only the data, but the sample information and gene information associated with GDS1.
 
-\subsection{Converting GSE to an exprSet}
+\subsection{Converting GSE to an ExpressionSet}
 First, make sure that using the method described above in the section ``Getting GSE Series Matrix files as an ExpressionSet'' for using GSE Series Matrix files is not sufficient for the task, as it is much faster and simpler.  If it is not (i.e., other columns from each GSM are needed), then this method will be needed.  
 
-Converting a \Rclass{GSE} object to an \Rclass{exprSet} object currently takes a bit of R data manipulation due to the varied data that can be stored in a \Rclass{GSE} and the underlying \Rclass{GSM} and \Rclass{GPL} objects.  However, using a simple example will hopefully be illustrative of the technique.  
+Converting a \Rclass{GSE} object to an \Rclass{ExpressionSet} object currently takes a bit of R data manipulation due to the varied data that can be stored in a \Rclass{GSE} and the underlying \Rclass{GSM} and \Rclass{GPL} objects.  However, using a simple example will hopefully be illustrative of the technique.  
 
 First, we need to make sure that all of the \Rclass{GSMs} are from the same platform:
 
