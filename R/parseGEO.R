@@ -141,12 +141,18 @@ parseGSE <- function(con,GSElimits) {
         GSMcount <- GSMcount+1
         # Look to see if limits should be used, otherwise, proceed
         if(is.null(GSElimits)) {
-          gsmlist[[accession]] <- parseGSM(a)
+          offset <- ifelse(finished,1,2)
+          tmpcon <- textConnection(a[1:(length(a)-offset)])
+          gsmlist[[accession]] <- parseGSM(tmpcon)
+          close(tmpcon)
           writeLines(b)
         } else {
           if((GSMcount>=GSElimits[1]) &
              (GSMcount<=GSElimits[2])) {
-            gsmlist[[accession]] <- parseGSM(a)
+            offset <- ifelse(finished,1,2)
+            tmpcon <- textConnection(a[1:(length(a)-offset)])
+            gsmlist[[accession]] <- parseGSM(tmpcon)
+            close(tmpcon)
             writeLines(b)
           } else {
             cat('Skipping sample',GSMcount,': Accession',accession,'at user request\n')
@@ -155,7 +161,10 @@ parseGSE <- function(con,GSElimits) {
       }
       if(length(grep('PLATFORM',nextEntity))>0) {
         accession <- strsplit(nextEntity,' = ')[[1]][2]
-        gpllist[[accession]] <- parseGPL(a)
+        offset <- ifelse(finished,1,2)
+        tmpcon <- textConnection(a[1:(length(a)-offset)])
+        gpllist[[accession]] <- parseGPL(tmpcon)
+        close(tmpcon)
       }
       if(!is.null(GSElimits)) {
         if(GSMcount+1>GSElimits[2]) {
