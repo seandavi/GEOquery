@@ -192,8 +192,9 @@ findFirstEntity <- function(con) {
   while(TRUE) {
     line <- readLines(con,1)
     if(length(line)==0) return(0)
-    entity.line <- grep('^\\^(DATASET|SAMPLE|SERIES|PLATFORM)',
+    entity.line <- grep('^\\^(DATASET|SAMPLE|SERIES|PLATFORM|ANNOTATION)',
                         line,ignore.case=TRUE,value=TRUE,perl=TRUE)
+    entity.line <- gsub('annotation','platform',entity.line,ignore.case=TRUE)
     if(length(entity.line)>0) {
       ret <- c(tolower(sub('\\^','',strsplit(entity.line,' = ')[[1]][1])),
                strsplit(entity.line,' = ')[[1]][2])
@@ -210,13 +211,13 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
   ### than the alternative, I have to do it.
   dat3 <- data.frame(NULL)
   if(is.null(colClasses)) {
-    dat1 <- read.delim(con,sep=sep,header=TRUE,nrows=sampleRows,...)
+    dat1 <- read.delim(con,sep=sep,header=TRUE,nrows=sampleRows,quote="",comment.char="",...)
     colclasses <- apply(dat1,2,class)
-    dat2 <- read.delim(con,sep=sep,colClasses=colclasses,header=FALSE,...)
+    dat2 <- read.delim(con,sep=sep,colClasses=colclasses,header=FALSE,quote="",comment.char="",...)
     colnames(dat2) <- colnames(dat1)
     dat3 <- rbind(dat1,dat2)
   } else {
-    dat3 <- read.delim(con,sep=sep,colClasses=colClasses,header=header,...)
+    dat3 <- read.delim(con,sep=sep,colClasses=colClasses,header=header,quote="",comment.char="",...)
   }
   return(dat3)
 }

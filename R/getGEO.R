@@ -19,14 +19,11 @@ getGEO <- function(GEO=NULL,
     }
     filename <- getGEOfile(GEO,destdir=destdir)
   }
-  if(!is.null(filename) & GSEMatrix & geotype=='GSE') {
-    stop("Currently, getting GSEmatrix from local files is not supported")
-  }
   if(length(grep('\\.gz$',filename,perl=TRUE))>0) {
-    con <- gzfile(filename,'r')
-  } else {
-    con <- file(filename,'r')
+    gunzip(filename,overwrite=TRUE)
+    filename <- gsub('\\.gz$','',filename)
   }
+  con <- file(filename,'r')
   ret <- parseGEO(con,GSElimits)
   close(con)
   return(ret)
