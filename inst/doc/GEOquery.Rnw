@@ -186,11 +186,13 @@ probesets <- Table(GPLList(gse)[[1]])$ID
 # make the data matrix from the VALUE columns from each GSM
 # being careful to match the order of the probesets in the platform
 # with those in the GSMs
-data.matrix <- log2(do.call('cbind',lapply(GSMList(gse),function(x) 
-                                           {tab <- Table(x)
-                                            mymatch <- match(probesets,tab$ID_REF)
-                                            return(tab$VALUE[mymatch])
-                                          })))
+data.matrix <- do.call('cbind',lapply(GSMList(gse),function(x) 
+                                      {tab <- Table(x)
+                                       mymatch <- match(probesets,tab$ID_REF)
+                                       return(tab$VALUE[mymatch])
+                                     }))
+data.matrix <- apply(data.matrix,2,function(x) {as.numeric(as.character(x))})
+data.matrix <- log2(data.matrix)
 data.matrix[1:5,]
 @ 
 
@@ -209,6 +211,9 @@ eset2
 @ 
 
 So, using a combination of \Rfunction{lapply} on the GSMList, one can extract as many columns of interest as necessary to build the data structure of choice.  Because the GSM data from the GEO website are fully downloaded and included in the \Rclass{GSE} object, one can extract foreground and background as well as quality for two-channel arrays, for example.  Getting array annotation is also a bit more complicated, but by replacing ``platform'' in the lapply call to get platform information for each array, one can get other information associated with each array.  Future work with this package will likely focus on better tools for manipulating \Rclass{GSE} data.
+
+\section{Accessing Raw Data from GEO}
+NCBI GEO accepts (but has not always required) raw data such as .CEL files, .CDF files, images, etc.  Sometimes, it is useful to get quick access to such data.  A single function, \Rfunction{getGEOSuppFiles}, can take as an argument a GEO accession and will download all the raw data associate with that accession.  By default, the function will create a directory in the current working directory to store the raw data for the chosen GEO accession.  Combining a simple \Rfunction{sapply} statement or other loop structure with \Rfunction{getGEOSuppFiles} makes for a very simple way to get gobs of raw data quickly and easily without needing to know the specifics of GEO raw data URLs.
 
 \section{Conclusion}
 The GEOquery package provides a bridge to the vast array resources contained in the NCBI GEO repositories.  By maintaining the full richness of the GEO data rather than focusing on getting only the ``numbers'', it is possible to integrate GEO data into current Bioconductor data structures and to perform analyses on that data quite quickly and easily.  These tools will hopefully open GEO data more fully to the array community at large.  
