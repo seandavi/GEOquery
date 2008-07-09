@@ -6,7 +6,7 @@
   GEO accession number given.
 }
 \usage{
-getGEOfile(GEO, destdir = tempdir(), amount = c("full", "brief", "quick", "data"))
+getGEOfile(GEO, destdir = tempdir(), AnnotGPL = FALSE, amount = c("full", "brief", "quick", "data"))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -14,6 +14,11 @@ getGEOfile(GEO, destdir = tempdir(), amount = c("full", "brief", "quick", "data"
     GDS84, GPL96, GSE2553, or GSM10)}
   \item{destdir}{Directory in which to store the resulting downloaded
     file.  Defaults to tempdir()}
+  \item{AnnotGPL}{A boolean defaulting to FALSE as to whether or not to
+    use the Annotation GPL information.  These files are nice to use
+    because they contain up-to-date information remapped from Entrez
+    Gene on a regular basis.  However, they do not exist for all GPLs;
+    in general, they are only available for GPLs referenced by a GDS}
   \item{amount}{Amount of information to pull from GEO.  Only applies to
     GSE, GPL, or GSM.  See details... }
 }
@@ -35,7 +40,7 @@ getGEOfile(GEO, destdir = tempdir(), amount = c("full", "brief", "quick", "data"
 \author{Sean Davis}
 \seealso{\code{\link{getGEO}}}
 \examples{
-  myfile <- getGEOfile('GDS2')
+  myfile <- getGEOfile('GDS10')
 }
 
 \keyword{ IO }
