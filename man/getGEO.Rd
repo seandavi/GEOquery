@@ -10,7 +10,7 @@
 }
 \usage{
 getGEO(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits=NULL,
-GSEMatrix=TRUE)
+GSEMatrix=TRUE,AnnotGPL=FALSE)
 }
 \arguments{
   \item{GEO}{A character string representing a GEO object for download
@@ -34,6 +34,11 @@ GSEMatrix=TRUE)
     files.  Defaults to TRUE, meaning that the SOFT format parsing will
     not occur; set to FALSE if you for some reason need other columns
     from the GSE records.}
+  \item{AnnotGPL}{A boolean defaulting to FALSE as to whether or not to
+    use the Annotation GPL information.  These files are nice to use
+    because they contain up-to-date information remapped from Entrez
+    Gene on a regular basis.  However, they do not exist for all GPLs;
+    in general, they are only available for GPLs referenced by a GDS}
 }
 \details{
   getGEO functions to download and parse information available from NCBI
@@ -103,7 +108,7 @@ GSEMatrix=TRUE)
 
 \seealso{\code{\link{getGEOfile}}}
 \examples{
-gds <- getGEO("GDS2")
+gds <- getGEO("GDS10")
 gds
 }
 

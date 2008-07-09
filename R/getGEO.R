@@ -1,7 +1,8 @@
 getGEO <- function(GEO=NULL,
                    filename=NULL,
                    destdir=tempdir(),
-                   GSElimits=NULL,GSEMatrix=TRUE) {
+                   GSElimits=NULL,GSEMatrix=TRUE,
+                   AnnotGPL=FALSE) {
   filename <- filename
   if(!is.null(GSElimits)) {
     if(length(GSElimits)!=2) {
@@ -17,7 +18,7 @@ getGEO <- function(GEO=NULL,
     if(GSEMatrix & geotype=='GSE') {
       return(getAndParseGSEMatrices(GEO))
     }
-    filename <- getGEOfile(GEO,destdir=destdir)
+    filename <- getGEOfile(GEO,destdir=destdir,AnnotGPL)
   }
   if(length(grep('\\.gz$',filename,perl=TRUE))>0) {
     gunzip(filename,overwrite=TRUE)

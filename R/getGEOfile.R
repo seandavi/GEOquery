@@ -1,4 +1,4 @@
-getGEOfile <- function(GEO,destdir=tempdir(),
+getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
                        amount=c('full','brief','quick','data'))
   {
     amount <- match.arg(amount)
@@ -21,10 +21,16 @@ getGEOfile <- function(GEO,destdir=tempdir(),
       mode <- 'w'
     }
     if (geotype == 'GPL') {
-      gseurl <- "http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
-      myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&view=',amount,sep='')
-      destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
-      mode <- 'w'
+      if (AnnotGPL) {
+        gdsurl <- 'ftp://ftp.ncbi.nih.gov/pub/geo/DATA/annotation/platforms/'
+        myurl <- paste(gdsurl,GEO,'.annot.gz',sep="")
+        destfile <- file.path(destdir,paste(GEO,'.annot.gz',sep=""))
+      } else {
+        gseurl <- "http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
+        myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&view=',amount,sep='')
+        destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
+        mode <- 'w'
+      }
     }
     if (geotype == 'GSM') {
       gseurl <- "http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
