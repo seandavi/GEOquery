@@ -7,8 +7,8 @@
   limma MALists or ExpressionSets.  
 }
 \usage{
-GDS2MA(GDS,do.log2=FALSE,GPL=NULL)
-GDS2eSet(GDS,do.log2=FALSE,GPL=NULL)
+GDS2MA(GDS,do.log2=FALSE,GPL=NULL,AnnotGPL=TRUE)
+GDS2eSet(GDS,do.log2=FALSE,GPL=NULL,AnnotGPL=TRUE)
 }
 \arguments{
   \item{GDS}{The GDS datastructure returned by getGEO}
@@ -19,6 +19,9 @@ GDS2eSet(GDS,do.log2=FALSE,GPL=NULL)
     The gene information from the GPL is then used to construct the
     \code{genes} slot of the resulting limma \code{MAList} object or the
     \code{featureData} slot of the \code{ExpressionSet} instance. }
+  \item{AnnotGPL}{In general, the annotation GPL files will be available
+    for GDS records, so the default is to use these files over the
+    user-submitted GPL files}
 }
 \details{
   This function just rearranges one data structure into another.  For

@@ -1,8 +1,8 @@
 "GDS2MA" <-
-  function(GDS,do.log2=FALSE,GPL=NULL) {
+  function(GDS,do.log2=FALSE,GPL=NULL,AnnotGPL=TRUE) {
     require(limma)
     if(is.null(GPL)) {
-      GPL <- getGEO(Meta(GDS)$platform)
+      GPL <- getGEO(Meta(GDS)$platform,AnnotGPL=AnnotGPL)
     }
     ord.table <- match(Table(GDS)[,1],Table(GPL)[,1])
                                         # exclude non-numeric columns
@@ -23,11 +23,11 @@
   }
 
 "GDS2eSet" <-
-  function(GDS,do.log2=FALSE,GPL=NULL) {
+  function(GDS,do.log2=FALSE,GPL=NULL,AnnotGPL=TRUE) {
     require(Biobase)
                                         # exclude non-numeric columns
     if(is.null(GPL)) {
-      GPL <- getGEO(Meta(GDS)$platform)
+      GPL <- getGEO(Meta(GDS)$platform,AnnotGPL=AnnotGPL)
     }
     ord.table <- match(Table(GDS)[,1],Table(GPL)[,1])
     inc.columns <- grep('GSM',colnames(Table(GDS)))
