@@ -211,13 +211,13 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
   ### than the alternative, I have to do it.
   dat3 <- data.frame(NULL)
   if(is.null(colClasses)) {
-    dat1 <- read.delim(con,sep=sep,header=TRUE,nrows=sampleRows,quote="",comment.char="",...)
+    dat1 <- read.delim(con,sep=sep,header=TRUE,nrows=sampleRows,quote="",comment.char="",na.strings=c('NA','null','NULL'),...)
     colclasses <- apply(dat1,2,class)
-    dat2 <- read.delim(con,sep=sep,colClasses=colclasses,header=FALSE,quote="",comment.char="",...)
+    dat2 <- read.delim(con,sep=sep,colClasses=colclasses,header=FALSE,quote="",comment.char="",na.strings=c('NA','null','NULL'),...)
     colnames(dat2) <- colnames(dat1)
     dat3 <- rbind(dat1,dat2)
   } else {
-    dat3 <- read.delim(con,sep=sep,colClasses=colClasses,header=header,quote="",comment.char="",...)
+    dat3 <- read.delim(con,sep=sep,colClasses=colClasses,header=header,quote="",comment.char="",na.strings=c('NA','null','NULL'),...)
   }
   return(dat3)
 }
@@ -318,7 +318,9 @@ parseGSEMatrix <- function(con) {
   readLines(con,1)
   colClasses <- c('character',rep('numeric',nrow(sampledat)))
   datamat <- as.matrix(read.delim(con,sep="\t",header=TRUE,row.names=1,
-                                  colClasses=colClasses,comment.char=""))
+                                  colClasses=colClasses,
+                                  na.strings=c('NA','null','NULL'),
+                                  comment.char=""))
   datamat <- datamat[1:(nrow(datamat)-1),]
   rownames(sampledat) <- colnames(datamat)
   GPL=as.character(sampledat[1,grep('platform_id',colnames(sampledat),ignore.case=TRUE)])
