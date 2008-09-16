@@ -11,6 +11,9 @@ parseGEO <- function(con,GSElimits) {
                 platform= {
                   parseGPL(con)
                 },
+                series_matrix={
+                  parseGSEMatrix(con)$eset
+                }
                 )
   return(ret)
 }
@@ -192,11 +195,13 @@ findFirstEntity <- function(con) {
   while(TRUE) {
     line <- readLines(con,1)
     if(length(line)==0) return(0)
-    entity.line <- grep('^\\^(DATASET|SAMPLE|SERIES|PLATFORM|ANNOTATION)',
-                        line,ignore.case=TRUE,value=TRUE,perl=TRUE)
+    entity.line <- grep('(^\\^DATASET|^\\^SAMPLE|^\\^SERIES|^\\^PLATFORM|^\\^ANNOTATION|^\\!SERIES_MATRIX)',line,ignore.case=TRUE,value=TRUE,perl=TRUE)
     entity.line <- gsub('annotation','platform',entity.line,ignore.case=TRUE)
     if(length(entity.line)>0) {
-      ret <- c(tolower(sub('\\^','',strsplit(entity.line,' = ')[[1]][1])),
+      if(length(grep("^!series_matrix",entity.line,ignore.case=TRUE,perl=TRUE,value=TRUE))>0) {
+        return("series_matrix")
+      }
+      ret <- c(tolower(sub('[\\^!]','',strsplit(entity.line,' = ')[[1]][1])),
                strsplit(entity.line,' = ')[[1]][2])
       return(ret)
     }
@@ -289,6 +294,7 @@ getAndParseGSEMatrices <- function(GEO) {
 parseGSEMatrix <- function(con) {
   require(Biobase)
   i <- 0
+  seek(con,where=0)
   while(i <- i+1) {
     a <- readLines(con,1)
     if(length(grep('^!Series_',a,ignore.case=TRUE))==0) {

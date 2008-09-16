@@ -17,7 +17,10 @@ GSEMatrix=TRUE,AnnotGPL=FALSE)
     and parsing.  (eg., 'GDS505','GSE2','GSM2','GPL96')}
   \item{filename}{The filename of a previously downloaded GEO SOFT format file or its gzipped
     representation (in which case the filename must end in .gz).  Either
-  one of GEO or filename may be specified, not both.  }
+  one of GEO or filename may be specified, not both.  GEO series matrix
+  files are also handled.  Note that since a single file is being parsed,
+  the return value is not a list of esets, but a single eset when GSE matrix
+  files are parsed.}
   \item{destdir}{The destination directory for any downloads.  Defaults
     to the architecture-dependent tempdir.  You may want to specify a
     different directory if you want to save the file for later use.
@@ -97,7 +100,9 @@ GSEMatrix=TRUE,AnnotGPL=FALSE)
   An object of the appropriate class (GDS, GPL, GSM, or GSE) is
   returned.  If the GSEMatrix option is used, then a list of
   ExpressionSet objects is returned, one for each SeriesMatrix file
-  associated with the GSE accesion.  
+  associated with the GSE accesion.  If the filename argument is used
+  in combination with a GSEMatrix file, then the return value is a single
+  ExpressionSet.
 }
 \author{Sean Davis}
 \section{Warning }{Some of the files that are downloaded, particularly

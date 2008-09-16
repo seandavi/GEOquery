@@ -19,7 +19,7 @@ getGEO <- function(GEO=NULL,
       return(getAndParseGSEMatrices(GEO))
     }
     filename <- getGEOfile(GEO,destdir=destdir,AnnotGPL)
-  }
+  }      
   if(length(grep('\\.gz$',filename,perl=TRUE))>0) {
     gunzip(filename,overwrite=TRUE)
     filename <- gsub('\\.gz$','',filename)
