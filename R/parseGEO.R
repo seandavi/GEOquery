@@ -281,8 +281,8 @@ getAndParseGSEMatrices <- function(GEO) {
     tmp <- tempdir()
     download.file(sprintf('ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SeriesMatrix/%s/%s',GEO,b[i]),destfile=file.path(tmp,b[i]),mode='wb')
     tmpfile <- tempfile()
-    gunzip(file.path(tmp,b[i]),tmpfile)
-    con <- file(tmpfile,'r')
+#    gunzip(file.path(tmp,b[i]),tmpfile)
+    con <- gzfile(file.path(tmp,b[i]),'rt')
     ret[[b[i]]] <- parseGSEMatrix(con)$eset
     close(con)
   }
