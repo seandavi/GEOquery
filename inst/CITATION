@@ -1,0 +1,13 @@
+citHeader("Please cite the following if utilizing the GEOquery software: ")
+citEntry(entry="article",
+  author = "Sean Davis and Paul Meltzer",
+  title = "GEOquery: a bridge between the Gene Expression Omnibus (GEO) and BioConductor",
+  journal = "Bioinformatics",
+  year = 2007,
+  volume = 14,
+  pages = "1846--1847",
+  textVersion=
+    paste("Davis, S. and Meltzer, P. S.",
+          "GEOquery: a bridge between the Gene Expression Omnibus (GEO) and BioConductor.", 
+          "Bioinformatics, 2007, 14, 1846-1847",sep="\n")
+)
