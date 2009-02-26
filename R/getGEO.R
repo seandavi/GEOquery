@@ -4,6 +4,7 @@ getGEO <- function(GEO=NULL,
                    GSElimits=NULL,GSEMatrix=TRUE,
                    AnnotGPL=FALSE) {
   filename <- filename
+  con <- null;
   if(!is.null(GSElimits)) {
     if(length(GSElimits)!=2) {
       stop('GSElimits should be an integer vector of length 2, like (1,10) to include GSMs 1 through 10')
@@ -21,10 +22,10 @@ getGEO <- function(GEO=NULL,
     filename <- getGEOfile(GEO,destdir=destdir,AnnotGPL)
   }      
   if(length(grep('\\.gz$',filename,perl=TRUE))>0) {
-    gunzip(filename,overwrite=TRUE)
-    filename <- gsub('\\.gz$','',filename)
+    con <- gzfile(filename,open='rt')
+  } else {
+    con <- file(filename,'r')
   }
-  con <- file(filename,'r')
   ret <- parseGEO(con,GSElimits)
   close(con)
   return(ret)
