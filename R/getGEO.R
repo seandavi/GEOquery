@@ -4,7 +4,7 @@ getGEO <- function(GEO=NULL,
                    GSElimits=NULL,GSEMatrix=TRUE,
                    AnnotGPL=FALSE) {
   filename <- filename
-  con <- null;
+  con <- NULL
   if(!is.null(GSElimits)) {
     if(length(GSElimits)!=2) {
       stop('GSElimits should be an integer vector of length 2, like (1,10) to include GSMs 1 through 10')
