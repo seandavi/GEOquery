@@ -59,7 +59,10 @@ This loads the GEOquery library.
 gds <- getGEO('GDS10')
 @ 
 
-Now, \Robject{gds} contains the R data structure (of class \Rclass{GDS}) that represents the GDS1 entry from GEO.  You'll note that the filename used to store the download was output to the screen (but not saved anywhere) for later use to a call to getGEO(filename=\dots).  
+Now, \Robject{gds} contains the R data structure (of class \Rclass{GDS}) that
+represents the GDS1 entry from GEO.  You'll note that the filename used to
+store the download was output to the screen (but not saved anywhere) for later
+use to a call to getGEO(filename=\dots).   
 
 We can do the same with any other GEO accession, such as GSM3, a GEO sample.
 
