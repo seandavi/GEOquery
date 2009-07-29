@@ -1,8 +1,3 @@
-##########################################
-###
-### All GEO parsing starts here
-###
-##########################################
 parseGEO <- function(con,GSElimits) {
   first.entity <- findFirstEntity(con)
   ret <- switch(as.character(first.entity[1]),
@@ -16,34 +11,8 @@ parseGEO <- function(con,GSElimits) {
                 platform= {
                   parseGPL(con)
                 },
-                series_matrix={
-                  parseGSEMatrix(con)$eset
-                }
                 )
   return(ret)
-}
-
-##########################################
-###
-### Functions for parsing portions of a
-### SOFT format file
-###
-##########################################
-findFirstEntity <- function(con) {
-  while(TRUE) {
-    line <- readLines(con,1)
-    if(length(line)==0) return(0)
-    entity.line <- grep('(^\\^DATASET|^\\^SAMPLE|^\\^SERIES|^\\^PLATFORM|^\\^ANNOTATION|^\\!SERIES_MATRIX)',line,ignore.case=TRUE,value=TRUE,perl=TRUE)
-    entity.line <- gsub('annotation','platform',entity.line,ignore.case=TRUE)
-    if(length(entity.line)>0) {
-      if(length(grep("^!series_matrix",entity.line,ignore.case=TRUE,perl=TRUE,value=TRUE))>0) {
-        return("series_matrix")
-      }
-      ret <- c(tolower(sub('[\\^!]','',strsplit(entity.line,' = ')[[1]][1])),
-               strsplit(entity.line,' = ')[[1]][2])
-      return(ret)
-    }
-  }
 }
 
 parseGeoMeta <- function(txt) {
@@ -59,148 +28,6 @@ parseGeoMeta <- function(txt) {
 	header <- split(tmp[,2],tmp[,1])
 	return(header)
 }
-
-parseGeoColumns <- function(txt) {
-	cols <- as.data.frame(splitOnFirst(txt[grep('^#',txt,perl=TRUE)],' = '))
-    	cols[,1] <- sub('#','',as.character(cols[,1]))
-    	colnames(cols) <- c('Column','Description')
-    	return(cols)
-}
-
-###########################################
-###
-### GSM Parsing
-###
-###########################################
-parseGSM <- function(con) {
-  txt <- vector('character')
-  i <- 0
-  while(i <- i+1) {
-    txt[i] <- readLines(con,1)
-    if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
-  }
-  cols <- parseGeoColumns(txt)
-  meta <- parseGeoMeta(txt)
-  dat3 <- fastTabRead(con)
-  geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
-  gsm <- new('GSM',
-             header=meta,
-             dataTable = geoDataTable)
-}
-
-############################################
-###
-### GSE parsing
-###
-############################################
-parseGSE <- function(con,GSElimits) {
-  gsmlist <- list()
-  gpllist <- list()
-  GSMcount <- 0
-  writeLines('Parsing....')
-  ## This gets the header information for the GSE
-  lines <- 1
-  a <- vector()
-  finished <- FALSE
-  nextEntity <- ""
-  while(!finished) {
-    line <- readLines(con,1)
-    if(length(line)==0) finished <- TRUE
-    a[lines] <- line
-    lines <- lines+1
-    b <- grep('^\\^(SAMPLE|PLATFORM)',line,value=TRUE,perl=TRUE)
-    if(length(b)>0) {
-      nextEntity <- b
-      writeLines(b)
-      finished <- TRUE
-      lines <- 1
-      header=parseGeoMeta(a)
-    }
-  }
-  finished <- FALSE
-  while(!finished) {
-    line <- readLines(con,1)
-    if(length(line)==0) {
-      finished <- TRUE
-    } else {
-      a[lines] <- line
-      lines <- lines+1
-      b <- grep('^\\^(SAMPLE|PLATFORM)',line,value=TRUE,perl=TRUE)
-    }
-    if(length(b)>0 | finished) {
-      lines <- 1
-      #new SAMPLE
-      if(length(grep('SAMPLE',nextEntity))>0) {
-        accession <- strsplit(nextEntity,' = ')[[1]][2]
-        GSMcount <- GSMcount+1
-        # Look to see if limits should be used, otherwise, proceed
-        if(is.null(GSElimits)) {
-          offset <- ifelse(finished,1,2)
-          tmpcon <- textConnection(a[1:(length(a)-offset)])
-          gsmlist[[accession]] <- parseGSM(tmpcon)
-          close(tmpcon)
-          writeLines(b)
-        } else {
-          if((GSMcount>=GSElimits[1]) &
-             (GSMcount<=GSElimits[2])) {
-            offset <- ifelse(finished,1,2)
-            tmpcon <- textConnection(a[1:(length(a)-offset)])
-            gsmlist[[accession]] <- parseGSM(tmpcon)
-            close(tmpcon)
-            writeLines(b)
-          } else {
-            cat('Skipping sample',GSMcount,': Accession',accession,'at user request\n')
-          }
-        }
-      }
-      if(length(grep('PLATFORM',nextEntity))>0) {
-        accession <- strsplit(nextEntity,' = ')[[1]][2]
-        offset <- ifelse(finished,1,2)
-        tmpcon <- textConnection(a[1:(length(a)-offset)])
-        gpllist[[accession]] <- parseGPL(tmpcon)
-        close(tmpcon)
-      }
-      if(!is.null(GSElimits)) {
-        if(GSMcount+1>GSElimits[2]) {
-                                        # end if beyond GSElimits[2]
-          cat('Stopping here at user request\n')
-          finished <- TRUE
-        }
-      }
-      if(!finished) {
-        nextEntity <- b
-      }
-      a <- vector()
-    }
-  }
-  gse <- new("GSE",
-             header=header,
-             gsms = gsmlist,
-             gpls = gpllist
-             )
-  return(gse)
-}
-
-#################################################
-###
-### GDS parsing
-###
-#################################################
-parseGDS <- function(con) {
-    txt <- vector('character')
-    i <- 0
-    while(i <- i+1) {
-      txt[i] <- readLines(con,1)
-      if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
-    }
-    cols <- parseGDSSubsets(txt)
-    meta <- parseGeoMeta(txt)
-    dat3 <- fastTabRead(con)
-    geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
-    gds <- new('GDS',
-               header=meta,
-               dataTable = geoDataTable)
-  }
 
 parseGDSSubsets <- function(txt) {
   # takes GDS text as input
@@ -240,12 +67,23 @@ parseGDSSubsets <- function(txt) {
 }
 
 
-##################################################
-###
-### GPL Parsing
-###
-##################################################
-parseGPL <- function(con) {
+splitOnFirst <- function(x,pattern) {
+  patlen <- nchar(pattern)
+    matches <- regexpr(pattern,x)
+    leftside <- substr(x,start=1,stop=matches-1)
+    rightside <- substr(x,start=matches+patlen,stop=10000000)
+    return(data.frame(leftside,rightside))
+  }
+
+
+parseGeoColumns <- function(txt) {
+	cols <- as.data.frame(splitOnFirst(txt[grep('^#',txt,perl=TRUE)],' = '))
+    	cols[,1] <- sub('#','',as.character(cols[,1]))
+    	colnames(cols) <- c('Column','Description')
+    	return(cols)
+}
+
+.parseGSMWithLimits <- function(con,n=NULL) {
   txt <- vector('character')
   i <- 0
   while(i <- i+1) {
@@ -254,19 +92,180 @@ parseGPL <- function(con) {
   }
   cols <- parseGeoColumns(txt)
   meta <- parseGeoMeta(txt)
-  dat3 <- fastTabRead(con)
+  nLinesToRead <- NULL
+  if(!is.null(n)) {
+    nLinesToRead <- n-length(txt)
+  }
+  dat3 <- fastTabRead(con,n=nLinesToRead)
+  geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
+  gsm <- new('GSM',
+             header=meta,
+             dataTable = geoDataTable)
+}
+
+parseGSM <- function(con) {
+  return(.parseGSMWithLimits(con))
+}
+
+
+### This function does a grep on a file
+### by doing a readline in chunks of size
+### chunksize.
+### Return value is a data.frame with the line number
+### of each match and the line itself.
+filegrep <-
+  function(con,regex,chunksize=10000) {
+    i <- 0
+    ret <- NULL
+    while(TRUE) {
+      lines <- readLines(con,n=chunksize)
+      if(length(lines)==0) {
+        break
+      }
+      foundLines <- grep(regex,lines)
+      foundTypes <- lines[foundLines]
+      if(length(foundLines)>0) {
+        foundLines <- foundLines+i
+        tmp <- data.frame(foundLines=foundLines,foundTypes=foundTypes)
+        if(is.null(ret)) {
+          ret <- tmp
+        } else {
+          ret <- rbind(ret,tmp)
+        }
+      }
+      i <- i+length(lines)
+    }
+    return(ret) 
+  }
+
+parseGSE <- function(con,GSElimits) {
+  gsmlist <- list()
+  gpllist <- list()
+  GSMcount <- 0
+  writeLines('Parsing....')
+  lineCounts <- filegrep(con,"\\^(SAMPLE|PLATFORM)",chunksize=10000)
+  cat(sprintf("Found %d entities...\n",nrow(lineCounts)))
+  seek(con,0)
+  ## This gets the header information for the GSE
+  a <- readLines(con,lineCounts[1,1]-1)
+  header=parseGeoMeta(a)
+  ## parse the actual entities, now
+  for(j in 1:nrow(lineCounts)) {
+    tmp <- strsplit(as.character(lineCounts[j,2])," = ")[[1]]
+    accession <- tmp[2]
+    cat(sprintf("%s (%d of %d entities)\n",accession,j,nrow(lineCounts)))
+    entityType <- tolower(sub("\\^","",tmp[1]))
+    nLinesToRead <- lineCounts[j+1,1]-lineCounts[j,1]-1
+    if(j==nrow(lineCounts)) {
+      nLinesToRead <- NULL
+    }
+    if(entityType=="sample") {
+      gsmlist[[accession]] <- .parseGSMWithLimits(con,n=nLinesToRead)
+    }
+    if(entityType=="platform") {
+      gpllist[[accession]] <- .parseGPLWithLimits(con,n=nLinesToRead)
+    }
+  }
+  return(new("GSE",
+             header= header,
+             gsms  = gsmlist,
+             gpls  = gpllist))
+}
+
+
+findFirstEntity <- function(con) {
+  while(TRUE) {
+    line <- readLines(con,1)
+    if(length(line)==0) return(0)
+    entity.line <- grep('^\\^(DATASET|SAMPLE|SERIES|PLATFORM|ANNOTATION)',
+                        line,ignore.case=TRUE,value=TRUE,perl=TRUE)
+    entity.line <- gsub('annotation','platform',entity.line,ignore.case=TRUE)
+    if(length(entity.line)>0) {
+      ret <- c(tolower(sub('\\^','',strsplit(entity.line,' = ')[[1]][1])),
+               strsplit(entity.line,' = ')[[1]][2])
+      return(ret)
+    }
+  }
+}
+
+fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
+                        colClasses=NULL,n=NULL,...) {
+  ### Need to read tables quickly, so guess the colclasses on the
+  ### fly.  This is a bit dangerous since the first rows might not
+  ### be representative of the entire set, but it is SO MUCH FASTER
+  ### than the alternative, I have to do it.
+  dat3 <- data.frame(NULL)
+  numberOfLines <- -1
+  if(!is.null(n)) {
+    numberOfLines <- n-sampleRows
+  }
+  if(is.null(colClasses)) {
+    if(!is.null(n)) {
+      sampleRows <- min(sampleRows,n)
+    }
+    dat1 <- read.delim(con,sep=sep,header=TRUE,nrows=sampleRows,quote="",comment.char="",na.strings=c('NA','null','NULL'),...)
+    colclasses <- apply(dat1,2,class)
+    dat2 <- read.delim(con,sep=sep,colClasses=colclasses,
+                       header=FALSE,quote="",comment.char="",
+                       na.strings=c('NA','null','NULL'),
+                       nrows=numberOfLines,...)
+    colnames(dat2) <- colnames(dat1)
+    dat3 <- rbind(dat1,dat2)
+  } else {
+    dat3 <- read.delim(con,sep=sep,colClasses=colClasses,
+                       header=header,quote="",comment.char="",
+                       na.strings=c('NA','null','NULL'),nrows=numberOfLines,...)
+  }
+  return(dat3)
+}
+
+parseGDS <- function(con) {
+    txt <- vector('character')
+    i <- 0
+    while(i <- i+1) {
+      txt[i] <- readLines(con,1)
+      if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
+    }
+    cols <- parseGDSSubsets(txt)
+    meta <- parseGeoMeta(txt)
+    dat3 <- fastTabRead(con)
+    geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
+    gds <- new('GDS',
+               header=meta,
+               dataTable = geoDataTable)
+  }
+
+
+.parseGPLWithLimits <- function(con,n=NULL) {
+  txt <- vector('character')
+  i <- 0
+  while(i <- i+1) {
+    txt[i] <- readLines(con,1)
+    if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
+  }
+  cols <- parseGeoColumns(txt)
+  meta <- parseGeoMeta(txt)
+  nLinesToRead <- NULL
+  if(!is.null(n)) {
+    nLinesToRead <- n-length(txt)
+  }
+  dat3 <- fastTabRead(con,n=nLinesToRead)
   geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
   gpl <- new('GPL',
              header=meta,
              dataTable = geoDataTable)
 }
 
+parseGPL <- function(con) {
+  return(.parseGPLWithLimits(con))
+}
 
-###################################################
-###
-### GSE Matrix Parsing
-###
-###################################################
+txtGrab <- function(regex,x) {
+  x <- as.character(x)
+  a <- regexpr(regex,x,perl=TRUE)
+  return(substr(x,a,a+attr(a,'match.length')-1))
+}
+
 getAndParseGSEMatrices <- function(GEO) {
   require(RCurl)
   GEO <- toupper(GEO)
@@ -282,8 +281,8 @@ getAndParseGSEMatrices <- function(GEO) {
     tmp <- tempdir()
     download.file(sprintf('ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SeriesMatrix/%s/%s',GEO,b[i]),destfile=file.path(tmp,b[i]),mode='wb')
     tmpfile <- tempfile()
-#    gunzip(file.path(tmp,b[i]),tmpfile)
-    con <- gzfile(file.path(tmp,b[i]),'rt')
+    gunzip(file.path(tmp,b[i]),tmpfile)
+    con <- file(tmpfile,'r')
     ret[[b[i]]] <- parseGSEMatrix(con)$eset
     close(con)
   }
@@ -295,7 +294,6 @@ getAndParseGSEMatrices <- function(GEO) {
 parseGSEMatrix <- function(con) {
   require(Biobase)
   i <- 0
-  seek(con,where=0)
   while(i <- i+1) {
     a <- readLines(con,1)
     if(length(grep('^!Series_',a,ignore.case=TRUE))==0) {
@@ -345,43 +343,3 @@ parseGSEMatrix <- function(con) {
               exprs=datamat)
   return(list(GPL=as.character(sampledat[1,grep('platform_id',colnames(sampledat),ignore.case=TRUE)]),eset=eset))
 }
-
-##############################################
-###
-### Utility functions
-###
-##############################################
-txtGrab <- function(regex,x) {
-  x <- as.character(x)
-  a <- regexpr(regex,x,perl=TRUE)
-  return(substr(x,a,a+attr(a,'match.length')-1))
-}
-
-fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
-                        colClasses=NULL,...) {
-  ### Need to read tables quickly, so guess the colclasses on the
-  ### fly.  This is a bit dangerous since the first rows might not
-  ### be representative of the entire set, but it is SO MUCH FASTER
-  ### than the alternative, I have to do it.
-  dat3 <- data.frame(NULL)
-  if(is.null(colClasses)) {
-    dat1 <- read.delim(con,sep=sep,header=TRUE,nrows=sampleRows,quote="",comment.char="",na.strings=c('NA','null','NULL'),...)
-    colclasses <- apply(dat1,2,class)
-    colclasses[1] <- 'character'
-    dat2 <- read.delim(con,sep=sep,colClasses=colclasses,header=FALSE,quote="",comment.char="",na.strings=c('NA','null','NULL'),...)
-    colnames(dat2) <- colnames(dat1)
-    dat3 <- rbind(dat1,dat2)
-  } else {
-    dat3 <- read.delim(con,sep=sep,colClasses=colClasses,header=header,quote="",comment.char="",na.strings=c('NA','null','NULL'),...)
-  }
-  return(dat3)
-}
-
-
-splitOnFirst <- function(x,pattern) {
-  patlen <- nchar(pattern)
-    matches <- regexpr(pattern,x)
-    leftside <- substr(x,start=1,stop=matches-1)
-    rightside <- substr(x,start=matches+patlen,stop=10000000)
-    return(data.frame(leftside,rightside))
-  }
