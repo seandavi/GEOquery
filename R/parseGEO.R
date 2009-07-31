@@ -205,6 +205,7 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
     }
     dat1 <- read.delim(con,sep=sep,header=TRUE,nrows=sampleRows,quote="",comment.char="",na.strings=c('NA','null','NULL'),...)
     colclasses <- apply(dat1,2,class)
+    colclasses[1] <- "factor"
     dat2 <- read.delim(con,sep=sep,colClasses=colclasses,
                        header=FALSE,quote="",comment.char="",
                        na.strings=c('NA','null','NULL'),
