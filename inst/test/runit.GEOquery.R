@@ -5,7 +5,6 @@ test.getGEO_GDS <- function() {
   checkEquals(dim(Table(gds))[2],19,msg="GDS column count")
   checkEquals(dim(Columns(gds)),c(17,4),msg="GDS Column method")
   checkEquals(class(dataTable(gds))[[1]],"GEODataTable",msg="GDS dataTable method check")
-  checkEquals(Accession(gds),"GDS507",msg="GDS accession")
 }
 
 test.getGEO_GSM <- function() {
@@ -30,5 +29,10 @@ test.getGEO_GPL <- function() {
   checkEquals(Accession(gpl),"GPL96",msg="GDS accession")
 }
 
+test.getEmptyGSE <- function() {
+  gse <- getGEO('GSE11413')
+  checkEquals(nrow(pData(gse[[1]])),12,msg="Empty GSE sample row count")
+  checkEquals(nrow(fData(gse[[1]])),0,msg="Empty GSE fData row count")
+}
 
 
