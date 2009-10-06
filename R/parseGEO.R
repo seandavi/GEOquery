@@ -86,18 +86,30 @@ parseGeoColumns <- function(txt) {
 .parseGSMWithLimits <- function(con,n=NULL) {
   txt <- vector('character')
   i <- 0
+  hasDataTable=FALSE
   while(i <- i+1) {
-    txt[i] <- readLines(con,1)
-    if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
+    tmp <- try(readLines(con,1))
+    if(inherits(tmp,"try-error") | length(tmp)==0) {
+      hasDataTable=FALSE
+      break
+    }
+    txt[i] <- tmp
+    if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) {
+      hasDataTable=TRUE
+      break
+    }
   }
   cols <- parseGeoColumns(txt)
   meta <- parseGeoMeta(txt)
-  nLinesToRead <- NULL
-  if(!is.null(n)) {
-    nLinesToRead <- n-length(txt)
-  }
-  dat3 <- fastTabRead(con,n=nLinesToRead)
-  geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
+  geoDataTable <- new("GEODataTable",columns=data.frame(),table=data.frame())
+  if(hasDataTable) {
+    nLinesToRead <- NULL
+    if(!is.null(n)) {
+      nLinesToRead <- n-length(txt)
+    }
+    dat3 <- fastTabRead(con,n=nLinesToRead)
+    geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
+  } 
   gsm <- new('GSM',
              header=meta,
              dataTable = geoDataTable)
@@ -240,18 +252,30 @@ parseGDS <- function(con) {
 .parseGPLWithLimits <- function(con,n=NULL) {
   txt <- vector('character')
   i <- 0
+  hasDataTable=FALSE
   while(i <- i+1) {
-    txt[i] <- readLines(con,1)
-    if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
+    tmp <- try(readLines(con,1))
+    if(inherits(tmp,"try-error") | length(tmp)==0) {
+      hasDataTable=FALSE
+      break
+    }
+    txt[i] <- tmp
+    if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) {
+      hasDataTable=TRUE
+      break
+    }
   }
   cols <- parseGeoColumns(txt)
   meta <- parseGeoMeta(txt)
-  nLinesToRead <- NULL
-  if(!is.null(n)) {
-    nLinesToRead <- n-length(txt)
-  }
-  dat3 <- fastTabRead(con,n=nLinesToRead)
-  geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
+  geoDataTable <- new("GEODataTable",columns=data.frame(),table=data.frame())
+  if(hasDataTable) {
+    nLinesToRead <- NULL
+    if(!is.null(n)) {
+      nLinesToRead <- n-length(txt)
+    }
+    dat3 <- fastTabRead(con,n=nLinesToRead)
+    geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
+  } 
   gpl <- new('GPL',
              header=meta,
              dataTable = geoDataTable)
@@ -337,6 +361,9 @@ parseGSEMatrix <- function(con) {
   rownames(dat) <- as.character(dat$ID)
   dat <- dat[match(rownames(datamat),rownames(dat)),]
   fd <- new('AnnotatedDataFrame',data=dat,varMetadata=vmd)
+  if(is.null(nrow(datamat))) {
+    datamat=matrix(nrow=0,ncol=nrow(sampledat))
+  }
   eset <- new('ExpressionSet',
               phenoData=as(sampledat,'AnnotatedDataFrame'),
               annotation=GPL,
