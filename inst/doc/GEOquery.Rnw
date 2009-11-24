@@ -56,18 +56,24 @@ library(GEOquery)
 This loads the GEOquery library.
 
 <<>>=
-gds <- getGEO('GDS10')
+# If you have network access, the more typical way to do this
+# would be to use this:
+# gds <- getGEO("GDS507")
+gds <- getGEO(filename=system.file("extdata/GDS507.soft.gz",package="GEOquery"))
 @ 
 
 Now, \Robject{gds} contains the R data structure (of class \Rclass{GDS}) that
-represents the GDS1 entry from GEO.  You'll note that the filename used to
+represents the GDS507 entry from GEO.  You'll note that the filename used to
 store the download was output to the screen (but not saved anywhere) for later
 use to a call to getGEO(filename=\dots).   
 
 We can do the same with any other GEO accession, such as GSM3, a GEO sample.
 
 <<>>=
-gsm <- getGEO('GSM3')
+# If you have network access, the more typical way to do this
+# would be to use this:
+# gds <- getGEO("GSM11805")
+gsm <- getGEO(filename=system.file("extdata/GSM11805.txt.gz",package="GEOquery"))
 @ 
 
 \section{GEOquery Data Structures}
@@ -96,7 +102,9 @@ Columns(gds)
 The \Rclass{GSE} is the most confusing of the GEO entities.  A GSE entry can represent an arbitrary number of samples run on an arbitrary number of platforms.  The \Rclass{GSE} has a metadata section, just like the other classes.  However, it doesn't have a GEODataTable.  Instead, it contains two lists, accessible using \Rmethod{GPLList} and {GSMList}, that are each lists of \Rclass{GPL} and \Rclass{GSM} objects.  To show an example:
 
 <<>>=
-gse <- getGEO("GSE462",GSEMatrix=FALSE)
+# Again, with good network access, one would do:
+# gse <- getGEO("GSE781",GSEMatrix=FALSE)
+gse <- getGEO(filename=system.file("extdata/GSE781_family.soft.gz",package="GEOquery"))
 Meta(gse)
 # names of all the GSM objects contained in the GSE
 names(GSMList(gse))
@@ -147,7 +155,7 @@ No annotation information (called platform information by GEO) was retrieved fro
 #get the platform from the GDS metadata
 Meta(gds)$platform
 #So use this information in a call to getGEO
-gpl <- getGEO("GPL5")
+gpl <- getGEO(filename=system.file("extdata/GPL97.annot.gz",package="GEOquery"))
 @ 
 
 So, \Robject{gpl} now contains the information for GPL5 from GEO.  Unlike \Rclass{ExpressionSet}, the limma \Rclass{MAList} does store gene annotation information, so we can use our newly created \Robject{gpl} of class \Rclass{GPL} in a call to \Rfunction{GDS2MA} like so:
@@ -157,7 +165,7 @@ MA <- GDS2MA(gds,GPL=gpl)
 MA
 @ 
 
-Now, \Robject{MA} is of class \Rclass{MAList} and contains not only the data, but the sample information and gene information associated with GDS1.
+Now, \Robject{MA} is of class \Rclass{MAList} and contains not only the data, but the sample information and gene information associated with GDS507.
 
 \subsection{Converting GSE to an ExpressionSet}
 First, make sure that using the method described above in the section ``Getting GSE Series Matrix files as an ExpressionSet'' for using GSE Series Matrix files is not sufficient for the task, as it is much faster and simpler.  If it is not (i.e., other columns from each GSM are needed), then this method will be needed.  
