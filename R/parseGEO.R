@@ -16,23 +16,23 @@ parseGEO <- function(con,GSElimits) {
 }
 
 parseGeoMeta <- function(txt) {
-		
-	leader <- strsplit(grep('!\\w*_',txt,perl=TRUE,value=TRUE)[1],'_')[[1]][1]
-     # pull out only lines that are in the header
-  	tmp <- txt[grep(leader,txt)]
-  	tmp <- gsub(paste(leader,'_',sep=""),'',tmp)
-  	first.eq <- regexpr(' = ',tmp)
-  	tmp <- cbind(substring(tmp,first=1,last=first.eq-1),substring			    (tmp,first=first.eq+3))
-     # remove blank lines
-     #tmp <- tmp[-grep('^\\s?$',tmp[,2],perl=TRUE),]
-	header <- split(tmp[,2],tmp[,1])
-	return(header)
+  
+  leader <- strsplit(grep('!\\w*_',txt,perl=TRUE,value=TRUE)[1],'_')[[1]][1]
+  ## pull out only lines that are in the header
+  tmp <- txt[grep(leader,txt)]
+  tmp <- gsub(paste(leader,'_',sep=""),'',tmp)
+  first.eq <- regexpr(' = ',tmp)
+  tmp <- cbind(substring(tmp,first=1,last=first.eq-1),substring			    (tmp,first=first.eq+3))
+  ## remove blank lines
+  ## tmp <- tmp[-grep('^\\s?$',tmp[,2],perl=TRUE),]
+  header <- split(tmp[,2],tmp[,1])
+  return(header)
 }
 
 parseGDSSubsets <- function(txt) {
-  # takes GDS text as input
-  # returns a data frame suitable for inclusion as a "Column" slot
-  #   in a GDS GeoDataTable object
+  ## takes GDS text as input
+  ## returns a data frame suitable for inclusion as a "Column" slot
+  ##   in a GDS GeoDataTable object
   numSubsets <- length(grep('^\\^subset',txt,ignore.case=TRUE))
   subset.lists <- list()
   if (numSubsets>0) {
@@ -69,18 +69,18 @@ parseGDSSubsets <- function(txt) {
 
 splitOnFirst <- function(x,pattern) {
   patlen <- nchar(pattern)
-    matches <- regexpr(pattern,x)
-    leftside <- substr(x,start=1,stop=matches-1)
-    rightside <- substr(x,start=matches+patlen,stop=10000000)
-    return(data.frame(leftside,rightside))
-  }
+  matches <- regexpr(pattern,x)
+  leftside <- substr(x,start=1,stop=matches-1)
+  rightside <- substr(x,start=matches+patlen,stop=10000000)
+  return(data.frame(leftside,rightside))
+}
 
 
 parseGeoColumns <- function(txt) {
-	cols <- as.data.frame(splitOnFirst(txt[grep('^#',txt,perl=TRUE)],' = '))
-    	cols[,1] <- sub('#','',as.character(cols[,1]))
-    	colnames(cols) <- c('Column','Description')
-    	return(cols)
+  cols <- as.data.frame(splitOnFirst(txt[grep('^#',txt,perl=TRUE)],' = '))
+  cols[,1] <- sub('#','',as.character(cols[,1]))
+  colnames(cols) <- c('Column','Description')
+  return(cols)
 }
 
 .parseGSMWithLimits <- function(con,n=NULL) {
@@ -202,10 +202,10 @@ findFirstEntity <- function(con) {
 
 fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
                         colClasses=NULL,n=NULL,...) {
-  ### Need to read tables quickly, so guess the colclasses on the
-  ### fly.  This is a bit dangerous since the first rows might not
-  ### be representative of the entire set, but it is SO MUCH FASTER
-  ### than the alternative, I have to do it.
+### Need to read tables quickly, so guess the colclasses on the
+### fly.  This is a bit dangerous since the first rows might not
+### be representative of the entire set, but it is SO MUCH FASTER
+### than the alternative, I have to do it.
   dat3 <- data.frame(NULL)
   numberOfLines <- -1
   if(!is.null(n)) {
@@ -233,20 +233,20 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
 }
 
 parseGDS <- function(con) {
-    txt <- vector('character')
-    i <- 0
-    while(i <- i+1) {
-      txt[i] <- readLines(con,1)
-      if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
-    }
-    cols <- parseGDSSubsets(txt)
-    meta <- parseGeoMeta(txt)
-    dat3 <- fastTabRead(con)
-    geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
-    gds <- new('GDS',
-               header=meta,
-               dataTable = geoDataTable)
+  txt <- vector('character')
+  i <- 0
+  while(i <- i+1) {
+    txt[i] <- readLines(con,1)
+    if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
   }
+  cols <- parseGDSSubsets(txt)
+  meta <- parseGeoMeta(txt)
+  dat3 <- fastTabRead(con)
+  geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
+  gds <- new('GDS',
+             header=meta,
+             dataTable = geoDataTable)
+}
 
 
 .parseGPLWithLimits <- function(con,n=NULL) {
@@ -313,8 +313,8 @@ getAndParseGSEMatrices <- function(GEO) {
   }
   return(ret)
 }
-    
-  
+
+
 
 parseGSEMatrix <- function(con) {
   require(Biobase)
