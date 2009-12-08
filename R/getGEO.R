@@ -21,12 +21,6 @@ getGEO <- function(GEO=NULL,
     }
     filename <- getGEOfile(GEO,destdir=destdir,AnnotGPL)
   }      
-  if(length(grep('\\.gz$',filename,perl=TRUE))>0) {
-    con <- gzfile(filename,open='rt')
-  } else {
-    con <- file(filename,'r')
-  }
-  ret <- parseGEO(con,GSElimits)
-  close(con)
+  ret <- parseGEO(filename,GSElimits)
   return(ret)
 }       
