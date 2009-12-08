@@ -1,30 +1,31 @@
-parseGEO <- function(con,GSElimits) {
+parseGEO <- function(fname,GSElimits) {
+  con <- fileOpen(fname)
   first.entity <- findFirstEntity(con)
+  close(con)
   ret <- switch(as.character(first.entity[1]),
                 sample= {
-                  parseGSM(con)
+                  parseGSM(fname)
                 },
-                series= parseGSE(con,GSElimits),
+                series= parseGSE(fname,GSElimits),
                 dataset= {
-                  parseGDS(con)
+                  parseGDS(fname)
                 },
                 platform= {
-                  parseGPL(con)
+                  parseGPL(fname)
                 },
                 )
   return(ret)
 }
 
 parseGeoMeta <- function(txt) {
-  
-  leader <- strsplit(grep('!\\w*_',txt,perl=TRUE,value=TRUE)[1],'_')[[1]][1]
+  ## leader <- strsplit(grep('!\\w*_',txt,perl=TRUE,value=TRUE)[1],'_')[[1]][1]
   ## pull out only lines that are in the header
-  tmp <- txt[grep(leader,txt)]
-  tmp <- gsub(paste(leader,'_',sep=""),'',tmp)
+  tmp <- txt[grep("!\\w*?_",txt)]
+  tmp <- gsub("!\\w*?_",'',tmp)
   first.eq <- regexpr(' = ',tmp)
-  tmp <- cbind(substring(tmp,first=1,last=first.eq-1),substring			    (tmp,first=first.eq+3))
-  ## remove blank lines
-  ## tmp <- tmp[-grep('^\\s?$',tmp[,2],perl=TRUE),]
+  tmp <- cbind(substring(tmp,first=1,last=first.eq-1),
+               substring(tmp,first=first.eq+3))
+  tmp <- tmp[tmp[,1]!="",]
   header <- split(tmp[,2],tmp[,1])
   return(header)
 }
@@ -83,6 +84,10 @@ parseGeoColumns <- function(txt) {
   return(cols)
 }
 
+### Parse a GSM; the limit is established by the
+### parameter n, used by getGSE to limit the number
+### of lines read to only the size of ONE GSM,
+### since a single GSE contains many GSMs
 .parseGSMWithLimits <- function(con,n=NULL) {
   txt <- vector('character')
   i <- 0
@@ -115,8 +120,11 @@ parseGeoColumns <- function(txt) {
              dataTable = geoDataTable)
 }
 
-parseGSM <- function(con) {
-  return(.parseGSMWithLimits(con))
+parseGSM <- function(fname) {
+  con <- fileOpen(fname)
+  ret <- .parseGSMWithLimits(con)
+  close(con)
+  return(ret)
 }
 
 
@@ -150,14 +158,18 @@ filegrep <-
     return(ret) 
   }
 
-parseGSE <- function(con,GSElimits) {
+parseGSE <- function(fname,GSElimits) {
   gsmlist <- list()
   gpllist <- list()
   GSMcount <- 0
   writeLines('Parsing....')
+  con <- fileOpen(fname)
   lineCounts <- filegrep(con,"\\^(SAMPLE|PLATFORM)",chunksize=10000)
   cat(sprintf("Found %d entities...\n",nrow(lineCounts)))
-  seek(con,0)
+  close(con)
+  ## I close and reopen the file because on Windows, the seek
+  ## function is pretty much guaranteed to NOT work
+  con <- fileOpen(fname)
   ## This gets the header information for the GSE
   a <- readLines(con,lineCounts[1,1]-1)
   header=parseGeoMeta(a)
@@ -178,6 +190,7 @@ parseGSE <- function(con,GSElimits) {
       gpllist[[accession]] <- .parseGPLWithLimits(con,n=nLinesToRead)
     }
   }
+  close(con)
   return(new("GSE",
              header= header,
              gsms  = gsmlist,
@@ -232,7 +245,8 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
   return(dat3)
 }
 
-parseGDS <- function(con) {
+parseGDS <- function(fname) {
+  con <- fileOpen(fname)
   txt <- vector('character')
   i <- 0
   while(i <- i+1) {
@@ -242,10 +256,12 @@ parseGDS <- function(con) {
   cols <- parseGDSSubsets(txt)
   meta <- parseGeoMeta(txt)
   dat3 <- fastTabRead(con)
+  close(con)
   geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
   gds <- new('GDS',
              header=meta,
              dataTable = geoDataTable)
+  return(gds)
 }
 
 
@@ -281,8 +297,11 @@ parseGDS <- function(con) {
              dataTable = geoDataTable)
 }
 
-parseGPL <- function(con) {
-  return(.parseGPLWithLimits(con))
+parseGPL <- function(fname) {
+  con <- fileOpen(fname)
+  ret <- .parseGPLWithLimits(con)
+  close(con)
+  return(ret)
 }
 
 txtGrab <- function(regex,x) {
@@ -291,9 +310,15 @@ txtGrab <- function(regex,x) {
   return(substr(x,a,a+attr(a,'match.length')-1))
 }
 
+### Function wrapper to get and parse ALL
+### the GSEMatrix files associated with a GSE
+### into a list of ExpressionSets
 getAndParseGSEMatrices <- function(GEO) {
   require(RCurl)
   GEO <- toupper(GEO)
+  ## This stuff functions to get the listing of available files
+  ## for a given GSE given that there may be many GSEMatrix
+  ## files for a given GSE.
   a <- getURL(sprintf('ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SeriesMatrix/%s/',GEO))
   tmpcon <- textConnection(a,'r')
   b <- read.table(tmpcon)
@@ -301,48 +326,30 @@ getAndParseGSEMatrices <- function(GEO) {
   b <- as.character(b[,ncol(b)])
   writeLines(sprintf('Found %d file(s)',length(b)))
   ret <- list()
+  ## Loop over the files, returning a list, one element
+  ## for each file
   for(i in 1:length(b)) {
     writeLines(b[i])
     tmp <- tempdir()
     download.file(sprintf('ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SeriesMatrix/%s/%s',GEO,b[i]),destfile=file.path(tmp,b[i]),mode='wb')
-    tmpfile <- tempfile()
-    gunzip(file.path(tmp,b[i]),tmpfile)
-    con <- file(tmpfile,'r')
-    ret[[b[i]]] <- parseGSEMatrix(con)$eset
-    close(con)
+    ret[[b[i]]] <- parseGSEMatrix(file.path(tmp,b[i]))$eset
   }
   return(ret)
 }
 
 
-
-parseGSEMatrix <- function(con) {
+### Function to parse a single GSEMatrix
+### file into an ExpressionSet
+parseGSEMatrix <- function(fname) {
   require(Biobase)
-  i <- 0
-  while(i <- i+1) {
-    a <- readLines(con,1)
-    if(length(grep('^!Series_',a,ignore.case=TRUE))==0) {
-      break
-    }
-  }
-  seek(con,where=0)
-  header <- read.table(con,sep="\t",header=FALSE,nrows=i-1)
-  i <- 0
-  seekloc <- 0
-  while(1) {
-    a <- readLines(con,1)
-    if(length(grep('^!Sample_',a,ignore.case=TRUE))==0) {
-      if(i==0) {
-        seekloc <- seek(con)
-        next
-      } else {
-        break
-      }
-    }
-    i <- i+1
-  }
-  seek(con,seekloc)
-  tmpdat <- read.table(con,sep="\t",header=FALSE,nrows=i)
+  dat <- readLines(fname)
+  ## get the number of !Series and !Sample lines
+  nseries <- sum(grepl("^!Series_", dat))
+  nsamples <- sum(grepl("^!Sample_", dat))
+  con <- fileOpen(fname)
+  ## Read the !Series_ and !Sample_ lines
+  header <- read.table(con,sep="\t",header=FALSE,nrows=nseries)
+  tmpdat <- read.table(con,sep="\t",header=FALSE,nrows=nsamples)
   sampledat <- data.frame(t(tmpdat[,-1]))
   colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
   readLines(con,1)
@@ -351,6 +358,10 @@ parseGSEMatrix <- function(con) {
                                   colClasses=colClasses,
                                   na.strings=c('NA','null','NULL'),
                                   comment.char=""))
+  close(con)
+  ## All the series matrix files are assumed to end with
+  ## the line "!series_matrix_table_end", so we remove
+  ## that line from the datamatrix (it has been read)
   datamat <- datamat[1:(nrow(datamat)-1),]
   rownames(sampledat) <- colnames(datamat)
   GPL=as.character(sampledat[1,grep('platform_id',colnames(sampledat),ignore.case=TRUE)])

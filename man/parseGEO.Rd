@@ -9,14 +9,15 @@
   Workhorse GEO parsers.
 }
 \usage{
-parseGEO(con, GSElimits)
-parseGPL(con)
-parseGDS(con)
-parseGSE(con, GSElimits)
-parseGSM(con)
+parseGEO(fname, GSElimits)
+parseGPL(fname)
+parseGDS(fname)
+parseGSE(fname, GSElimits)
+parseGSM(fname)
 }
 \arguments{
-  \item{con}{A connection that contains the body of a GEO SOFT format file}
+  \item{fname}{The filename of a SOFT format file.  If the filename ends in .gz, 
+  a gzfile() connection is used to read the file directly.}
   \item{GSElimits}{Used to limit the number of GSMs parsed into the GSE
     object; useful for memory management for large GSEs.}
 }
