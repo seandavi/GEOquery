@@ -19,7 +19,7 @@ test.getGEO_GSM <- function() {
 }
 
 test.getGEO_GPL <- function() {
-  gpl <- getGEO(filename=system.file("extdata/GPL96.txt.gz",package="GEOquery"))
+  gpl <- getGEO("gpl96")
   checkEquals(class(gpl)[[1]],'GPL',msg="GPL class check")
   checkEquals(dim(Table(gpl))[1],22283,msg="GPL row count")
   checkEquals(dim(Table(gpl))[2],16,msg="GPL column count")
@@ -34,5 +34,15 @@ test.getEmptyGSE <- function() {
   checkEquals(nrow(pData(gse[[1]])),12,msg="Empty GSE sample row count")
   checkEquals(nrow(fData(gse[[1]])),0,msg="Empty GSE fData row count")
 }
+
+test.getGEO_GSE_SOFT <- function() {
+  gse <- getGEO("GSE1563",GSEMatrix=FALSE)
+  checkEquals(length(GSMList(gse)),62,msg="GSMList() count")
+  checkEquals(length(GPLList(gse)),1,msg="GPLList() count")
+  checkEquals( nrow(Table(GPLList(gse)[[1]])),12625,msg="Number of GPL rows")
+  checkEquals( nrow(Table(GSMList(gse)[[1]])),12625,msg="Number of GSM rows")
+  checkEquals(length(Meta(gse)),25,msg="Meta(gse) length")
+}
+  
 
 
