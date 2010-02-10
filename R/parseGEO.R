@@ -13,6 +13,9 @@ parseGEO <- function(fname,GSElimits) {
                 platform= {
                   parseGPL(fname)
                 },
+                "0" = {
+                  parseGSEMatrix(fname)$eset
+                },
                 )
   return(ret)
 }
