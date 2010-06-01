@@ -1,11 +1,12 @@
 Package: GEOquery
 Type: Package
 Title: Get data from NCBI Gene Expression Omnibus (GEO)
-Version: 2.13.0
-Date: 2010-02-10
+Version: 2.13.1
+Date: 2010-06-01
 Author: Sean Davis <sdavis2@mail.nih.gov>
 Maintainer: Sean Davis <sdavis2@mail.nih.gov>
 Depends: methods, Biobase, RCurl
+Imports: XML
 Suggests: limma, RUnit
 URL: http://watson.nci.nih.gov/~sdavis
 biocViews: Microarray, DataImport, OneChannel, TwoChannel, SAGE
