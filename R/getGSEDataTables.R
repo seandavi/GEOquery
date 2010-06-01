@@ -7,6 +7,7 @@ getGSEDataTables <- function(GSE) {
 		dTableText=xmlValue(getNodeSet(x,"ns:Internal-Data","ns")[[1]])
 		tc = textConnection(dTableText)
 		dTable = read.delim(tc,sep="\t",header=FALSE)
+		close(tc)
 		colnames(dTable)=cnames
 		return(dTable)
 	})
