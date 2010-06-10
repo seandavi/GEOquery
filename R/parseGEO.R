@@ -274,7 +274,7 @@ parseGDS <- function(fname) {
   hasDataTable=FALSE
   while(i <- i+1) {
     tmp <- try(readLines(con,1))
-    if(inherits(tmp,"try-error") | length(tmp)==0) {
+    if(inherits(tmp,"try-error") | length(tmp)==0 | i==n) {
       hasDataTable=FALSE
       break
     }
