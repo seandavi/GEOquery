@@ -38,13 +38,17 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
       destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
       mode <- 'w'
     }
-    download.file(myurl,destfile,mode=mode,quiet=TRUE)
-    if(length(grep('\\.gz',destfile,perl=TRUE))>0) {
-      gunzip(destfile,overwrite=TRUE,remove=TRUE)
-      destfile <- sub('\\.gz$','',destfile)
+    if(!file.exists(destfile)) {
+      download.file(myurl,destfile,mode=mode,quiet=TRUE)
+      message('File stored at: ')
+      message(destfile)
+    } else {
+      message(sprintf('Using locally cached version of %s found here:\n%s ',GEO,destfile))
     }
-    writeLines('File stored at: ')
-    writeLines(destfile)
+#    if(length(grep('\\.gz',destfile,perl=TRUE))>0) {
+#      gunzip(destfile,overwrite=TRUE,remove=TRUE)
+#      destfile <- sub('\\.gz$','',destfile)
+#    }
     invisible(destfile)
   }
 
