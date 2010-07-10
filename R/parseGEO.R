@@ -274,9 +274,15 @@ parseGDS <- function(fname) {
   hasDataTable=FALSE
   while(i <- i+1) {
     tmp <- try(readLines(con,1))
-    if(inherits(tmp,"try-error") | length(tmp)==0 | i==n) {
+    if(inherits(tmp,"try-error") | length(tmp)==0 ) {
       hasDataTable=FALSE
       break
+    }
+    if(!is.null(n)) {
+      if(i==n) {
+        hasDataTable=FALSE
+        break
+      }
     }
     txt[i] <- tmp
     if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) {
@@ -316,7 +322,7 @@ txtGrab <- function(regex,x) {
 ### Function wrapper to get and parse ALL
 ### the GSEMatrix files associated with a GSE
 ### into a list of ExpressionSets
-getAndParseGSEMatrices <- function(GEO) {
+getAndParseGSEMatrices <- function(GEO,destdir) {
   require(RCurl)
   GEO <- toupper(GEO)
   ## This stuff functions to get the listing of available files
@@ -327,15 +333,20 @@ getAndParseGSEMatrices <- function(GEO) {
   b <- read.table(tmpcon)
   close(tmpcon)
   b <- as.character(b[,ncol(b)])
-  writeLines(sprintf('Found %d file(s)',length(b)))
+  message(sprintf('Found %d file(s)',length(b)))
   ret <- list()
   ## Loop over the files, returning a list, one element
   ## for each file
   for(i in 1:length(b)) {
-    writeLines(b[i])
-    tmp <- tempdir()
-    download.file(sprintf('ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SeriesMatrix/%s/%s',GEO,b[i]),destfile=file.path(tmp,b[i]),mode='wb')
-    ret[[b[i]]] <- parseGSEMatrix(file.path(tmp,b[i]))$eset
+    message(b[i])
+    destfile=file.path(destdir,b[i])
+    if(file.exists(destfile)) {
+      message(sprintf('Using locally cached version: %s',destfile))
+    } else {
+      download.file(sprintf('ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SeriesMatrix/%s/%s',
+                            GEO,b[i]),destfile=destfile,mode='wb')
+    }
+    ret[[b[i]]] <- parseGSEMatrix(destfile)$eset
   }
   return(ret)
 }
