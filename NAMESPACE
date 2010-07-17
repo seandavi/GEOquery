@@ -4,6 +4,8 @@ importFrom(XML,
 	xmlInternalTreeParse,
 	getNodeSet,
 	xmlValue)
+importFrom(RCurl,
+	getURL)
 export(parseGEO,
 	parseGSM,
 	parseGSE,
