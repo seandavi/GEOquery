@@ -323,7 +323,6 @@ txtGrab <- function(regex,x) {
 ### the GSEMatrix files associated with a GSE
 ### into a list of ExpressionSets
 getAndParseGSEMatrices <- function(GEO,destdir) {
-  require(RCurl)
   GEO <- toupper(GEO)
   ## This stuff functions to get the listing of available files
   ## for a given GSE given that there may be many GSEMatrix
