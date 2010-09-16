@@ -382,7 +382,10 @@ parseGSEMatrix <- function(fname) {
   vmd <- Columns(gpl)
   rownames(vmd) <- colnames(Table(gpl))
   dat <- Table(gpl)
-  rownames(dat) <- as.character(dat$ID)
+  ## Fixed bug caused by an ID being "NA" in GSE15197, for example
+  tmpnames=as.character(dat$ID)
+  tmpnames[is.na(tmpnames)]="NA"
+  rownames(dat) <- tmpnames
   dat <- dat[match(rownames(datamat),rownames(dat)),]
   fd <- new('AnnotatedDataFrame',data=dat,varMetadata=vmd)
   if(is.null(nrow(datamat))) {
