@@ -49,6 +49,10 @@ GEO DataSets (GDSxxx) are curated sets of GEO Sample data. A GDS record represen
 
 Getting data from GEO is really quite easy.  There is only one command that is needed, \Rfunction{getGEO}.  This one function interprets its input to determine how to get the data from GEO and then parse the data into useful R data structures.  Usage is quite simple:
 
+<<hide=true,echo=false>>=
+options(download.file.method='auto')
+@
+
 <<>>=
 library(GEOquery)
 @ 
