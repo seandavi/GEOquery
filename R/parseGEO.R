@@ -363,7 +363,8 @@ parseGSEMatrix <- function(fname) {
   ## Read the !Series_ and !Sample_ lines
   header <- read.table(con,sep="\t",header=FALSE,nrows=nseries)
   tmpdat <- read.table(con,sep="\t",header=FALSE,nrows=nsamples)
-  sampledat <- data.frame(t(tmpdat[,-1]))
+  tmptmp <- t(tmpdat)
+  sampledat <- rbind(data.frame(),tmptmp[-1,])
   colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
   readLines(con,1)
   colClasses <- c('character',rep('numeric',nrow(sampledat)))
