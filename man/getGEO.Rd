@@ -113,8 +113,8 @@ GSEMatrix=TRUE,AnnotGPL=FALSE)
 
 \seealso{\code{\link{getGEOfile}}}
 \examples{
-gds <- getGEO("GDS10")
-gds
+# gds <- getGEO("GDS10")
+# gds
 }
 
 \keyword{IO}

@@ -29,8 +29,8 @@ getGEOSuppFiles(GEO, makeDirectory = TRUE, baseDir = getwd())
 }
 \author{Sean Davis <sdavis2@mail.nih.gov>}
 \examples{
-a <- getGEOSuppFiles('GSM1137')
-a
+# a <- getGEOSuppFiles('GSM1137')
+# a
 }
 \keyword{ IO }
 \keyword{ database }

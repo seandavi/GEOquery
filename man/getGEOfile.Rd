@@ -40,7 +40,7 @@ getGEOfile(GEO, destdir = tempdir(), AnnotGPL = FALSE, amount = c("full", "brief
 \author{Sean Davis}
 \seealso{\code{\link{getGEO}}}
 \examples{
-  myfile <- getGEOfile('GDS10')
+  # myfile <- getGEOfile('GDS10')
 }
 
 \keyword{ IO }
