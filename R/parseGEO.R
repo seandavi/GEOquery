@@ -161,14 +161,14 @@ filegrep <-
     return(ret) 
   }
 
-parseGSE <- function(fname,GSElimits) {
+parseGSE <- function(fname,GSElimits=NULL) {
   gsmlist <- list()
   gpllist <- list()
   GSMcount <- 0
   writeLines('Parsing....')
   con <- fileOpen(fname)
   lineCounts <- filegrep(con,"\\^(SAMPLE|PLATFORM)",chunksize=10000)
-  cat(sprintf("Found %d entities...\n",nrow(lineCounts)))
+  message(sprintf("Found %d entities...",nrow(lineCounts)))
   close(con)
   ## I close and reopen the file because on Windows, the seek
   ## function is pretty much guaranteed to NOT work
@@ -180,14 +180,25 @@ parseGSE <- function(fname,GSElimits) {
   for(j in 1:nrow(lineCounts)) {
     tmp <- strsplit(as.character(lineCounts[j,2])," = ")[[1]]
     accession <- tmp[2]
-    cat(sprintf("%s (%d of %d entities)\n",accession,j,nrow(lineCounts)))
+    message(sprintf("%s (%d of %d entities)",accession,j,nrow(lineCounts)))
     entityType <- tolower(sub("\\^","",tmp[1]))
     nLinesToRead <- lineCounts[j+1,1]-lineCounts[j,1]-1
     if(j==nrow(lineCounts)) {
       nLinesToRead <- NULL
     }
     if(entityType=="sample") {
-      gsmlist[[accession]] <- .parseGSMWithLimits(con,n=nLinesToRead)
+      GSMcount=GSMcount+1
+      if(is.null(GSElimits)) {
+        gsmlist[[accession]] <- .parseGSMWithLimits(con,n=nLinesToRead)
+      } else {
+        if((GSMcount>=GSElimits[1]) & (GSMcount<=GSElimits[2])) {
+          gsmlist[[accession]] <- .parseGSMWithLimits(con,n=nLinesToRead)
+        } else {
+          if(!is.null(nLinesToRead)) {
+            readLines(con,n=nLinesToRead)
+          }
+        }
+      }
     }
     if(entityType=="platform") {
       gpllist[[accession]] <- .parseGPLWithLimits(con,n=nLinesToRead)
