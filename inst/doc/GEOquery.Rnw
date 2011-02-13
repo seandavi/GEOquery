@@ -49,9 +49,6 @@ GEO DataSets (GDSxxx) are curated sets of GEO Sample data. A GDS record represen
 
 Getting data from GEO is really quite easy.  There is only one command that is needed, \Rfunction{getGEO}.  This one function interprets its input to determine how to get the data from GEO and then parse the data into useful R data structures.  Usage is quite simple:
 
-<<hide=true,echo=false>>=
-options(download.file.method='auto')
-@
 
 <<>>=
 library(GEOquery)
@@ -130,7 +127,8 @@ simpler format file based on tab-delimited text.  The \Rfunction{getGEO}
 function can handle this format and will parse very large GSEs quite quickly.
 The data structure returned from this parsing is a list of ExpressionSets.  As
 an example, we download and parse GSE2553.  
-<<>>=  
+<<>>=
+# Note that GSEMatrix=TRUE is the default
 gse2553 <- getGEO('GSE2553',GSEMatrix=TRUE)
 show(gse2553)
 show(pData(phenoData(gse2553[[1]]))[1:5,c(1,6,8)])
@@ -227,6 +225,31 @@ So, using a combination of \Rfunction{lapply} on the GSMList, one can extract as
 
 \section{Accessing Raw Data from GEO}
 NCBI GEO accepts (but has not always required) raw data such as .CEL files, .CDF files, images, etc.  Sometimes, it is useful to get quick access to such data.  A single function, \Rfunction{getGEOSuppFiles}, can take as an argument a GEO accession and will download all the raw data associate with that accession.  By default, the function will create a directory in the current working directory to store the raw data for the chosen GEO accession.  Combining a simple \Rfunction{sapply} statement or other loop structure with \Rfunction{getGEOSuppFiles} makes for a very simple way to get gobs of raw data quickly and easily without needing to know the specifics of GEO raw data URLs.
+
+
+\section{Use Cases}
+GEOquery can be quite powerful for gathering a lot of data quickly.  A few examples can be useful to show how this might be done for data mining purposes.
+
+\subsection{Getting all Series Records for a Given Platform}
+For data mining purposes, it is sometimes useful to be able to pull all the GSE records for a given platform.  GEOquery makes this very easy, but a little bit of knowledge of the GPL record is necessary to get started.  The GPL record contains both the GSE and GSM accessions that reference it.  Some code is useful to illustrate the point:
+
+<<>>=
+gpl97 <- getGEO('GPL97')
+Meta(gpl97)$title
+head(Meta(gpl97)$series_id)
+length(Meta(gpl97)$series_id)
+head(Meta(gpl97)$sample_id)
+length(Meta(gpl97)$sample_id)
+@ 
+
+The code above loads the GPL97 record into R.  The Meta method extracts a list of header information from the GPL record.  The ``title'' gives the human name of the platform.  The ``series_id'' gives a vector of series ids.  Note that there are more than 120 series associated with this platform and more than 5100 samples.  Code like the following could be used to download all the samples or series.  I show only the first 5 samples as an example:
+
+<<>>=
+gsmids <- Meta(gpl97)$sample_id
+gsmlist <- sapply(gsmids[1:5],getGEO)
+names(gsmlist)
+@ 
+
 
 \section{Conclusion}
 The GEOquery package provides a bridge to the vast array resources contained in the NCBI GEO repositories.  By maintaining the full richness of the GEO data rather than focusing on getting only the ``numbers'', it is possible to integrate GEO data into current Bioconductor data structures and to perform analyses on that data quite quickly and easily.  These tools will hopefully open GEO data more fully to the array community at large.  
