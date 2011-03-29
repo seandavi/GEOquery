@@ -242,7 +242,7 @@ head(Meta(gpl97)$sample_id)
 length(Meta(gpl97)$sample_id)
 @ 
 
-The code above loads the GPL97 record into R.  The Meta method extracts a list of header information from the GPL record.  The ``title'' gives the human name of the platform.  The ``series_id'' gives a vector of series ids.  Note that there are more than 120 series associated with this platform and more than 5100 samples.  Code like the following could be used to download all the samples or series.  I show only the first 5 samples as an example:
+The code above loads the GPL97 record into R.  The Meta method extracts a list of header information from the GPL record.  The ``title'' gives the human name of the platform.  The ``series\_id'' gives a vector of series ids.  Note that there are more than 120 series associated with this platform and more than 5100 samples.  Code like the following could be used to download all the samples or series.  I show only the first 5 samples as an example:
 
 <<>>=
 gsmids <- Meta(gpl97)$sample_id
