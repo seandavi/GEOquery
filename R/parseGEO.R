@@ -354,7 +354,8 @@ getAndParseGSEMatrices <- function(GEO,destdir) {
       message(sprintf('Using locally cached version: %s',destfile))
     } else {
       download.file(sprintf('ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SeriesMatrix/%s/%s',
-                            GEO,b[i]),destfile=destfile,mode='wb')
+                            GEO,b[i]),destfile=destfile,mode='wb',
+                    method=getOption('download.file.method.GEOquery'))
     }
     ret[[b[i]]] <- parseGSEMatrix(destfile)$eset
   }

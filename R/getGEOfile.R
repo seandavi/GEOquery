@@ -39,7 +39,7 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
       mode <- 'w'
     }
     if(!file.exists(destfile)) {
-      download.file(myurl,destfile,mode=mode,quiet=TRUE)
+      download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
       message('File stored at: ')
       message(destfile)
     } else {
@@ -58,7 +58,7 @@ getGEORaw <- function(GEO,destdir=tempdir()) {
     GEOurl <- 'ftp://ftp.ncbi.nih.gov/pub/geo/data/geo/raw_data/series/'
     myurl <- paste(GEOurl,GEO,'/',GEO,'_RAW.tar',sep="")
     destfile <- file.path(destdir,paste(GEO,'_RAW.tar',sep=""))
-    download.file(myurl,destfile,quiet=TRUE)
+    download.file(myurl,destfile,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
     writeLines('File stored at: ')
     writeLines(destfile)
     invisible(destfile)

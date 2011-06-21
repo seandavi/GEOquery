@@ -29,7 +29,8 @@ getGEOSuppFiles <- function(GEO,makeDirectory=TRUE,baseDir=getwd()) {
   fnames <- as.character(dirlist[,9])
   for(i in fnames) {
     download.file(file.path(url,i),
-                  destfile=file.path(storedir,i))
+                  destfile=file.path(storedir,i),
+                  method=getOption('download.file.method.GEOquery'))
     fileinfo[[file.path(storedir,i)]] <- file.info(file.path(storedir,i))
   }
   invisible(do.call(rbind,fileinfo))
