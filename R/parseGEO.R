@@ -242,19 +242,19 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
     if(!is.null(n)) {
       sampleRows <- min(sampleRows,n)
     }
-    dat1 <- read.delim(con,sep=sep,header=TRUE,nrows=sampleRows,quote="",comment.char="",na.strings=c('NA','null','NULL'),...)
+    dat1 <- read.delim(con,sep=sep,header=TRUE,nrows=sampleRows,quote="",comment.char="",na.strings=c('NA','null','NULL','Null'),...)
     colclasses <- apply(dat1,2,class)
     colclasses[1] <- "factor"
     dat2 <- read.delim(con,sep=sep,colClasses=colclasses,
                        header=FALSE,quote="",comment.char="",
-                       na.strings=c('NA','null','NULL'),
+                       na.strings=c('NA','null','NULL','Null'),
                        nrows=numberOfLines,...)
     colnames(dat2) <- colnames(dat1)
     dat3 <- rbind(dat1,dat2)
   } else {
     dat3 <- read.delim(con,sep=sep,colClasses=colClasses,
                        header=header,quote="",comment.char="",
-                       na.strings=c('NA','null','NULL'),nrows=numberOfLines,...)
+                       na.strings=c('NA','null','NULL',"Null"),nrows=numberOfLines,...)
   }
   return(dat3)
 }
@@ -382,7 +382,7 @@ parseGSEMatrix <- function(fname) {
   colClasses <- c('character',rep('numeric',nrow(sampledat)))
   datamat <- as.matrix(read.delim(con,sep="\t",header=TRUE,row.names=1,
                                   colClasses=colClasses,
-                                  na.strings=c('NA','null','NULL'),
+                                  na.strings=c('NA','null','NULL','Null'),
                                   comment.char=""))
   close(con)
   ## All the series matrix files are assumed to end with
