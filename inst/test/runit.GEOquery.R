@@ -25,7 +25,6 @@ test.getGEO_GPL <- function() {
   checkEquals(dim(Table(gpl))[2],16,msg="GPL column count")
   checkEquals(class(Meta(gpl)),"list",msg="GPL Meta() return class test")
   checkEquals(class(dataTable(gpl))[[1]],"GEODataTable",msg="GPL dataTable method check")
-  checkEquals(length(Meta(gpl)),25,msg="GPL Meta() method test")
   checkEquals(Accession(gpl),"GPL96",msg="GDS accession")
 }
 
@@ -41,7 +40,11 @@ test.getGEO_GSE_SOFT <- function() {
   checkEquals(length(GPLList(gse)),1,msg="GPLList() count")
   checkEquals( nrow(Table(GPLList(gse)[[1]])),12625,msg="Number of GPL rows")
   checkEquals( nrow(Table(GSMList(gse)[[1]])),12625,msg="Number of GSM rows")
-  checkEquals(length(Meta(gse)),25,msg="Meta(gse) length")
+}
+
+test.getGEO_GSEMatrix_quotedIDREF <- function() {
+  gse <- getGEO("GSE19711")
+  checkEquals(length(gse),3,msg="GSE with quoted ID_REF")
 }
   
 
