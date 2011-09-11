@@ -382,7 +382,9 @@ parseGSEMatrix <- function(fname) {
   # used to be able to use colclasses, but some SNP arrays provide only the
   # genotypes in AA AB BB form, so need to switch it up....
   #  colClasses <- c('character',rep('numeric',nrow(sampledat)))
-  datamat <- as.matrix(fastTabRead(con,row.names=1))
+  datamat <- as.matrix(read.delim(con,sep="\t",header=TRUE,row.names=1,
+                                  na.strings=c('NA','null','NULL','Null'),
+                                  comment.char=""))
   close(con)
   ## All the series matrix files are assumed to end with
   ## the line "!series_matrix_table_end", so we remove
