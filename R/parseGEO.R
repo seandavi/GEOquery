@@ -214,7 +214,7 @@ parseGSE <- function(fname,GSElimits=NULL) {
 
 findFirstEntity <- function(con) {
   while(TRUE) {
-    line <- readLines(con,1)
+    line <- suppressWarnings(readLines(con,1))
     if(length(line)==0) return(0)
     entity.line <- grep('^\\^(DATASET|SAMPLE|SERIES|PLATFORM|ANNOTATION)',
                         line,ignore.case=TRUE,value=TRUE,perl=TRUE)
@@ -264,12 +264,12 @@ parseGDS <- function(fname) {
   txt <- vector('character')
   i <- 0
   while(i <- i+1) {
-    txt[i] <- readLines(con,1)
+    txt[i] <- suppressWarnings(readLines(con,1))
     if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
   }
   cols <- parseGDSSubsets(txt)
   meta <- parseGeoMeta(txt)
-  dat3 <- fastTabRead(con)
+  dat3 <- suppressWarnings(fastTabRead(con))
   close(con)
   geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
   gds <- new('GDS',
@@ -373,18 +373,18 @@ parseGSEMatrix <- function(fname) {
   nsamples <- sum(grepl("^!Sample_", dat))
   con <- fileOpen(fname)
   ## Read the !Series_ and !Sample_ lines
-  header <- read.table(con,sep="\t",header=FALSE,nrows=nseries)
-  tmpdat <- read.table(con,sep="\t",header=FALSE,nrows=nsamples)
+  header <- suppressWarnings(read.table(con,sep="\t",header=FALSE,nrows=nseries))
+  tmpdat <- suppressWarnings(read.table(con,sep="\t",header=FALSE,nrows=nsamples))
   tmptmp <- t(tmpdat)
   sampledat <- rbind(data.frame(),tmptmp[-1,])
   colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
-  readLines(con,1)
+  suppressWarnings(readLines(con,1))
   # used to be able to use colclasses, but some SNP arrays provide only the
   # genotypes in AA AB BB form, so need to switch it up....
   #  colClasses <- c('character',rep('numeric',nrow(sampledat)))
-  datamat <- as.matrix(read.delim(con,sep="\t",header=TRUE,row.names=1,
+  datamat <- as.matrix(suppressWarnings(read.delim(con,sep="\t",header=TRUE,row.names=1,
                                   na.strings=c('NA','null','NULL','Null'),
-                                  comment.char=""))
+                                  comment.char="")))
   close(con)
   ## All the series matrix files are assumed to end with
   ## the line "!series_matrix_table_end", so we remove
