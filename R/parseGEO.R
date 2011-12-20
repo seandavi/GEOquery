@@ -242,18 +242,19 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
     if(!is.null(n)) {
       sampleRows <- min(sampleRows,n)
     }
-    dat1 <- read.delim(con,sep=sep,header=TRUE,nrows=sampleRows,quote="",comment.char="",na.strings=c('NA','null','NULL','Null'),...)
+    dat1 <- read.table(con,sep=sep,header=header,nrows=sampleRows,fill=TRUE,check.names=FALSE,
+                       quote='"',comment.char="",na.strings=c('NA','null','NULL','Null'),...)
     colclasses <- apply(dat1,2,class)
     colclasses[1] <- "factor"
     dat2 <- read.delim(con,sep=sep,colClasses=colclasses,
-                       header=FALSE,quote="",comment.char="",
+                       header=FALSE,quote='"',comment.char="",
                        na.strings=c('NA','null','NULL','Null'),
                        nrows=numberOfLines,...)
     colnames(dat2) <- colnames(dat1)
     dat3 <- rbind(dat1,dat2)
   } else {
     dat3 <- read.delim(con,sep=sep,colClasses=colClasses,
-                       header=header,quote="",comment.char="",
+                       header=header,quote='"',comment.char="",
                        na.strings=c('NA','null','NULL',"Null"),nrows=numberOfLines,...)
   }
   return(dat3)
@@ -382,10 +383,13 @@ parseGSEMatrix <- function(fname) {
   # used to be able to use colclasses, but some SNP arrays provide only the
   # genotypes in AA AB BB form, so need to switch it up....
   #  colClasses <- c('character',rep('numeric',nrow(sampledat)))
-  datamat <- as.matrix(suppressWarnings(read.delim(con,sep="\t",header=TRUE,row.names=1,
+  datamat <- as.matrix(suppressWarnings(read.delim(con,sep="\t",header=TRUE,
                                   na.strings=c('NA','null','NULL','Null'),
                                   comment.char="")))
   close(con)
+  tmprownames = datamat[,1]
+  datamat <- datamat[!is.na(tmprownames),-1]
+  rownames(datamat) <- tmprownames[!is.na(tmprownames)]
   ## All the series matrix files are assumed to end with
   ## the line "!series_matrix_table_end", so we remove
   ## that line from the datamatrix (it has been read)
