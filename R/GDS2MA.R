@@ -47,9 +47,15 @@
     mtitle=ifelse(is.null(Meta(GDS)$title),"",Meta(GDS)$title)
     dt <- Table(GPL)
     rownames(dt) <- as.character(dt$ID)
+    vardt = data.frame(Column=Columns(GPL)[,1],
+      labelDescription=Columns(GPL)[,2])
+    ## GEO started using the same column names for
+    ## both GO IDs and textual descriptions, so
+    ## had to be made unique.
+    vardt[,1] <- make.unique(as.character(vardt[,1]))
+    colnames(dt) <- rownames(vardt)
     featuredata <- new('AnnotatedDataFrame',data=dt[ord.table,],
-                       varMetadata=data.frame(Column=Columns(GPL)[,1],
-                         labelDescription=Columns(GPL)[,2]))
+                       varMetadata=vardt)
     eset <- new('ExpressionSet',exprs=expr,phenoData=pheno,
                 featureData=featuredata,
                 experimentData=new("MIAME",

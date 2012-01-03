@@ -10,12 +10,6 @@
 \description{
   The main documentation is in the Class documentation
 }
-\usage{
-}
-\arguments{
-}
-\details{
-}
 \author{Sean Davis}
 \seealso{\code{\link{GEOData-class}}}
 
