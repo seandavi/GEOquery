@@ -25,12 +25,35 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
         gdsurl <- 'ftp://ftp.ncbi.nih.gov/pub/geo/DATA/annotation/platforms/'
         myurl <- paste(gdsurl,GEO,'.annot.gz',sep="")
         destfile <- file.path(destdir,paste(GEO,'.annot.gz',sep=""))
+        # check to see if Annotation GPL is present.  If so,
+        # use it, else move on to submitter GPL
+        res=try({
+          if(!file.exists(destfile)) {
+            download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
+            message('File stored at: ')
+            message(destfile)
+          } else {
+            message(sprintf('Using locally cached version of %s found here:\n%s ',GEO,destfile))
+          }
+        },silent=TRUE)
+        if(!inherits(res,'try-error')) {
+          return(invisible(destfile))
+        } else {
+          message('Annotation GPL not available, so will use submitter GPL instead')
+        }
+      } 
+      gseurl <- "http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
+      myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&view=',amount,sep='')
+      destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
+      mode <- 'w'
+      if(!file.exists(destfile)) {
+        download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
+        message('File stored at: ')
+        message(destfile)
       } else {
-        gseurl <- "http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
-        myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&view=',amount,sep='')
-        destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
-        mode <- 'w'
+        message(sprintf('Using locally cached version of %s found here:\n%s ',GEO,destfile))
       }
+      return(invisible(destfile))
     }
     if (geotype == 'GSM') {
       gseurl <- "http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
@@ -38,6 +61,7 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
       destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
       mode <- 'w'
     }
+    print('here1')
     if(!file.exists(destfile)) {
       download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
       message('File stored at: ')

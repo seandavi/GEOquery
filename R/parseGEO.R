@@ -334,7 +334,7 @@ txtGrab <- function(regex,x) {
 ### Function wrapper to get and parse ALL
 ### the GSEMatrix files associated with a GSE
 ### into a list of ExpressionSets
-getAndParseGSEMatrices <- function(GEO,destdir) {
+getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL) {
   GEO <- toupper(GEO)
   ## This stuff functions to get the listing of available files
   ## for a given GSE given that there may be many GSEMatrix
@@ -358,7 +358,7 @@ getAndParseGSEMatrices <- function(GEO,destdir) {
                             GEO,b[i]),destfile=destfile,mode='wb',
                     method=getOption('download.file.method.GEOquery'))
     }
-    ret[[b[i]]] <- parseGSEMatrix(destfile)$eset
+    ret[[b[i]]] <- parseGSEMatrix(destfile,AnnotGPL)$eset
   }
   return(ret)
 }
@@ -366,7 +366,7 @@ getAndParseGSEMatrices <- function(GEO,destdir) {
 
 ### Function to parse a single GSEMatrix
 ### file into an ExpressionSet
-parseGSEMatrix <- function(fname) {
+parseGSEMatrix <- function(fname,AnnotGPL) {
   require(Biobase)
   dat <- readLines(fname)
   ## get the number of !Series and !Sample lines
@@ -396,15 +396,18 @@ parseGSEMatrix <- function(fname) {
   datamat <- datamat[1:(nrow(datamat)-1),]
   rownames(sampledat) <- colnames(datamat)
   GPL=as.character(sampledat[1,grep('platform_id',colnames(sampledat),ignore.case=TRUE)])
-  gpl <- getGEO(GPL)
+  gpl <- getGEO(GPL,AnnotGPL=AnnotGPL)
   vmd <- Columns(gpl)
-  rownames(vmd) <- colnames(Table(gpl))
   dat <- Table(gpl)
   ## Fixed bug caused by an ID being "NA" in GSE15197, for example
   tmpnames=as.character(dat$ID)
   tmpnames[is.na(tmpnames)]="NA"
   rownames(dat) <- tmpnames
   dat <- dat[match(rownames(datamat),rownames(dat)),]
+  # Fix possibility of duplicate column names in the
+  # GPL files; this is prevalent in the Annotation GPLs
+  rownames(vmd) <- make.unique(colnames(Table(gpl)))
+  colnames(dat) <- rownames(vmd)
   fd <- new('AnnotatedDataFrame',data=dat,varMetadata=vmd)
   if(is.null(nrow(datamat))) {
     datamat=matrix(nrow=0,ncol=nrow(sampledat))
