@@ -416,6 +416,6 @@ parseGSEMatrix <- function(fname,AnnotGPL) {
               phenoData=as(sampledat,'AnnotatedDataFrame'),
               annotation=GPL,
               featureData=fd,
-              exprs=datamat)
+              exprs=as.matrix(datamat))
   return(list(GPL=as.character(sampledat[1,grep('platform_id',colnames(sampledat),ignore.case=TRUE)]),eset=eset))
 }
