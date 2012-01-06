@@ -1,6 +1,18 @@
 \name{NEWS}
 \title{News for package 'GEOquery'}
 
+\section{Changes in version 2.21.5}{
+\itemize{
+  \item{Fixed bug causing numeric data to be read as character}
+  }
+}
+
+\section{Changes in version 2.20.5}{
+\itemize{
+  \item{Fixed bug causing numeric data to be read as character}
+  }
+}
+
 \section{Changes in version 2.21.4}{
 \itemize{
   \item{Using AnnotGPL=TRUE in getGEO will now result in the Annotation

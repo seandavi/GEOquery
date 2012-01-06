@@ -383,9 +383,9 @@ parseGSEMatrix <- function(fname,AnnotGPL) {
   # used to be able to use colclasses, but some SNP arrays provide only the
   # genotypes in AA AB BB form, so need to switch it up....
   #  colClasses <- c('character',rep('numeric',nrow(sampledat)))
-  datamat <- as.matrix(suppressWarnings(read.delim(con,sep="\t",header=TRUE,
+  datamat <- suppressWarnings(read.delim(con,sep="\t",header=TRUE,
                                   na.strings=c('NA','null','NULL','Null'),
-                                  comment.char="")))
+                                  comment.char=""))
   close(con)
   tmprownames = datamat[,1]
   datamat <- datamat[!is.na(tmprownames),-1]
