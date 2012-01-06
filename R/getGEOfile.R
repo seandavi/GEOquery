@@ -61,7 +61,6 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
       destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
       mode <- 'w'
     }
-    print('here1')
     if(!file.exists(destfile)) {
       download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
       message('File stored at: ')
