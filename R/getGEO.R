@@ -17,9 +17,9 @@ getGEO <- function(GEO=NULL,
     GEO <- toupper(GEO)
     geotype <- toupper(substr(GEO,1,3))
     if(GSEMatrix & geotype=='GSE') {
-      return(getAndParseGSEMatrices(GEO,destdir,AnnotGPL))
+      return(getAndParseGSEMatrices(GEO,destdir,AnnotGPL=AnnotGPL))
     }
-    filename <- getGEOfile(GEO,destdir=destdir,AnnotGPL)
+    filename <- getGEOfile(GEO,destdir=destdir,AnnotGPL=AnnotGPL)
   }      
   ret <- parseGEO(filename,GSElimits)
   return(ret)
