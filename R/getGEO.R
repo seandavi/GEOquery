@@ -3,7 +3,6 @@ getGEO <- function(GEO=NULL,
                    destdir=tempdir(),
                    GSElimits=NULL,GSEMatrix=TRUE,
                    AnnotGPL=FALSE) {
-  filename <- filename
   con <- NULL
   if(!is.null(GSElimits)) {
     if(length(GSElimits)!=2) {
