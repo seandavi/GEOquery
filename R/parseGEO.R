@@ -358,7 +358,7 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL) {
                             GEO,b[i]),destfile=destfile,mode='wb',
                     method=getOption('download.file.method.GEOquery'))
     }
-    ret[[b[i]]] <- parseGSEMatrix(destfile,AnnotGPL)$eset
+    ret[[b[i]]] <- parseGSEMatrix(destfile,AnnotGPL=AnnotGPL)$eset
   }
   return(ret)
 }
@@ -366,7 +366,7 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL) {
 
 ### Function to parse a single GSEMatrix
 ### file into an ExpressionSet
-parseGSEMatrix <- function(fname,AnnotGPL) {
+parseGSEMatrix <- function(fname,AnnotGPL=FALSE) {
   require(Biobase)
   dat <- readLines(fname)
   ## get the number of !Series and !Sample lines
