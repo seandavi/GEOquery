@@ -53,6 +53,7 @@
     ## both GO IDs and textual descriptions, so
     ## had to be made unique.
     vardt[,1] <- make.unique(as.character(vardt[,1]))
+    rownames(vardt) = vardt[,1]
     colnames(dt) <- rownames(vardt)
     featuredata <- new('AnnotatedDataFrame',data=dt[ord.table,],
                        varMetadata=vardt)
