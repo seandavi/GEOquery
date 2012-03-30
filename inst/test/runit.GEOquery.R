@@ -1,6 +1,6 @@
 test.getGEO_GDS <- function() {
   gds <- getGEO(filename=system.file("extdata/GDS507.soft.gz",package="GEOquery"))
-   checkEquals(class(gds)[[1]],'GDS',msg="GDS class check")
+  checkEquals(class(gds)[[1]],'GDS',msg="GDS class check")
   checkEquals(dim(Table(gds))[1],22645,msg="GDS row count")
   checkEquals(dim(Table(gds))[2],19,msg="GDS column count")
   checkEquals(dim(Columns(gds)),c(17,4),msg="GDS Column method")
@@ -27,6 +27,12 @@ test.getGEO_GPL <- function() {
   checkEquals(class(dataTable(gpl))[[1]],"GEODataTable",msg="GPL dataTable method check")
   checkEquals(Accession(gpl),"GPL96",msg="GDS accession")
 }
+
+test.getSingleSampleGSE <- function() {
+  gse = getGEO("GSE11595")
+  checkTrue(is(gse[[1]],'ExpressionSet'),msg="This is supposed to be an ExpressionSet")
+  checkEquals(ncol(gse[[1]]),c(Samples=1),msg="Single Sample GSE dimension check")
+  }
 
 test.getEmptyGSE <- function() {
   gse <- getGEO('GSE11413')

@@ -388,7 +388,8 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE) {
                                   comment.char=""))
   close(con)
   tmprownames = datamat[,1]
-  datamat <- datamat[!is.na(tmprownames),-1]
+  # need the as.matrix for single-sample or empty GSE
+  datamat <- as.matrix(datamat[!is.na(tmprownames),-1])
   rownames(datamat) <- tmprownames[!is.na(tmprownames)]
   ## All the series matrix files are assumed to end with
   ## the line "!series_matrix_table_end", so we remove
