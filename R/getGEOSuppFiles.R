@@ -30,6 +30,7 @@ getGEOSuppFiles <- function(GEO,makeDirectory=TRUE,baseDir=getwd()) {
   for(i in fnames) {
     download.file(file.path(url,i),
                   destfile=file.path(storedir,i),
+                  mode='wb',
                   method=getOption('download.file.method.GEOquery'))
     fileinfo[[file.path(storedir,i)]] <- file.info(file.path(storedir,i))
   }
