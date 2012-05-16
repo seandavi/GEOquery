@@ -53,5 +53,9 @@ test.getGEO_GSEMatrix_quotedIDREF <- function() {
   checkEquals(length(gse),3,msg="GSE with quoted ID_REF")
 }
   
-
+test.getGEO_GSEMatrixCaseInsensitiveIDMatching <- function() {
+  gse <- getGEO('GSE35683')
+  checkEquals(as.integer(nrow(gse[[1]])),54675,
+              msg = "GSE with case mismatch between ID and ID_REF")
+  }
 

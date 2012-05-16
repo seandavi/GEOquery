@@ -394,7 +394,12 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE) {
   ## All the series matrix files are assumed to end with
   ## the line "!series_matrix_table_end", so we remove
   ## that line from the datamatrix (it has been read)
-  datamat <- datamat[1:(nrow(datamat)-1),]
+  if(nrow(datamat)==1) {
+    ## empty gse
+    datamat <- datamat[1:(nrow(datamat)-1),]
+  } else {
+    datamat <- as.matrix(datamat[1:(nrow(datamat)-1),])
+  }
   rownames(sampledat) <- colnames(datamat)
   GPL=as.character(sampledat[1,grep('platform_id',colnames(sampledat),ignore.case=TRUE)])
   gpl <- getGEO(GPL,AnnotGPL=AnnotGPL)
@@ -404,14 +409,27 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE) {
   tmpnames=as.character(dat$ID)
   tmpnames[is.na(tmpnames)]="NA"
   rownames(dat) <- tmpnames
-  dat <- dat[match(rownames(datamat),rownames(dat)),]
+  ## Apparently, NCBI GEO uses case-insensitive matching
+  ## between platform IDs and series ID Refs ???
+  dat <- dat[match(tolower(rownames(datamat)),tolower(rownames(dat))),]
   # Fix possibility of duplicate column names in the
   # GPL files; this is prevalent in the Annotation GPLs
   rownames(vmd) <- make.unique(colnames(Table(gpl)))
   colnames(dat) <- rownames(vmd)
   fd <- new('AnnotatedDataFrame',data=dat,varMetadata=vmd)
   if(is.null(nrow(datamat))) {
+    ## fix empty GSE datamatrix
+    ## samplename stuff above does not work with
+    ## empty GSEs, so fix here, also
+    tmpnames <- names(datamat)
+    rownames(sampledat) <- tmpnames
     datamat=matrix(nrow=0,ncol=nrow(sampledat))
+    colnames(datamat) <- tmpnames
+  } else {
+    ## This looks like a dangerous operation but is needed
+    ## to deal with the fact that NCBI GEO allows case-insensitive
+    ## matching and we need to pick one.
+    rownames(datamat) <- rownames(dat)
   }
   eset <- new('ExpressionSet',
               phenoData=as(sampledat,'AnnotatedDataFrame'),
