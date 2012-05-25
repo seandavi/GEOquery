@@ -339,7 +339,7 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL) {
   ## This stuff functions to get the listing of available files
   ## for a given GSE given that there may be many GSEMatrix
   ## files for a given GSE.
-  a <- getURL(sprintf('ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SeriesMatrix/%s/',GEO))
+  a <- getURL(sprintf('ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/SeriesMatrix/%s/',GEO))
   tmpcon <- textConnection(a,'r')
   b <- read.table(tmpcon)
   close(tmpcon)
@@ -354,7 +354,7 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL) {
     if(file.exists(destfile)) {
       message(sprintf('Using locally cached version: %s',destfile))
     } else {
-      download.file(sprintf('ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SeriesMatrix/%s/%s',
+      download.file(sprintf('ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/SeriesMatrix/%s/%s',
                             GEO,b[i]),destfile=destfile,mode='wb',
                     method=getOption('download.file.method.GEOquery'))
     }
