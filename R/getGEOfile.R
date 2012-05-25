@@ -5,12 +5,12 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
     geotype <- toupper(substr(GEO,1,3))
     mode <- 'wb'
     if (geotype == 'GDS') {
-      gdsurl <- 'ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SOFT/GDS/'
+      gdsurl <- 'ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/SOFT/GDS/'
       myurl <- paste(gdsurl,GEO,'.soft.gz',sep="")
       destfile <- file.path(destdir,paste(GEO,'.soft.gz',sep=""))
     }
     if (geotype == 'GSE' & amount=='full') {
-      gseurl <- 'ftp://ftp.ncbi.nih.gov/pub/geo/DATA/SOFT/by_series/'
+      gseurl <- 'ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/SOFT/by_series/'
       myurl <- paste(gseurl,GEO,'/',GEO,'_family.soft.gz',sep="")
       destfile <- file.path(destdir,paste(GEO,'.soft.gz',sep=""))
     }
@@ -22,7 +22,7 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
     }
     if (geotype == 'GPL') {
       if (AnnotGPL) {
-        gdsurl <- 'ftp://ftp.ncbi.nih.gov/pub/geo/DATA/annotation/platforms/'
+        gdsurl <- 'ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/annotation/platforms/'
         myurl <- paste(gdsurl,GEO,'.annot.gz',sep="")
         destfile <- file.path(destdir,paste(GEO,'.annot.gz',sep=""))
         # check to see if Annotation GPL is present.  If so,
@@ -78,7 +78,7 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
 getGEORaw <- function(GEO,destdir=tempdir()) {
   geotype <- toupper(substr(GEO,1,3))
   if(geotype=='GSE') {
-    GEOurl <- 'ftp://ftp.ncbi.nih.gov/pub/geo/data/geo/raw_data/series/'
+    GEOurl <- 'ftp://ftp.ncbi.nlm.nih.gov/pub/geo/data/geo/raw_data/series/'
     myurl <- paste(GEOurl,GEO,'/',GEO,'_RAW.tar',sep="")
     destfile <- file.path(destdir,paste(GEO,'_RAW.tar',sep=""))
     download.file(myurl,destfile,quiet=TRUE,method=getOption('download.file.method.GEOquery'))

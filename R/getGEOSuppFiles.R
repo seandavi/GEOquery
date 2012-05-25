@@ -17,13 +17,13 @@ getGEOSuppFiles <- function(GEO,makeDirectory=TRUE,baseDir=getwd()) {
   fileinfo <- list()
   if(geotype=='GSM') {
     gsmstub <- gsub('\\d{1,3}$','nnn',GEO,perl=TRUE)
-    url <- sprintf("ftp://ftp.ncbi.nih.gov/pub/geo/DATA/supplementary/samples/%s/%s/",gsmstub,GEO)
+    url <- sprintf("ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/supplementary/samples/%s/%s/",gsmstub,GEO)
   }
   if(geotype=='GSE') {
-    url <- sprintf("ftp://ftp.ncbi.nih.gov/pub/geo/DATA/supplementary/series/%s/",GEO)
+    url <- sprintf("ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/supplementary/series/%s/",GEO)
   }
   if(geotype=='GPL') {
-    url <- sprintf("ftp://ftp.ncbi.nih.gov/pub/geo/DATA/supplementary/platforms/%s/",GEO)
+    url <- sprintf("ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/supplementary/platforms/%s/",GEO)
   }
   dirlist <- getDirListing(url)
   fnames <- as.character(dirlist[,9])
