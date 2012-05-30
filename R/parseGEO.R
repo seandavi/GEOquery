@@ -358,7 +358,7 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL) {
                             GEO,b[i]),destfile=destfile,mode='wb',
                     method=getOption('download.file.method.GEOquery'))
     }
-    ret[[b[i]]] <- parseGSEMatrix(destfile,AnnotGPL=AnnotGPL)$eset
+    ret[[b[i]]] <- parseGSEMatrix(destfile,destdir=destdir,AnnotGPL=AnnotGPL)$eset
   }
   return(ret)
 }
@@ -366,7 +366,7 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL) {
 
 ### Function to parse a single GSEMatrix
 ### file into an ExpressionSet
-parseGSEMatrix <- function(fname,AnnotGPL=FALSE) {
+parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir) {
   require(Biobase)
   dat <- readLines(fname)
   ## get the number of !Series and !Sample lines
@@ -402,7 +402,7 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE) {
   }
   rownames(sampledat) <- colnames(datamat)
   GPL=as.character(sampledat[1,grep('platform_id',colnames(sampledat),ignore.case=TRUE)])
-  gpl <- getGEO(GPL,AnnotGPL=AnnotGPL)
+  gpl <- getGEO(GPL,AnnotGPL=AnnotGPL,destdir=destdir)
   vmd <- Columns(gpl)
   dat <- Table(gpl)
   ## Fixed bug caused by an ID being "NA" in GSE15197, for example
