@@ -246,12 +246,16 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
                        quote='"',comment.char="",na.strings=c('NA','null','NULL','Null'),...)
     colclasses <- apply(dat1,2,class)
     colclasses[1] <- "factor"
-    dat2 <- read.delim(con,sep=sep,colClasses=colclasses,
+    dat2 <- try(read.delim(con,sep=sep,colClasses=colclasses,
                        header=FALSE,quote='"',comment.char="",
                        na.strings=c('NA','null','NULL','Null'),
-                       nrows=numberOfLines,...)
-    colnames(dat2) <- colnames(dat1)
-    dat3 <- rbind(dat1,dat2)
+                       nrows=numberOfLines,...),silent=TRUE)
+    if(inherits(dat2,'try-error')) {
+      dat3=dat1
+    } else {
+      colnames(dat2) <- colnames(dat1)
+      dat3 <- rbind(dat1,dat2)
+    }
   } else {
     dat3 <- read.delim(con,sep=sep,colClasses=colClasses,
                        header=header,quote='"',comment.char="",
