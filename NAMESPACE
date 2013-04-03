@@ -1,0 +1,24 @@
+import(methods)
+importFrom(XML,
+	xmlRoot,
+	xmlInternalTreeParse,
+	xmlParseDoc,
+	HUGE,
+	getNodeSet,
+	xmlValue)
+importFrom(RCurl,
+	getURL)
+export(parseGEO,
+	parseGSM,
+	parseGSE,
+	parseGDS,
+	parseGPL,
+	getGEO,
+	GDS2MA,
+	GDS2eSet,
+	getGEOfile,
+	gunzip,
+	getGEOSuppFiles,
+	getGSEDataTables)
+exportClasses("GDS","GEODataTable","GEOData","GSE","GPL","GSM","GDS")
+exportMethods("Meta","Columns","GPLList","GSMList","Table","dataTable","Accession","show")
