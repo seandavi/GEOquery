@@ -10,22 +10,26 @@ getDirListing <- function(url) {
 getGEOSuppFiles <- function(GEO,makeDirectory=TRUE,baseDir=getwd()) {
   geotype <- toupper(substr(GEO,1,3))
   storedir <- baseDir
-  if(makeDirectory) {
-    try(dir.create(GEO))
-    storedir <- file.path(baseDir,GEO)
-  }
   fileinfo <- list()
+  stub = gsub('\\d{1,3}$','nnn',GEO,perl=TRUE)
   if(geotype=='GSM') {
-    gsmstub <- gsub('\\d{1,3}$','nnn',GEO,perl=TRUE)
-    url <- sprintf("ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/supplementary/samples/%s/%s/",gsmstub,GEO)
+    url <- sprintf("ftp://ftp.ncbi.nlm.nih.gov/geo/samples/%s/%s/suppl/",stub,GEO)
   }
   if(geotype=='GSE') {
-    url <- sprintf("ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/supplementary/series/%s/",GEO)
+    url <- sprintf("ftp://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/suppl/",stub,GEO)
   }
   if(geotype=='GPL') {
-    url <- sprintf("ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/supplementary/platforms/%s/",GEO)
+    url <- sprintf("ftp://ftp.ncbi.nlm.nih.gov/geo/platform/%s/%s/suppl/",stub,GEO)
   }
-  dirlist <- getDirListing(url)
+  dirlist <- try(getDirListing(url),silent=TRUE)
+  if(inherits(dirlist,'try-error')) {
+    message('No supplemental files found')
+    return(NULL)
+  }
+  if(makeDirectory) {
+    try(dir.create(GEO),silent=TRUE)
+    storedir <- file.path(baseDir,GEO)
+  }
   fnames <- as.character(dirlist[,9])
   for(i in fnames) {
     download.file(file.path(url,i),

@@ -138,3 +138,25 @@ test_that('GSM functionality',{
   expect_equal(ncol(Table(gsm)),3)
   expect_equal(length(Meta(gsm)),28)
 })
+
+#############################
+#
+# Supplemental Files Tests
+#
+#############################
+
+context('Supplemental Files Tests')
+
+test_that('GSE supplemental files',{
+  fres = getGEOSuppFiles('GSE1000')
+
+  expect_equal(ncol(fres),10)
+  expect_equal(nrow(fres),2)
+})
+
+test_that('GSM supplemental files',{
+  fres = getGEOSuppFiles('GSM15789')
+
+  expect_equal(ncol(fres),10)
+  expect_equal(nrow(fres),1)
+})  

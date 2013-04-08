@@ -4,14 +4,16 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
     amount <- match.arg(amount)
     geotype <- toupper(substr(GEO,1,3))
     mode <- 'wb'
+    GEO <- toupper(GEO)
+    stub = gsub('\\d{1,3}$','nnn',GEO,perl=TRUE)
     if (geotype == 'GDS') {
-      gdsurl <- 'ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/SOFT/GDS/'
-      myurl <- paste(gdsurl,GEO,'.soft.gz',sep="")
-      destfile <- file.path(destdir,paste(GEO,'.soft.gz',sep=""))
+      gdsurl <- 'ftp://ftp.ncbi.nlm.nih.gov/geo/datasets/%s/%s/soft/%s'
+      myurl <- sprintf(gdsurl,stub,GEO,paste0(GEO,'.soft.gz'))
+      destfile <- file.path(destdir,paste0(GEO,'.soft.gz'))
     }
     if (geotype == 'GSE' & amount=='full') {
-      gseurl <- 'ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/SOFT/by_series/'
-      myurl <- paste(gseurl,GEO,'/',GEO,'_family.soft.gz',sep="")
+      gseurl <- 'ftp://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/soft/%s'
+      myurl <- sprintf(gseurl,stub,GEO,paste0(GEO,'_family.soft.gz'))
       destfile <- file.path(destdir,paste(GEO,'.soft.gz',sep=""))
     }
     if (geotype == 'GSE' & amount!='full' & amount!='table') {
@@ -22,8 +24,8 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
     }
     if (geotype == 'GPL') {
       if (AnnotGPL) {
-        gdsurl <- 'ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/annotation/platforms/'
-        myurl <- paste(gdsurl,GEO,'.annot.gz',sep="")
+        gplurl <- 'ftp://ftp.ncbi.nlm.nih.gov/geo/platforms/%s/%s/annot/%s'
+        myurl <- sprintf(gplurl,stub,GEO,paste0(GEO,'.annot.gz'))
         destfile <- file.path(destdir,paste(GEO,'.annot.gz',sep=""))
         # check to see if Annotation GPL is present.  If so,
         # use it, else move on to submitter GPL
@@ -76,18 +78,7 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
   }
 
 getGEORaw <- function(GEO,destdir=tempdir()) {
-  geotype <- toupper(substr(GEO,1,3))
-  if(geotype=='GSE') {
-    GEOurl <- 'ftp://ftp.ncbi.nlm.nih.gov/pub/geo/data/geo/raw_data/series/'
-    myurl <- paste(GEOurl,GEO,'/',GEO,'_RAW.tar',sep="")
-    destfile <- file.path(destdir,paste(GEO,'_RAW.tar',sep=""))
-    download.file(myurl,destfile,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
-    writeLines('File stored at: ')
-    writeLines(destfile)
-    invisible(destfile)
-  } else {
-    stop('Fetching raw data supported for GSE only....')
-  }
+  return(getGEOSuppFiles(GEO,baseDir=destdir))
 }
                              
 gunzip <- function(filename, destname=gsub("[.]gz$", "", filename), overwrite=FALSE, remove=TRUE, BFR.SIZE=1e7) {
