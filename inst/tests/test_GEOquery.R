@@ -25,6 +25,13 @@ test_that('getGEO on a GPL works correctly',{
   expect_that(dataTable(gpl),    is_a('GEODataTable'))
 })
 
+test_that('getGEO on a GPL with quotes works correctly',{
+  gpl = getGEO('GPL4133')
+
+  expect_that(nrow(Table(gpl)),  equals(45220))
+})
+
+
 #############################
 #
 # GSEMatrix tests
