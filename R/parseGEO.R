@@ -228,7 +228,7 @@ findFirstEntity <- function(con) {
 }
 
 fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
-                        colClasses=NULL,n=NULL,...) {
+                        colClasses=NULL,n=NULL,quote='"',...) {
 ### Need to read tables quickly, so guess the colclasses on the
 ### fly.  This is a bit dangerous since the first rows might not
 ### be representative of the entire set, but it is SO MUCH FASTER
@@ -243,11 +243,11 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
       sampleRows <- min(sampleRows,n)
     }
     dat1 <- read.table(con,sep=sep,header=header,nrows=sampleRows,fill=TRUE,check.names=FALSE,
-                       quote='"',comment.char="",na.strings=c('NA','null','NULL','Null'),...)
+                       quote=quote,comment.char="",na.strings=c('NA','null','NULL','Null'),...)
     colclasses <- apply(dat1,2,class)
     colclasses[1] <- "factor"
     dat2 <- try(read.delim(con,sep=sep,colClasses=colclasses,
-                       header=FALSE,quote='"',comment.char="",
+                       header=FALSE,quote=quote,comment.char="",
                        na.strings=c('NA','null','NULL','Null'),
                        nrows=numberOfLines,...),silent=TRUE)
     if(inherits(dat2,'try-error')) {
@@ -258,7 +258,7 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
     }
   } else {
     dat3 <- read.delim(con,sep=sep,colClasses=colClasses,
-                       header=header,quote='"',comment.char="",
+                       header=header,quote=quote,comment.char="",
                        na.strings=c('NA','null','NULL',"Null"),nrows=numberOfLines,...)
   }
   return(dat3)
@@ -314,7 +314,7 @@ parseGDS <- function(fname) {
     if(!is.null(n)) {
       nLinesToRead <- n-length(txt)
     }
-    dat3 <- fastTabRead(con,n=nLinesToRead)
+    dat3 <- fastTabRead(con,n=nLinesToRead,quote='')
     geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
   } 
   gpl <- new('GPL',
