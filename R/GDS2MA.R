@@ -24,7 +24,6 @@
 
 "GDS2eSet" <-
   function(GDS,do.log2=FALSE,GPL=NULL,AnnotGPL=TRUE) {
-    #require(Biobase)
                                         # exclude non-numeric columns
     if(is.null(GPL)) {
       GPL <- getGEO(Meta(GDS)$platform,AnnotGPL=AnnotGPL)
