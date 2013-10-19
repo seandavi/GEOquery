@@ -373,7 +373,6 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL) {
 ### Function to parse a single GSEMatrix
 ### file into an ExpressionSet
 parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir()) {
-  require(Biobase)
   dat <- readLines(fname)
   ## get the number of !Series and !Sample lines
   nseries <- sum(grepl("^!Series_", dat))
