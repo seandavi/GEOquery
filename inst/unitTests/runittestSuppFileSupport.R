@@ -38,4 +38,9 @@ function() {
 
     checkEquals(10,ncol(fres))
     checkEquals(1,nrow(fres))
+
+    fres = getGEOSuppFiles('GSM15789',baseDir=tempdir())
+
+    checkEquals(10,ncol(fres))
+    checkEquals(1,nrow(fres))
 }
