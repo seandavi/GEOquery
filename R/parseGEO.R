@@ -339,44 +339,28 @@ txtGrab <- function(regex,x) {
 ### the GSEMatrix files associated with a GSE
 ### into a list of ExpressionSets
 getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL) {
-  GEO <- toupper(GEO)
-  ## This stuff functions to get the listing of available files
-  ## for a given GSE given that there may be many GSEMatrix
-  ## files for a given GSE.
-  stub = gsub('\\d{1,3}$','nnn',GEO,perl=TRUE)
-  gdsurl <- 'ftp://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/matrix/'
-  a <- getURL(sprintf(gdsurl,stub,GEO))
-    # Renaud Gaujoux reported problems behind firewall
-    # where the ftp index was converted to html content
-    # The IF statement here is his fix--harmless for the rest
-    # of us.
-    if( grepl("^<HTML", a) ){ # process HTML content
-        message("# Processing HTML result page (behind a proxy?) ... ", appendLF=FALSE)
-        sa <- gsub('HREF', 'href', a, fixed = TRUE) # just not to depend on case change
-        sa <- strsplit(sa, 'href', fixed = TRUE)[[1L]]
-        pattern <- "^=\\s*[\"']/[^\"']+/([^/]+)[\"'].*"
-        b <- as.matrix(gsub(pattern, "\\1", sa[grepl(pattern, sa)]))
-        message('OK')
-
-    } else { # standard processing of txt content
-        tmpcon <- textConnection(a, "r")
-  b <- read.table(tmpcon)
-  close(tmpcon)
-    }
-  b <- as.character(b[,ncol(b)])
-  message(sprintf('Found %d file(s)',length(b)))
-  ret <- list()
-  ## Loop over the files, returning a list, one element
-  ## for each file
-  for(i in 1:length(b)) {
-    message(b[i])
-    destfile=file.path(destdir,b[i])
-    if(file.exists(destfile)) {
-      message(sprintf('Using locally cached version: %s',destfile))
-    } else {
-      download.file(sprintf('ftp://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/matrix/%s',
-                            stub,GEO,b[i]),destfile=destfile,mode='wb',
-                    method=getOption('download.file.method.GEOquery'))
+    GEO <- toupper(GEO)
+    ## This stuff functions to get the listing of available files
+    ## for a given GSE given that there may be many GSEMatrix
+    ## files for a given GSE.
+    stub = gsub('\\d{1,3}$','nnn',GEO,perl=TRUE)
+    gdsurl <- 'ftp://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/matrix/'
+    b = getDirListing(sprintf(gdsurl,stub,GEO))
+    message(sprintf('Found %d file(s)',length(b)))
+    ret <- list()
+    ## Loop over the files, returning a list, one element
+    ## for each file
+    for(i in 1:length(b)) {
+        message(b[i])
+        destfile=file.path(destdir,b[i])
+        if(file.exists(destfile)) {
+            message(sprintf('Using locally cached version: %s',destfile))
+        } else {
+            download.file(sprintf('ftp://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/matrix/%s',
+                                  stub,GEO,b[i]),destfile=destfile,mode='wb',
+                          method=getOption('download.file.method.GEOquery'))
+        }
+        ret[[b[i]]] <- parseGSEMatrix(destfile,destdir=destdir,AnnotGPL=AnnotGPL)$eset
     }
     ret[[b[i]]] <- parseGSEMatrix(destfile,destdir=destdir,AnnotGPL=AnnotGPL)$eset
   }
