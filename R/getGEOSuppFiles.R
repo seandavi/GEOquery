@@ -44,8 +44,7 @@ getGEOSuppFiles <- function(GEO,makeDirectory=TRUE,baseDir=getwd()) {
     return(NULL)
   }
   if(makeDirectory) {
-    suppressWarnings(try(dir.create(GEO),silent=TRUE))
-    storedir <- file.path(baseDir,GEO)
+    suppressWarnings(dir.create(storedir <- file.path(baseDir,GEO)))
   }
   for(i in fnames) {
     download.file(file.path(url,i),
