@@ -345,25 +345,7 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL) {
     ## files for a given GSE.
     stub = gsub('\\d{1,3}$','nnn',GEO,perl=TRUE)
     gdsurl <- 'ftp://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/matrix/'
-    a <- getURL(sprintf(gdsurl,stub,GEO))
-    # Renaud Gaujoux reported problems behind firewall
-    # where the ftp index was converted to html content
-    # The IF statement here is his fix--harmless for the rest
-    # of us.
-    if( grepl("^<HTML", a) ){ # process HTML content
-        message("# Processing HTML result page (behind a proxy?) ... ", appendLF=FALSE)
-        sa <- gsub('HREF', 'href', a, fixed = TRUE) # just not to depend on case change
-        sa <- strsplit(sa, 'href', fixed = TRUE)[[1L]]
-        pattern <- "^=\\s*[\"']/[^\"']+/([^/]+)[\"'].*"
-        b <- as.matrix(gsub(pattern, "\\1", sa[grepl(pattern, sa)]))
-        message('OK')
-
-    } else { # standard processing of txt content
-        tmpcon <- textConnection(a, "r")
-        b <- read.table(tmpcon)
-        close(tmpcon)
-    }
-    b <- as.character(b[,ncol(b)])
+    b = getDirListing(sprintf(gdsurl,stub,GEO))
     message(sprintf('Found %d file(s)',length(b)))
     ret <- list()
     ## Loop over the files, returning a list, one element
