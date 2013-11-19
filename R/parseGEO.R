@@ -362,8 +362,7 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL) {
         }
         ret[[b[i]]] <- parseGSEMatrix(destfile,destdir=destdir,AnnotGPL=AnnotGPL)$eset
     }
-    ret[[b[i]]] <- parseGSEMatrix(destfile,destdir=destdir,AnnotGPL=AnnotGPL)$eset
-  }
+  ret[[b[i]]] <- parseGSEMatrix(destfile,destdir=destdir,AnnotGPL=AnnotGPL)$eset
   return(ret)
 }
 
