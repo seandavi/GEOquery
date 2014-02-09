@@ -7,8 +7,8 @@
   limma MALists or ExpressionSets.  
 }
 \usage{
-GDS2MA(GDS,do.log2=FALSE,GPL=NULL,AnnotGPL=TRUE)
-GDS2eSet(GDS,do.log2=FALSE,GPL=NULL,AnnotGPL=TRUE)
+GDS2MA(GDS,do.log2=FALSE,GPL=NULL,AnnotGPL=TRUE,getGPL=TRUE)
+GDS2eSet(GDS,do.log2=FALSE,GPL=NULL,AnnotGPL=TRUE,getGPL=TRUE)
 }
 \arguments{
   \item{GDS}{The GDS datastructure returned by getGEO}
@@ -22,6 +22,13 @@ GDS2eSet(GDS,do.log2=FALSE,GPL=NULL,AnnotGPL=TRUE)
   \item{AnnotGPL}{In general, the annotation GPL files will be available
     for GDS records, so the default is to use these files over the
     user-submitted GPL files}
+  \item{getGPL}{A boolean defaulting to TRUE as to whether or not to
+    download and include GPL information when converting to
+    ExpressionSet or MAList.
+    You may want to set this to FALSE if you know that you are going to
+    annotate your featureData using Bioconductor tools rather than relying
+    on information provided through NCBI GEO.  Download times can also
+    be greatly reduced by specifying FALSE.}
 }
 \details{
   This function just rearranges one data structure into another.  For
