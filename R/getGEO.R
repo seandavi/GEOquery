@@ -2,7 +2,8 @@ getGEO <- function(GEO=NULL,
                    filename=NULL,
                    destdir=tempdir(),
                    GSElimits=NULL,GSEMatrix=TRUE,
-                   AnnotGPL=FALSE) {
+                   AnnotGPL=FALSE,
+                   getGPL=TRUE) {
   con <- NULL
   if(!is.null(GSElimits)) {
     if(length(GSElimits)!=2) {
@@ -16,7 +17,7 @@ getGEO <- function(GEO=NULL,
     GEO <- toupper(GEO)
     geotype <- toupper(substr(GEO,1,3))
     if(GSEMatrix & geotype=='GSE') {
-      return(getAndParseGSEMatrices(GEO,destdir,AnnotGPL=AnnotGPL))
+      return(getAndParseGSEMatrices(GEO,destdir,AnnotGPL=AnnotGPL,getGPL=getGPL))
     }
     filename <- getGEOfile(GEO,destdir=destdir,AnnotGPL=AnnotGPL)
   }      

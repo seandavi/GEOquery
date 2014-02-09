@@ -338,7 +338,7 @@ txtGrab <- function(regex,x) {
 ### Function wrapper to get and parse ALL
 ### the GSEMatrix files associated with a GSE
 ### into a list of ExpressionSets
-getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL) {
+getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE) {
     GEO <- toupper(GEO)
     ## This stuff functions to get the listing of available files
     ## for a given GSE given that there may be many GSEMatrix
@@ -360,7 +360,7 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL) {
                                   stub,GEO,b[i]),destfile=destfile,mode='wb',
                           method=getOption('download.file.method.GEOquery'))
         }
-        ret[[b[i]]] <- parseGSEMatrix(destfile,destdir=destdir,AnnotGPL=AnnotGPL)$eset
+        ret[[b[i]]] <- parseGSEMatrix(destfile,destdir=destdir,AnnotGPL=AnnotGPL,getGPL=getGPL)$eset
     }
     return(ret)
 }
@@ -368,7 +368,7 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL) {
 
 ### Function to parse a single GSEMatrix
 ### file into an ExpressionSet
-parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir()) {
+parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
     dat <- readLines(fname)
     ## get the number of !Series and !Sample lines
     nseries <- sum(grepl("^!Series_", dat))
@@ -403,21 +403,25 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir()) {
     }
     rownames(sampledat) <- colnames(datamat)
     GPL=as.character(sampledat[1,grep('platform_id',colnames(sampledat),ignore.case=TRUE)])
-    gpl <- getGEO(GPL,AnnotGPL=AnnotGPL,destdir=destdir)
-    vmd <- Columns(gpl)
-    dat <- Table(gpl)
-    ## Fixed bug caused by an ID being "NA" in GSE15197, for example
-    tmpnames=as.character(dat$ID)
-    tmpnames[is.na(tmpnames)]="NA"
-    rownames(dat) <- tmpnames
-    ## Apparently, NCBI GEO uses case-insensitive matching
-    ## between platform IDs and series ID Refs ???
-    dat <- dat[match(tolower(rownames(datamat)),tolower(rownames(dat))),]
+    ## if getGPL is FALSE, skip this and featureData is then a data.frame with no columns
+    fd = new("AnnotatedDataFrame",data=data.frame(row.names=rownames(datamat)))
+    if(getGPL) {
+        gpl <- getGEO(GPL,AnnotGPL=AnnotGPL,destdir=destdir)
+        vmd <- Columns(gpl)
+        dat <- Table(gpl)
+        ## Fixed bug caused by an ID being "NA" in GSE15197, for example
+        tmpnames=as.character(dat$ID)
+        tmpnames[is.na(tmpnames)]="NA"
+        rownames(dat) <- tmpnames
+        ## Apparently, NCBI GEO uses case-insensitive matching
+        ## between platform IDs and series ID Refs ???
+        dat <- dat[match(tolower(rownames(datamat)),tolower(rownames(dat))),]
                                         # Fix possibility of duplicate column names in the
                                         # GPL files; this is prevalent in the Annotation GPLs
-    rownames(vmd) <- make.unique(colnames(Table(gpl)))
-    colnames(dat) <- rownames(vmd)
-    fd <- new('AnnotatedDataFrame',data=dat,varMetadata=vmd)
+        rownames(vmd) <- make.unique(colnames(Table(gpl)))
+        colnames(dat) <- rownames(vmd)
+        fd <- new('AnnotatedDataFrame',data=dat,varMetadata=vmd)
+    }
     if(is.null(nrow(datamat))) {
         ## fix empty GSE datamatrix
         ## samplename stuff above does not work with
