@@ -10,7 +10,7 @@
 }
 \usage{
 getGEO(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits=NULL,
-GSEMatrix=TRUE,AnnotGPL=FALSE)
+GSEMatrix=TRUE,AnnotGPL=FALSE,getGPL=TRUE)
 }
 \arguments{
   \item{GEO}{A character string representing a GEO object for download
@@ -42,6 +42,12 @@ GSEMatrix=TRUE,AnnotGPL=FALSE)
     because they contain up-to-date information remapped from Entrez
     Gene on a regular basis.  However, they do not exist for all GPLs;
     in general, they are only available for GPLs referenced by a GDS}
+  \item{getGPL}{A boolean defaulting to TRUE as to whether or not to
+    download and include GPL information when getting a GSEMatrix file.
+    You may want to set this to FALSE if you know that you are going to
+    annotate your featureData using Bioconductor tools rather than relying
+    on information provided through NCBI GEO.  Download times can also
+    be greatly reduced by specifying FALSE.}
 }
 \details{
   getGEO functions to download and parse information available from NCBI
