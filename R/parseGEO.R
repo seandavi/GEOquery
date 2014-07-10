@@ -409,8 +409,14 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
         gpl <- getGEO(GPL,AnnotGPL=AnnotGPL,destdir=destdir)
         vmd <- Columns(gpl)
         dat <- Table(gpl)
+        ## GEO uses "TAG" instead of "ID" for SAGE GSE/GPL entries, but it is apparently
+        ##     always the first column, so use dat[,1] instead of dat$ID
+        ## The next line deals with the empty GSE
+        tmpnames=character(0)
+        if(ncol(dat)>0) {
+          tmpnames=as.character(dat[,1])
+        }
         ## Fixed bug caused by an ID being "NA" in GSE15197, for example
-        tmpnames=as.character(dat$ID)
         tmpnames[is.na(tmpnames)]="NA"
         rownames(dat) <- tmpnames
         ## Apparently, NCBI GEO uses case-insensitive matching
