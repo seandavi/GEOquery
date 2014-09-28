@@ -1,13 +1,15 @@
 ---
 title: "Using the GEOquery Package"
 author: "Sean Davis"
-date: September 21, 2014
+date: "September 21, 2014"
 output:
+  pdf_document:
+    toc: yes
   html_document:
-    toc: true
-    number_sections: true
-    theme: united
     highlight: pygments
+    number_sections: yes
+    theme: united
+    toc: yes
 ---
 <!--
 %\VignetteEngine{knitr::rmarkdown}
@@ -43,14 +45,14 @@ GEO DataSets (GDSxxx) are curated sets of GEO Sample data. A GDS record represen
 
 # Getting Started using GEOquery
 
-Getting data from GEO is really quite easy.  There is only one command that is needed, `getGEO`.  This one function interprets its input to determine how to get the data from GEO and then parse the data into useful R data structures.  Usage is quite simple:
+Getting data from GEO is really quite easy.  There is only one command that is needed, `getGEO`.  This one function interprets its input to determine how to get the data from GEO and then parse the data into useful R data structures.  Usage is quite simple.  This loads the GEOquery library.
 
 
 ```{r loadLibrary}
 library(GEOquery)
 ```
 
-This loads the GEOquery library.
+Now, we are free to access any GEO accession.  *Note that in the following, I use a file packaged with the GEOquery package.  In general, you will use only the GEO accession, as noted in the code comments.*
 
 ```{r}
 # If you have network access, the more typical way to do this
@@ -59,12 +61,12 @@ This loads the GEOquery library.
 gds <- getGEO(filename=system.file("extdata/GDS507.soft.gz",package="GEOquery"))
 ```
 
-Now, `gds` contains the R data structure (of class `GDS`}) that
+Now, `gds` contains the R data structure (of class `GDS`) that
 represents the GDS507 entry from GEO.  You'll note that the filename used to
 store the download was output to the screen (but not saved anywhere) for later
 use to a call to `getGEO(filename=...)`.   
 
-We can do the same with any other GEO accession, such as GSM3, a GEO sample.
+We can do the same with any other GEO accession, such as `GSM11805`, a GEO sample.
 
 ```{r}
 # If you have network access, the more typical way to do this
@@ -247,7 +249,7 @@ head(Meta(gpl97)$sample_id)
 length(Meta(gpl97)$sample_id)
 ```
 
-The code above loads the GPL97 record into R.  The Meta method extracts a list of header information from the GPL record.  The `title` gives the human name of the platform.  The `series_id` gives a vector of series ids.  Note that there are more than 120 series associated with this platform and more than 5100 samples.  Code like the following could be used to download all the samples or series.  I show only the first 5 samples as an example:
+The code above loads the GPL97 record into R.  The Meta method extracts a list of header information from the GPL record.  The `title` gives the human name of the platform.  The `series_id` gives a vector of series ids.  Note that there are `r length(Meta(gpl97)$series_id)` series associated with this platform and `r length(Meta(gpl97)$sample_id)` samples.  Code like the following could be used to download all the samples or series.  I show only the first 5 samples as an example:
 
 ```{r}
 gsmids <- Meta(gpl97)$sample_id
@@ -260,7 +262,25 @@ names(gsmlist)
 
 The GEOquery package provides a bridge to the vast array resources contained in the NCBI GEO repositories.  By maintaining the full richness of the GEO data rather than focusing on getting only the ``numbers'', it is possible to integrate GEO data into current Bioconductor data structures and to perform analyses on that data quite quickly and easily.  These tools will hopefully open GEO data more fully to the array community at large.  
 
-# sessionInfo
+## Citing GEOquery
+
+Please consider citing GEOquery if used in support of your own research:
+
+```{r citation}
+citation("GEOquery")
+```
+
+## Reporting problems or bugs
+
+If you run into problems using GEOquery, the [Bioconductor Support site](https://support.bioconductor.org/) is a good first place to ask for help. If you are convinced that there is a bug in GEOquery (this is pretty unusual, but not unheard of), feel free to submit an issue on the [GEOquery github site](https://github.com/seandavi/GEOquery) or file a bug report directly from R (will open a new github issue):
+
+```{r eval=FALSE}
+bug.report(package='GEOquery')
+```
+
+# Session info
+
+The following package and versions were used in the production of this vignette.
 
 ```{r echo=FALSE}
 sessionInfo()
