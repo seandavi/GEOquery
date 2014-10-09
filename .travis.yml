@@ -8,7 +8,7 @@ install:
   - Rscript -e "source('http://bioconductor.org/biocLite.R');
                   biocLite();
                   useDevel();
-                  biocLite(c('Biobase', 'XML', 'RCurl', 'methods'))"
+                  biocLite(c('Biobase', 'XML', 'RCurl', 'methods', 'limma', 'knitr', 'rmarkdown'))"
   
   - ./travis-tool.sh install_deps
 
