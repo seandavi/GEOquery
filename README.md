@@ -1,4 +1,4 @@
-https://api.travis-ci.org/seandavi/GEOquery.svg?branch=master
+![Travis Build Status](https://api.travis-ci.org/seandavi/GEOquery.svg?branch=master)
 
 ## Installation
 
