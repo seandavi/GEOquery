@@ -1,3 +1,5 @@
+https://api.travis-ci.org/seandavi/GEOquery.svg?branch=master
+
 ## Installation
 
 To install from Bioconductor, use the following code:
