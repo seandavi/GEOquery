@@ -1,20 +1,19 @@
 ---
 title: "Using the GEOquery Package"
 author: "Sean Davis"
-date: "September 21, 2014"
+date: "March 25, 2015"
 output:
-  pdf_document:
-    toc: yes
-  html_document:
-    highlight: pygments
-    number_sections: yes
-    theme: united
-    toc: yes
+  BiocStyle::html_document:
+    toc: true
 ---
 <!--
 %\VignetteEngine{knitr::rmarkdown}
 %\VignetteIndexEntry{Using GEOquery}
 -->
+
+```{r style, echo = FALSE, results = 'asis'}
+BiocStyle::markdown()
+```
 
 ```{r pre,echo=FALSE,results='hide'}
 library(knitr)
@@ -73,6 +72,24 @@ We can do the same with any other GEO accession, such as `GSM11805`, a GEO sampl
 # would be to use this:
 # gds <- getGEO("GSM11805")
 gsm <- getGEO(filename=system.file("extdata/GSM11805.txt.gz",package="GEOquery"))
+```
+
+# Finding GEO data
+
+The GEO database contains literally millions of samples and tens-of-thousands of studies. There are a number of approaches for finding data in the GEO database:
+
+* Using the [web search functionality](http://www.ncbi.nlm.nih.gov/gds/)
+* Using the `r Biocpkg("GEOmetadb")` package
+* Using the included `queryGEO` function
+
+## Example `queryGEO` usage
+
+The `queryGEO` function takes as input a string query as described on [this page](http://www.ncbi.nlm.nih.gov/geo/info/qqtutorial.html). Very advanced querying and filtering is available. The function uses the `r CRANpkg("rentrez")` package to perform the query in the 'gds' database at NCBI. The results are returned as a data.frame. Note that the resulting GEO entities may be GPL, GDS, GSE, or GSM, so further filtering of the returned data.frame may be necessary. The `accession` column can be used in a loop in calls to `getGEO` (see below).
+
+```{r}
+res = queryGEO('sarcoma AND "cel"[Supplementary Files] AND 20:20000[Number of Samples]')
+dim(res)
+head(res)
 ```
 
 # GEOquery Data Structures
