@@ -11,6 +11,6 @@ Imports: XML, RCurl, rentrez
 Suggests: limma, knitr, rmarkdown, BiocStyle
 VignetteBuilder: knitr
 URL: https://github.com/seandavi/GEOquery
-biocViews: Microarray, DataImport, OneChannel, TwoChannel, SAGE
+biocViews: Microarray, DataImport, OneChannel, TwoChannel, SAGE, GeneExpression
 Description: The NCBI Gene Expression Omnibus (GEO) is a public repository of microarray data.  Given the rich and varied nature of this resource, it is only natural to want to apply BioConductor tools to these data.  GEOquery is the bridge between GEO and BioConductor.
 License: GPL-2
