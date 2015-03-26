@@ -22,6 +22,7 @@ export(parseGEO,
 	getGEOfile,
 	gunzip,
 	getGEOSuppFiles,
-	getGSEDataTables)
+	getGSEDataTables,
+  queryGEO)
 exportClasses("GDS","GEODataTable","GEOData","GSE","GPL","GSM","GDS")
 exportMethods("Meta","Columns","GPLList","GSMList","Table","dataTable","Accession","show")
