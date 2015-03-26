@@ -24,8 +24,6 @@ notifications:
     on_success: change
     on_failure: change
 
-sudo: false
-
 env:
   matrix:
     - RVERSION=3.0.3
