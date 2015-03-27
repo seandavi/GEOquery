@@ -1,4 +1,5 @@
 import(methods)
+import(Biobase)
 importFrom(XML,
 	xmlRoot,
 	xmlInternalTreeParse,
