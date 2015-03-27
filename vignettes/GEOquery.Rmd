@@ -3,7 +3,9 @@ title: "Using the GEOquery Package"
 author: "Sean Davis"
 date: "March 25, 2015"
 output:
-  BiocStyle::html_document:
+  html_document:
+    theme: united
+    highlight: tango
     toc: true
 ---
 <!--
@@ -86,7 +88,7 @@ The GEO database contains literally millions of samples and tens-of-thousands of
 
 The `queryGEO` function takes as input a string query as described on [this page](http://www.ncbi.nlm.nih.gov/geo/info/qqtutorial.html). Very advanced querying and filtering is available. The function uses the `r CRANpkg("rentrez")` package to perform the query in the 'gds' database at NCBI. The results are returned as a data.frame. Note that the resulting GEO entities may be GPL, GDS, GSE, or GSM, so further filtering of the returned data.frame may be necessary. The `accession` column can be used in a loop in calls to `getGEO` (see below).
 
-```{r}
+```{r eval=FALSE}
 res = queryGEO('sarcoma AND "cel"[Supplementary Files] AND 20:20000[Number of Samples]')
 dim(res)
 head(res)
