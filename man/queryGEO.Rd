@@ -37,8 +37,10 @@ Sean Davis
 \code{\link{getGEO}}, \code{\link[rentrez]{entrez_search}}
 }
 \examples{
+\dontrun{
 res = queryGEO('sarcoma AND "cel"[Supplementary Files] AND 20:20000[Number of Samples]')
 dim(res)
 head(res)
+}
 }
 
