@@ -1,21 +1,20 @@
 ---
 title: "Using the GEOquery Package"
 author: "Sean Davis"
-date: "March 25, 2015"
+date: "September 21, 2014"
 output:
+  pdf_document:
+    toc: yes
   html_document:
+    highlight: pygments
+    number_sections: yes
     theme: united
-    highlight: tango
-    toc: true
+    toc: yes
 ---
 <!--
 %\VignetteEngine{knitr::rmarkdown}
 %\VignetteIndexEntry{Using GEOquery}
 -->
-
-```{r style, echo = FALSE, results = 'asis'}
-BiocStyle::markdown()
-```
 
 ```{r pre,echo=FALSE,results='hide'}
 library(knitr)
@@ -26,7 +25,7 @@ opts_chunk$set(warning=FALSE,message=FALSE,cache=TRUE)
 
 The NCBI Gene Expression Omnibus (GEO) serves as a public repository for a wide range of high-throughput experimental data. These data include single and dual channel microarray-based experiments measuring mRNA, genomic DNA, and protein abundance, as well as non-array techniques such as serial analysis of gene expression (SAGE), mass spectrometry proteomic data, and high-throughput sequencing data.
 
-At the most basic level of organization of GEO, there are four basic entity types.  The first three (Sample, Platform, and Series) are supplied by users; the fourth, the dataset, is compiled and curated by GEO staff from the user-submitted data. See [the GEO home page](http://www.ncbi.nlm.nih.gov/geo/) for more information.
+At the most basic level of organization of GEO, there are four basic entity types.  The first three (Sample, Platform, and Series) are supplied by users; the fourth, the dataset, is compiled and curated by GEO staff from the user-submitted data. See [the GEO home page](http://www.ncbi.nih.gov/geo) for more information.
 
 ## Platforms
 
@@ -74,24 +73,6 @@ We can do the same with any other GEO accession, such as `GSM11805`, a GEO sampl
 # would be to use this:
 # gds <- getGEO("GSM11805")
 gsm <- getGEO(filename=system.file("extdata/GSM11805.txt.gz",package="GEOquery"))
-```
-
-# Finding GEO data
-
-The GEO database contains literally millions of samples and tens-of-thousands of studies. There are a number of approaches for finding data in the GEO database:
-
-* Using the [web search functionality](http://www.ncbi.nlm.nih.gov/gds/)
-* Using the `r Biocpkg("GEOmetadb")` package
-* Using the included `queryGEO` function
-
-## Example `queryGEO` usage
-
-The `queryGEO` function takes as input a string query as described on [this page](http://www.ncbi.nlm.nih.gov/geo/info/qqtutorial.html). Very advanced querying and filtering is available. The function uses the `r CRANpkg("rentrez")` package to perform the query in the 'gds' database at NCBI. The results are returned as a data.frame. Note that the resulting GEO entities may be GPL, GDS, GSE, or GSM, so further filtering of the returned data.frame may be necessary. The `accession` column can be used in a loop in calls to `getGEO` (see below).
-
-```{r eval=FALSE}
-res = queryGEO('sarcoma AND "cel"[Supplementary Files] AND 20:20000[Number of Samples]')
-dim(res)
-head(res)
 ```
 
 # GEOquery Data Structures

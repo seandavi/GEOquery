@@ -1,4 +1,0 @@
-GEOquery v2.33.5
-=================
-
-* Implemented queryGEO(), a powerful but simple function to directly query GEO metadata.

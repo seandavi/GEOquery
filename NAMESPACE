@@ -1,5 +1,4 @@
 import(methods)
-import(Biobase)
 importFrom(XML,
 	xmlRoot,
 	xmlInternalTreeParse,
@@ -9,9 +8,6 @@ importFrom(XML,
 	xmlValue)
 importFrom(RCurl,
 	getURL)
-importFrom(rentrez,
-           entrez_search,
-           entrez_summary)
 export(parseGEO,
 	parseGSM,
 	parseGSE,
@@ -23,7 +19,6 @@ export(parseGEO,
 	getGEOfile,
 	gunzip,
 	getGEOSuppFiles,
-	getGSEDataTables,
-  queryGEO)
+	getGSEDataTables)
 exportClasses("GDS","GEODataTable","GEOData","GSE","GPL","GSM","GDS")
 exportMethods("Meta","Columns","GPLList","GSMList","Table","dataTable","Accession","show")
