@@ -21,6 +21,6 @@ getGEO <- function(GEO=NULL,
     }
     filename <- getGEOfile(GEO,destdir=destdir,AnnotGPL=AnnotGPL)
   }      
-  ret <- parseGEO(filename,GSElimits)
+  ret <- parseGEO(filename,GSElimits,destdir,AnnotGPL=AnnotGPL,getGPL=getGPL)
   return(ret)
 }       
