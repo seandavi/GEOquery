@@ -1,4 +1,4 @@
-parseGEO <- function(fname,GSElimits) {
+parseGEO <- function(fname,GSElimits,destdir=tempdir(),AnnotGPL=FALSE,getGPL=TRUE) {
     con <- fileOpen(fname)
     first.entity <- findFirstEntity(con)
     close(con)
@@ -14,7 +14,7 @@ parseGEO <- function(fname,GSElimits) {
                       parseGPL(fname)
                   },
                   "0" = {
-                      parseGSEMatrix(fname)$eset
+                      parseGSEMatrix(fname,destdir=destdir,AnnotGPL=AnnotGPL,getGPL=getGPL)$eset
                   },
                   )
     return(ret)
