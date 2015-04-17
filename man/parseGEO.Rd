@@ -9,7 +9,7 @@
   Workhorse GEO parsers.
 }
 \usage{
-parseGEO(fname, GSElimits)
+parseGEO(fname, GSElimits, destdir=tempdir(), AnnotGPL=FALSE, getGPL=TRUE)
 parseGPL(fname)
 parseGDS(fname)
 parseGSE(fname, GSElimits)
@@ -20,6 +20,9 @@ parseGSM(fname)
   a gzfile() connection is used to read the file directly.}
   \item{GSElimits}{Used to limit the number of GSMs parsed into the GSE
     object; useful for memory management for large GSEs.}
+  \item{destdir}{The destination directory into which files will be saved (to be used for caching)}
+  \item{AnnotGPL}{Fetch the annotation GPL if available}
+  \item{getGPL}{Fetch the GPL associated with a GSEMatrix entity (should remain TRUE for all normal use cases)}
 }
 \details{
   These are probably not useful to the end-user.  Use getGEO to access
