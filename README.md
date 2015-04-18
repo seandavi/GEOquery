@@ -15,3 +15,10 @@ To install directly from github:
 library(devtools)
 install_github('GEOquery','seandavi')
 ```
+
+## Usage
+
+See the full vignette in [rmarkdown](https://github.com/seandavi/GEOquery/blob/master/vignettes/GEOquery.Rmd) or visit Bioconductor for details:
+
+- [Release version](http://www.bioconductor.org/packages/release/bioc/html/GEOquery.html)
+- [Devel version](http://www.bioconductor.org/packages/devel/bioc/html/GEOquery.html)
