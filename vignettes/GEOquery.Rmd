@@ -179,7 +179,7 @@ Now, `MA` is of class `MAList` and contains not only the data, but the sample in
 
 Converting a `GSE` object to an `ExpressionSet` object currently takes a bit of R data manipulation due to the varied data that can be stored in a `GSE` and the underlying `GSM` and `GPL` objects.  However, using a simple example will hopefully be illustrative of the technique.  
 
-First, we need to make sure that all of the `GSMs} are from the same platform:
+First, we need to make sure that all of the `GSMs` are from the same platform:
 
 ```{r}
 gsmplatforms <- lapply(GSMList(gse),function(x) {Meta(x)$platform})
