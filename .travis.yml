@@ -5,6 +5,10 @@ before_install:
   - chmod 755 ./travis-tool.sh
   - ./travis-tool.sh bootstrap
   - sudo pip install codecov
+
+r_github_packages:
+  - jimhester/covr
+
 install:
   - Rscript -e "source('http://bioconductor.org/biocLite.R');
                   biocLite();
@@ -24,4 +28,4 @@ notifications:
     on_failure: seandavi@gmail.com
 
 after_success:
-  - codecov
+  - Rscript -e 'library(covr);codecov()'
