@@ -27,20 +27,37 @@ function () {
 	}
 }
 
-"testSuppFileSupport" <-
-function() {
+"testSuppFileSupport" <- function() {
+    ####################################
+    ## GSE
     fres = getGEOSuppFiles('GSE1000')
 
-    checkEquals(10,ncol(fres))
+    if(.Platform$OS.type == "unix") {
+        checkEquals(10,ncol(fres))
+    } else {
+        checkEquals(7,ncol(fres))
+    }
     checkEquals(2,nrow(fres))
 
+    #####################################
+    ## GSM
     fres = getGEOSuppFiles('GSM15789')
 
-    checkEquals(10,ncol(fres))
+    if(.Platform$OS.type == "unix") {
+        checkEquals(10,ncol(fres))
+    } else {
+        checkEquals(7,ncol(fres))
+    }
     checkEquals(1,nrow(fres))
 
+    #####################################
+    ## GSM
     fres = getGEOSuppFiles('GSM15789',baseDir=tempdir())
 
-    checkEquals(10,ncol(fres))
+    if(.Platform$OS.type == "unix") {
+        checkEquals(10,ncol(fres))
+    } else {
+        checkEquals(7,ncol(fres))
+    }
     checkEquals(1,nrow(fres))
 }
