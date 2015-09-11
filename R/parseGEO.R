@@ -92,7 +92,6 @@ parseGeoColumns <- function(txt) {
 ### of lines read to only the size of ONE GSM,
 ### since a single GSE contains many GSMs
 .parseGSMWithLimits <- function(con,n=NULL) {
-    txt <- vector('character')
     i <- 0
     hasDataTable=FALSE
     while(i <- i+1) {
@@ -101,12 +100,13 @@ parseGeoColumns <- function(txt) {
             hasDataTable=FALSE
             break
         }
-        txt[i] <- tmp
-        if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) {
+        if(length(grep('!\\w+_table_begin',tmp,perl=TRUE))>0) {
             hasDataTable=TRUE
             break
         }
     }
+    seek(con,0)
+    txt <- readLines(con,n=i)
     cols <- parseGeoColumns(txt)
     meta <- parseGeoMeta(txt)
     geoDataTable <- new("GEODataTable",columns=data.frame(),table=data.frame())
@@ -266,12 +266,13 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
 
 parseGDS <- function(fname) {
     con <- fileOpen(fname)
-    txt <- vector('character')
     i <- 0
     while(i <- i+1) {
-        txt[i] <- suppressWarnings(readLines(con,1))
-        if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
+        tmp <- suppressWarnings(readLines(con,1))
+        if(length(grep('!\\w+_table_begin',tmp,perl=TRUE))>0) break
     }
+    seek(con,0)
+    txt <- readLines(con,n=i)
     cols <- parseGDSSubsets(txt)
     meta <- parseGeoMeta(txt)
     dat3 <- suppressWarnings(fastTabRead(con))
@@ -285,7 +286,6 @@ parseGDS <- function(fname) {
 
 
 .parseGPLWithLimits <- function(con,n=NULL) {
-    txt <- vector('character')
     i <- 0
     hasDataTable=FALSE
     while(i <- i+1) {
@@ -300,12 +300,13 @@ parseGDS <- function(fname) {
                 break
             }
         }
-        txt[i] <- tmp
-        if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) {
+        if(length(grep('!\\w+_table_begin',tmp,perl=TRUE))>0) {
             hasDataTable=TRUE
             break
         }
     }
+    seek(con,0)
+    txt <- readLines(con,n=i)
     cols <- parseGeoColumns(txt)
     meta <- parseGeoMeta(txt)
     geoDataTable <- new("GEODataTable",columns=data.frame(),table=data.frame())
