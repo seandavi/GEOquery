@@ -98,15 +98,18 @@ parseGeoColumns <- function(txt) {
     while(i <- i+1) {
         tmp <- try(readLines(con,1))
         if(inherits(tmp,"try-error") | length(tmp)==0) {
+            i <- i-1  # counted an extra line
             hasDataTable=FALSE
             break
         }
         txt[i] <- tmp
+        if(i==length(txt)) txt <- c(txt, character(i))  # double vector size
         if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) {
             hasDataTable=TRUE
             break
         }
     }
+    txt <- txt[1:i]
     cols <- parseGeoColumns(txt)
     meta <- parseGeoMeta(txt)
     geoDataTable <- new("GEODataTable",columns=data.frame(),table=data.frame())
@@ -270,8 +273,10 @@ parseGDS <- function(fname) {
     i <- 0
     while(i <- i+1) {
         txt[i] <- suppressWarnings(readLines(con,1))
+        if(i==length(txt)) txt <- c(txt, character(i))  # double vector size
         if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
     }
+    txt <- txt[1:i]
     cols <- parseGDSSubsets(txt)
     meta <- parseGeoMeta(txt)
     dat3 <- suppressWarnings(fastTabRead(con))
@@ -290,22 +295,21 @@ parseGDS <- function(fname) {
     hasDataTable=FALSE
     while(i <- i+1) {
         tmp <- try(readLines(con,1))
-        if(inherits(tmp,"try-error") | length(tmp)==0 ) {
+        if(inherits(tmp,"try-error")
+           || length(tmp)==0
+           || (!is.null(n) && i==n)) {
+            i <- i-1  # counted an extra line
             hasDataTable=FALSE
             break
         }
-        if(!is.null(n)) {
-            if(i==n) {
-                hasDataTable=FALSE
-                break
-            }
-        }
         txt[i] <- tmp
+        if(i==length(txt)) txt <- c(txt, character(i))  # double vector size
         if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) {
             hasDataTable=TRUE
             break
         }
     }
+    txt <- txt[1:i]
     cols <- parseGeoColumns(txt)
     meta <- parseGeoMeta(txt)
     geoDataTable <- new("GEODataTable",columns=data.frame(),table=data.frame())
