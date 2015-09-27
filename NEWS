@@ -1,0 +1,10 @@
+Version 2.36
+    
+  New Features
+    * New, faster SOFT format parsing (Leonardo Gama)
+    * Turned on unit tests in Travis CI
+    * Test coverage metrics added
+    
+  Bug fixes
+    * default download method no longer assumes that curl is installed on linux
+    * GSEMatrix parsing from file now finds cached GPLs
