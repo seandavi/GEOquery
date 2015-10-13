@@ -326,10 +326,24 @@ parseGDS <- function(fname) {
                dataTable = geoDataTable)
 }
 
+### In memory cache for GPL objects parsed from locally cached versions of GPL SOFT files.
+### It is disabled by default with options('GEOquery.inmemory.gpl'=FALSE).
+GPLcache <- new.env(parent=emptyenv())
+
 parseGPL <- function(fname) {
+    if(getOption('GEOquery.inmemory.gpl')) {
+        info <- file.info(fname,extra_cols=FALSE)
+        cache <- get0(fname,envir=GPLcache,inherits=FALSE)
+        ## Check if the locally cached version wasn't modified.
+        if(!is.null(cache) && cache$info$mtime==info$mtime) {
+            message("Using GPL object found in memory from locally cached version.")
+            return(cache$gpl)
+        }
+    }
     con <- fileOpen(fname)
     ret <- .parseGPLWithLimits(con)
     close(con)
+    if(getOption('GEOquery.inmemory.gpl')) GPLcache[[fname]] <- list(gpl=ret,info=info)
     return(ret)
 }
 
