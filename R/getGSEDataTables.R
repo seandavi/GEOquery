@@ -1,5 +1,5 @@
 getGSEDataTables <- function(GSE) {
-    url=sprintf("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?targ=self&form=xml&tool=geoquery&view=full&acc=%s",GSE)
+    url=sprintf("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?targ=self&form=xml&view=full&acc=%s",GSE)
     ## Needed to switch to httr to support https, which is now what GEO is using
     txt = content(httr::GET(url),type='text')
     doc1 = xmlRoot(xmlParseDoc(txt))
