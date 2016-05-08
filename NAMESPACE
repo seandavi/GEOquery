@@ -8,6 +8,9 @@ importFrom(XML,
 	xmlValue)
 importFrom(RCurl,
 	getURL)
+importFrom(httr,
+	GET,
+        content)
 export(parseGEO,
 	parseGSM,
 	parseGSE,
