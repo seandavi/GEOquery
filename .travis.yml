@@ -1,26 +1,13 @@
-language: c
-
+language: r
+r:
+  - bioc-devel
+  - bioc-release
+cache: packages
 before_install:
-  - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
-  - chmod 755 ./travis-tool.sh
-  - ./travis-tool.sh bootstrap
-  - sudo pip install codecov
+  - pip install codecov
 
 r_github_packages:
   - jimhester/covr
-
-install:
-  - Rscript -e "source('http://bioconductor.org/biocLite.R');
-                  biocLite();
-                  useDevel();
-                  biocLite(c('Biobase', 'XML', 'RCurl', 'methods', 'limma', 'knitr', 'rmarkdown', 'RUnit', 'BiocGenerics','covr'))"
-  
-  - ./travis-tool.sh install_deps
-
-script: ./travis-tool.sh run_tests
-
-on_failure:
-  - ./travis-tool.sh dump_logs
 
 notifications:
   email:
@@ -28,4 +15,4 @@ notifications:
     on_failure: seandavi@gmail.com
 
 after_success:
-  - Rscript -e 'library(covr);codecov()'
+  - Rscript -e 'covr::codecov()'
