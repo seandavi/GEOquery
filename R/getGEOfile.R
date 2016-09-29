@@ -7,13 +7,13 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
     GEO <- toupper(GEO)
     stub = gsub('\\d{1,3}$','nnn',GEO,perl=TRUE)
     if (geotype == 'GDS') {
-      gdsurl <- 'https://ftp.ncbi.nlm.nih.gov/geo/datasets/%s/%s/soft/%s?tool=geoquery'
-      myurl <- sprintf(gdsurl,stub,GEO,paste0(GEO,'.soft.gz?tool=geoquery'))
+      gdsurl <- 'http://ftp.ncbi.nlm.nih.gov/geo/datasets/%s/%s/soft/%s'
+      myurl <- sprintf(gdsurl,stub,GEO,paste0(GEO,'.soft.gz'))
       destfile <- file.path(destdir,paste0(GEO,'.soft.gz'))
     }
     if (geotype == 'GSE' & amount=='full') {
-      gseurl <- 'https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/soft/%s'
-      myurl <- sprintf(gseurl,stub,GEO,paste0(GEO,'_family.soft.gz?tool=geoquery'))
+      gseurl <- 'http://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/soft/%s'
+      myurl <- sprintf(gseurl,stub,GEO,paste0(GEO,'_family.soft.gz'))
       destfile <- file.path(destdir,paste(GEO,'.soft.gz',sep=""))
     }
     if (geotype == 'GSE' & amount!='full' & amount!='table') {
@@ -24,8 +24,8 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
     }
     if (geotype == 'GPL') {
       if (AnnotGPL) {
-        gplurl <- 'https://ftp.ncbi.nlm.nih.gov/geo/platforms/%s/%s/annot/%s'
-        myurl <- sprintf(gplurl,stub,GEO,paste0(GEO,'.annot.gz?tool=geoquery'))
+        gplurl <- 'http://ftp.ncbi.nlm.nih.gov/geo/platforms/%s/%s/annot/%s'
+        myurl <- sprintf(gplurl,stub,GEO,paste0(GEO,'.annot.gz'))
         destfile <- file.path(destdir,paste(GEO,'.annot.gz',sep=""))
         # check to see if Annotation GPL is present.  If so,
         # use it, else move on to submitter GPL
