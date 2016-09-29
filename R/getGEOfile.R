@@ -7,24 +7,24 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
     GEO <- toupper(GEO)
     stub = gsub('\\d{1,3}$','nnn',GEO,perl=TRUE)
     if (geotype == 'GDS') {
-      gdsurl <- 'http://ftp.ncbi.nlm.nih.gov/geo/datasets/%s/%s/soft/%s'
+      gdsurl <- 'https://ftp.ncbi.nlm.nih.gov/geo/datasets/%s/%s/soft/%s'
       myurl <- sprintf(gdsurl,stub,GEO,paste0(GEO,'.soft.gz'))
       destfile <- file.path(destdir,paste0(GEO,'.soft.gz'))
     }
     if (geotype == 'GSE' & amount=='full') {
-      gseurl <- 'http://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/soft/%s'
+      gseurl <- 'https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/soft/%s'
       myurl <- sprintf(gseurl,stub,GEO,paste0(GEO,'_family.soft.gz'))
       destfile <- file.path(destdir,paste(GEO,'.soft.gz',sep=""))
     }
     if (geotype == 'GSE' & amount!='full' & amount!='table') {
       gseurl <- "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
-      myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&tool=geoquery&view=',amount,sep='')
+      myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&view=',amount,sep='')
       destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
       mode <- 'w'
     }
     if (geotype == 'GPL') {
       if (AnnotGPL) {
-        gplurl <- 'http://ftp.ncbi.nlm.nih.gov/geo/platforms/%s/%s/annot/%s'
+        gplurl <- 'https://ftp.ncbi.nlm.nih.gov/geo/platforms/%s/%s/annot/%s'
         myurl <- sprintf(gplurl,stub,GEO,paste0(GEO,'.annot.gz'))
         destfile <- file.path(destdir,paste(GEO,'.annot.gz',sep=""))
         # check to see if Annotation GPL is present.  If so,
@@ -45,7 +45,7 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
         }
       } 
       gseurl <- "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
-      myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&tool=geoquery&view=',amount,sep='')
+      myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&view=',amount,sep='')
       destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
       mode <- 'w'
       if(!file.exists(destfile)) {
@@ -59,7 +59,7 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
     }
     if (geotype == 'GSM') {
       gseurl <- "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
-      myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&tool=geoquery&view=',amount,sep='')
+      myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&view=',amount,sep='')
       destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
       mode <- 'w'
     }
