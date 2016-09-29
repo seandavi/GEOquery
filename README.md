@@ -1,4 +1,4 @@
-[![Travis Build Status](https://api.travis-ci.org/seandavi/GEOquery.svg?branch=master)](https://travis-ci.org/seandavi/GEOquery)
+![Travis Build Status](https://api.travis-ci.org/seandavi/GEOquery.svg?branch=master)
 [![codecov](https://codecov.io/gh/seandavi/GEOquery/branch/master/graph/badge.svg)](https://codecov.io/gh/seandavi/GEOquery)
 
 ## Installation
