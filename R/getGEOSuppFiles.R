@@ -6,12 +6,12 @@ getDirListing <- function(url) {
   ## where the ftp index was converted to html content
   ## The IF statement here is his fix--harmless for the rest
   ## of us.
-  if( grepl("^<HTML", a) ){ # process HTML content
-    message("# Processing HTML result page (behind a proxy?) ... ", appendLF=FALSE)
-    sa <- gsub('HREF', 'href', a, fixed = TRUE) # just not to depend on case change
-    sa <- strsplit(sa, 'href', fixed = TRUE)[[1L]]
-    pattern <- "^=\\s*[\"']/[^\"']+/([^/]+)[\"'].*"
-    b <- as.matrix(gsub(pattern, "\\1", sa[grepl(pattern, sa)]))
+  if( grepl("<HTML", a, ignore.case=T) ){ # process HTML content
+    doc <- XML::htmlParse(a)
+    links <- XML::xpathSApply(doc, "//a/@href")
+    XML::free(doc)
+    
+    b <- as.matrix(links)
     message('OK')
   } else { # standard processing of txt content
     tmpcon <- textConnection(a, "r")
@@ -28,13 +28,13 @@ getGEOSuppFiles <- function(GEO,makeDirectory=TRUE,baseDir=getwd()) {
   fileinfo <- list()
   stub = gsub('\\d{1,3}$','nnn',GEO,perl=TRUE)
   if(geotype=='GSM') {
-    url <- sprintf("ftp://ftp.ncbi.nlm.nih.gov/geo/samples/%s/%s/suppl/",stub,GEO)
+    url <- sprintf("https://ftp.ncbi.nlm.nih.gov/geo/samples/%s/%s/suppl/",stub,GEO)
   }
   if(geotype=='GSE') {
-    url <- sprintf("ftp://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/suppl/",stub,GEO)
+    url <- sprintf("https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/suppl/",stub,GEO)
   }
   if(geotype=='GPL') {
-    url <- sprintf("ftp://ftp.ncbi.nlm.nih.gov/geo/platform/%s/%s/suppl/",stub,GEO)
+    url <- sprintf("https://ftp.ncbi.nlm.nih.gov/geo/platform/%s/%s/suppl/",stub,GEO)
   }
   fnames <- try(getDirListing(url),silent=TRUE)
   if(inherits(fnames,'try-error')) {
