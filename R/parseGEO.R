@@ -374,7 +374,7 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE) {
         if(file.exists(destfile)) {
             message(sprintf('Using locally cached version: %s',destfile))
         } else {
-            download.file(sprintf('https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/matrix/%s',
+            download.file(sprintf('https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/matrix/%s?tool=geoquery',
                                   stub,GEO,b[i]),destfile=destfile,mode='wb',
                           method=getOption('download.file.method.GEOquery'))
         }
