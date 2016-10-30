@@ -1,5 +1,6 @@
 require(rentrez)
 require(purrr)
+require(lubridate)
 
 .docSumListConvert = function(x) {
     ret = data.frame(
@@ -24,7 +25,7 @@ require(purrr)
         n_samples    = x %>% purrr::map('n_samples') %>% as.integer(),
         pubmedids    = x %>% purrr::map('pubmedids') %>% I(),
         projects     = x %>% purrr::map('projects') %>% I(),
-        public_date  = x %>% purrr::map('pdat') %>% purrr::flatten_chr() %>% date(),
+        public_date  = x %>% purrr::map('pdat') %>% purrr::flatten_chr() %>% lubridate::date(),
         samplestaxa  = x %>% purrr::map('samplestaxa') %>% I() #purrr::map(strsplit,', ') %>% purrr::flatten() %>% I()
         )
     return(ret)
@@ -61,6 +62,7 @@ getGEOMeta = function(geo) {
             accession     = xml_attr(xml_find_first(dat,'/d1:MINiML/d1:Sample'),'iid'),
             gpl           = xml_attr(xml_find_first(dat,'/d1:MINiML/d1:Platform'),'iid'),
             title         = xml_text(xml_find_first(dat,'/d1:MINiML/d1:Sample/d1:Title')),
+            description   = xml_text(xml_find_first(dat,'/d1:MINiML/d1:Sample/d1:Description')),
             type          = xml_text(xml_find_first(dat,'/d1:MINiML/d1:Sample/d1:Type')),
             submission_date= xml_text(xml_find_first(dat,'/d1:MINiML/d1:Sample/d1:Status/d1:Submission-Date')),
             last_update   = xml_text(xml_find_first(dat,'/d1:MINiML/d1:Sample/d1:Status/d1:Last-Update--Date')),
@@ -70,15 +72,29 @@ getGEOMeta = function(geo) {
                                    function(channel) {
                                        return(list(
                                            tax_id = xml_attr(xml_find_first(channel,'./d1:Organism'),'taxid'),
-                                           organixm = xml_text(xml_find_first(channel,'./d1:Organism')),
+                                           organism = xml_text(xml_find_first(channel,'./d1:Organism')),
                                            source = xml_text(xml_find_first(channel,'./d1:Source')),
                                            molecule = xml_text(xml_find_first(channel,'./d1:Molecule')),
-                                           characteristics = xml_text(xml_find_first(channel,'./d1:Characteristics'))
-                                           
+                                           treatment_protocol = xml_text(xml_find_first(channel,'./d1:Treatment-Protocol')),
+                                           extract_protocol = str_trim(xml_text(xml_find_first(channel,'./d1:Extract-Protocol'))),
+                                           label_protocol = xml_text(xml_find_first(channel,'./d1:Label-Protocol')),
+                                           scan_protocol = xml_text(xml_find_first(channel,'./d1:Scan-Protocol')),
+                                           hybridization_protocol = xml_text(xml_find_first(channel,'./d1:Hybridization-Protocol')),
+                                           growth_protocol = str_trim(xml_text(xml_find_first(channel,'./d1:Growth-Protocol'))),
+                                           characteristics = sapply(xml_find_all(channel,'d1:Characteristics'),function(x) {str_trim(xml_text(x))}) %>%
+                                             setNames(sapply(xml_find_all(channel,'d1:Characteristics'),function(x) {str_trim(xml_attrs(x,'tag'))})) %>% I()
                                        ))
-                                   })
+                                   }))),
+            columns       = data.frame(do.call(rbind,lapply(xml_find_all(dat,'/d1:MINiML/d1:Sample/d1:Data-Table/d1:Column'),
+                                function(column) {
+                                  return(list(
+                                    name = xml_text(xml_find_first(column,'d1:Name')),
+                                    description = xml_text(xml_find_first(column,'d1:Description'))
+                                    
+                                  ))
+                                })))
                                
-        )))
+        )
         return(ret)
     }
     geo = toupper(geo)
@@ -89,4 +105,27 @@ getGEOMeta = function(geo) {
                  GSM = .getGSMmeta(dat),
                  NA)
     return(ret)
-}    
+}
+
+
+getGEOMeta()
+
+
+res = searchGEODocSums()
+
+library(BiocParallel)
+register(MulticoreParam(8))
+
+
+
+docsumJSON = function(retstart,retmax) {
+  require(jsonlite)
+  dir.create(sprintf('~/docsums_%d',(retstart-1) %% 10000),showWarnings=FALSE)
+  f = file(sprintf('~/docsums_%d/docsums_%d_%d.json',(retstart-1) %% 10000,retstart,retstart+retmax),'wt')
+  h = fetchDocSums(res,retstart=retstart,retmax=retmax)
+  stream_out(h,f)
+  message(retstart)
+  close(f)
+}
+
+bplapply(seq(0,res$count,100),function(x) docsumJSON(x+1,100))
