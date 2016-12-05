@@ -2,7 +2,7 @@
 res = searchGEODocSums()
 
 library(BiocParallel)
-register(MulticoreParam(8))
+register(MulticoreParam())
 
 
 
@@ -16,4 +16,6 @@ docsumJSON = function(retstart,retmax) {
   close(f)
 }
 
-bplapply(seq(0,res$count,100),function(x) docsumJSON(x+1,100))
+buildGEODocsums = function() {
+  bplapply(seq(0,res$count,100),function(x) docsumJSON(x+1,100))
+}
