@@ -31,6 +31,18 @@ require(lubridate)
     return(ret)
     }
 
+.docSumListFix = function(x) {
+  if(!is.list(x)) x = list(x)
+  ret = lapply(x,function(val) {
+    val$gpl = list(paste0('GPL',stringi::stri_split(val$gpl,fixed=';')[[1]]))
+    val$gse = list(paste0('GSE',stringi::stri_split(val$gse,fixed=';')[[1]]))
+    val$gds = list(paste0('GDS',stringi::stri_split(val$gds,fixed=';')[[1]]))
+    val$ssinfo  = unique(stringi::stri_split(val$ssinfo,fixed=';')[[1]])
+    return(val)
+  })
+  return(ret)
+}
+
 #' get all GEO records as docsums
 #'
 #' Fetches all records from NCBI entrez and creates a data frame
@@ -52,8 +64,24 @@ fetchDocSums= function(res,retstart=1,retmax=100) {
     
   return(.docSumListConvert(z))
 }
-
-
+.bqSchemaFromDocsums = function(exampleDF) {
+  mappings = list(integer=list(mode='nullable',type='integer'),
+                  factor =list(mode="nullable",type="string"),
+                  character = list(mode='nullable',type='string'),
+                  numeric = list(mode="nullable",type="float"),
+                  logical = list(mode="nullable",type="boolean"),
+                  AsIs    = list(mode="repeated",type="string"),
+                  Date    = list(mode="nullable",type="string"))
+  coltypes = sapply(exampleDF,class)
+  coldesc  = mappings[coltypes]
+  names(coldesc)=NULL
+  coldesc=lapply(seq_along(coldesc),function(col) {
+    ret = coldesc[[col]]
+    ret$name=colnames(exampleDF)[col]
+    return(ret)
+  })
+  return(coldesc)
+}
 
 
 getGEOMeta = function(geo) {
@@ -106,26 +134,3 @@ getGEOMeta = function(geo) {
                  NA)
     return(ret)
 }
-
-
-getGEOMeta()
-
-
-res = searchGEODocSums()
-
-library(BiocParallel)
-register(MulticoreParam(8))
-
-
-
-docsumJSON = function(retstart,retmax) {
-  require(jsonlite)
-  dir.create(sprintf('~/docsums_%d',(retstart-1) %% 10000),showWarnings=FALSE)
-  f = file(sprintf('~/docsums_%d/docsums_%d_%d.json',(retstart-1) %% 10000,retstart,retstart+retmax),'wt')
-  h = fetchDocSums(res,retstart=retstart,retmax=retmax)
-  stream_out(h,f)
-  message(retstart)
-  close(f)
-}
-
-bplapply(seq(0,res$count,100),function(x) docsumJSON(x+1,100))
