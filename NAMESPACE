@@ -8,6 +8,8 @@ importFrom(XML,
 	xmlValue)
 importFrom(RCurl,
 	getURL)
+importFrom(curl,
+		curl_download)
 importFrom(httr,
 	GET,
         content)

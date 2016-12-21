@@ -31,7 +31,8 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
         # use it, else move on to submitter GPL
         res=try({
           if(!file.exists(destfile)) {
-            download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
+            curl_download(myurl,destfile,mode=mode,quiet=TRUE)
+            #download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
             message('File stored at: ')
             message(destfile)
           } else {
@@ -43,7 +44,7 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
         } else {
           message('Annotation GPL not available, so will use submitter GPL instead')
         }
-      } 
+      }
       gseurl <- "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
       myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&tool=geoquery&view=',amount,sep='')
       destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
@@ -80,9 +81,9 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
 getGEORaw <- function(GEO,destdir=tempdir()) {
   return(getGEOSuppFiles(GEO,baseDir=destdir))
 }
-                             
+
 gunzip <- function(filename, destname=gsub("[.]gz$", "", filename), overwrite=FALSE, remove=TRUE, BFR.SIZE=1e7) {
-  if (filename == destname) 
+  if (filename == destname)
     stop(sprintf("Argument 'filename' and 'destname' are identical: %s", filename));
   if (!overwrite && file.exists(destname))
     stop(sprintf("File already exists: %s", destname));
@@ -90,17 +91,17 @@ gunzip <- function(filename, destname=gsub("[.]gz$", "", filename), overwrite=FA
   inn <- gzfile(filename, "rb");
   on.exit(if (!is.null(inn)) close(inn));
 
-  out <- file(destname, "wb"); 
+  out <- file(destname, "wb");
   on.exit(close(out), add=TRUE);
 
   nbytes <- 0;
-  repeat { 
+  repeat {
     bfr <- readBin(inn, what=raw(0), size=1, n=BFR.SIZE);
     n <- length(bfr);
     if (n == 0)
       break;
     nbytes <- nbytes + n;
-    writeBin(bfr, con=out, size=1); 
+    writeBin(bfr, con=out, size=1);
   };
 
   if (remove) {
@@ -108,6 +109,6 @@ gunzip <- function(filename, destname=gsub("[.]gz$", "", filename), overwrite=FA
     inn <- NULL;
     file.remove(filename);
   }
-    
+
   invisible(nbytes);
 }
