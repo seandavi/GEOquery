@@ -50,7 +50,8 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
       destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
       mode <- 'w'
       if(!file.exists(destfile)) {
-        download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
+        #download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
+        curl_download(myurl,destfile,mode=mode,quiet=TRUE)
         message('File stored at: ')
         message(destfile)
       } else {
@@ -65,7 +66,8 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
       mode <- 'w'
     }
     if(!file.exists(destfile)) {
-      download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
+      #download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
+      curl_download(myurl,destfile,mode=mode,quiet=TRUE)
       message('File stored at: ')
       message(destfile)
     } else {
