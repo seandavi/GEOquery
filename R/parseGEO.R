@@ -120,7 +120,7 @@ parseGeoColumns <- function(txt) {
         }
         dat3 <- fastTabRead(con,n=nLinesToRead)
         geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
-    } 
+    }
     gsm <- new('GSM',
                header=meta,
                dataTable = geoDataTable)
@@ -161,7 +161,7 @@ filegrep <-
             }
             i <- i+length(lines)
         }
-        return(ret) 
+        return(ret)
     }
 
 parseGSE <- function(fname,GSElimits=NULL) {
@@ -320,7 +320,7 @@ parseGDS <- function(fname) {
         }
         dat3 <- fastTabRead(con,n=nLinesToRead,quote='')
         geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
-    } 
+    }
     gpl <- new('GPL',
                header=meta,
                dataTable = geoDataTable)
@@ -374,9 +374,11 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE) {
         if(file.exists(destfile)) {
             message(sprintf('Using locally cached version: %s',destfile))
         } else {
-            download.file(sprintf('https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/matrix/%s?tool=geoquery',
-                                  stub,GEO,b[i]),destfile=destfile,mode='wb',
-                          method=getOption('download.file.method.GEOquery'))
+            # download.file(sprintf('https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/matrix/%s?tool=geoquery',
+            #                       stub,GEO,b[i]),destfile=destfile,mode='wb',
+            #               method=getOption('download.file.method.GEOquery'))
+            curl_download(sprintf('https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/matrix/%s?tool=geoquery',
+                                   stub,GEO,b[i]),destfile=destfile,mode='wb')
         }
         ret[[b[i]]] <- parseGSEMatrix(destfile,destdir=destdir,AnnotGPL=AnnotGPL,getGPL=getGPL)$eset
     }
