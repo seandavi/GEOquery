@@ -8,7 +8,8 @@ Maintainer: Sean Davis <sdavis2@mail.nih.gov>
 BugReports: https://github.com/seandavi/GEOquery/issues/new
 Depends: methods, Biobase
 Imports: XML, RCurl, httr
-Suggests: limma, knitr, rmarkdown, RUnit, BiocGenerics
+Suggests: limma, knitr, rmarkdown, RUnit, BiocGenerics,
+    testthat
 VignetteBuilder: knitr
 URL: https://github.com/seandavi/GEOquery
 biocViews: Microarray, DataImport, OneChannel, TwoChannel, SAGE
