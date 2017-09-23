@@ -3,16 +3,9 @@ r:
   - bioc-devel
   - bioc-release
 cache: packages
-before_install:
-  - pip install codecov
-
-r_github_packages:
-  - jimhester/covr
 
 notifications:
   email:
     on_success: seandavi@gmail.com
     on_failure: seandavi@gmail.com
 
-after_success:
-  - Rscript -e 'covr::codecov()'
