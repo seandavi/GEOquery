@@ -4,7 +4,7 @@ r:
   - bioc-release
 cache: packages
 before_install:
-  - sudo pip install codecov
+  - pip install codecov
 
 r_github_packages:
   - jimhester/covr
