@@ -3,8 +3,7 @@
 #' This one makes some assumptions about the
 #' structure of the HTML response returned.
 #'
-#' @importFrom httr GET
-#' @importFrom xml2 xml_find_all
+#' @importFrom xml2 xml_find_all, xml_text, read_html
 #' 
 getDirListing <- function(url) {
   # Takes a URL and returns a character vector of filenames
