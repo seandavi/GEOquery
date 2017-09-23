@@ -37,7 +37,7 @@ function () {
     } else {
         checkEquals(7,ncol(fres))
     }
-    checkEquals(2,nrow(fres))
+    checkEquals(1,nrow(fres))
 
     #####################################
     ## GSM
