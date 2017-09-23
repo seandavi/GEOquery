@@ -11,6 +11,9 @@ importFrom(RCurl,
 importFrom(httr,
 	GET,
         content)
+importFrom(readr,
+	read_lines,
+        read_tsv)
 export(parseGEO,
 	parseGSM,
 	parseGSE,

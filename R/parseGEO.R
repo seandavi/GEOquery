@@ -1,3 +1,5 @@
+.na_strings = c('NA','null','NULL','Null')
+
 parseGEO <- function(fname,GSElimits,destdir=tempdir(),AnnotGPL=FALSE,getGPL=TRUE) {
     con <- fileOpen(fname)
     first.entity <- findFirstEntity(con)
@@ -267,27 +269,39 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
     return(dat3)
 }
 
+#' parse a GEO dataset (GDS)
+#'
+#' GEO datasets, or GDS, used to be produced
+#' by NCBI GEO as "curated" versions of submitted
+#' data. NCBI GEO no longer produces these objects,
+#' but there are still thousands available that, in
+#' some cases, have much nicer sample annotation and
+#' more standardized annotation for the associated GPLs.
+#'
+#' @param fname the filename of the SOFT format file. May
+#' be gzipped.
+#'
+#' @importFrom readr read_tsv, read_lines
+#'
+#' @rdname low_level_functions
+#' @keywords internal
+#' 
 parseGDS <- function(fname) {
-    con <- fileOpen(fname)
-    txt <- vector('character')
-    i <- 0
-    while(i <- i+1) {
-        txt[i] <- suppressWarnings(readLines(con,1))
-        if(i==length(txt)) txt <- c(txt, character(i))  # double vector size
-        if(length(grep('!\\w+_table_begin',txt[i],perl=TRUE))>0) break
+    txt = read_lines(fname)
+    tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)
+    if(length(tbl_begin>0)) {
+        txt = txt[1:tbl_begin[1]]
+        dat3 <- read_tsv(fname, comment='!dataset_table_end', skip = tbl_begin[1],
+                         guess_max = 10000, na = .na_strings)
     }
-    txt <- txt[1:i]
     cols <- parseGDSSubsets(txt)
     meta <- parseGeoMeta(txt)
-    dat3 <- suppressWarnings(fastTabRead(con))
-    close(con)
-    geoDataTable <- new('GEODataTable',columns=cols,table=dat3[1:(nrow(dat3)-1),])
+    geoDataTable <- new('GEODataTable',columns=cols,table=as.data.frame(dat3))
     gds <- new('GDS',
                header=meta,
                dataTable = geoDataTable)
     return(gds)
 }
-
 
 .parseGPLWithLimits <- function(con,n=NULL) {
     txt <- vector('character')
@@ -383,42 +397,31 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE) {
     return(ret)
 }
 
-
-### Function to parse a single GSEMatrix
-### file into an ExpressionSet
 parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
-    dat <- readLines(fname)
+    dat <- read_lines(fname)
     ## get the number of !Series and !Sample lines
-    nseries <- sum(grepl("^!Series_", dat))
-    nsamples <- sum(grepl("^!Sample_", dat))
-    con <- fileOpen(fname)
+    #nseries <- sum(grepl("^!Series_", dat))
+    #nsamples <- sum(grepl("^!Sample_", dat))
+    #con <- fileOpen(fname)
     ## Read the !Series_ and !Sample_ lines
-    header <- suppressWarnings(read.table(con,sep="\t",header=FALSE,nrows=nseries))
-    tmpdat <- suppressWarnings(read.table(con,sep="\t",header=FALSE,nrows=nsamples))
+    header <- suppressWarnings(read.table(textConnection(grep("^!Series_", dat, value = TRUE)),
+                                          sep="\t",header=FALSE))
+    tmpdat <- suppressWarnings(read.table(textConnection(grep("^!Sample_", dat, value = TRUE)),
+                                          sep="\t",header=FALSE))
     tmptmp <- t(tmpdat)
     sampledat <- rbind(data.frame(),tmptmp[-1,])
     colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
-    suppressWarnings(readLines(con,1))
                                         # used to be able to use colclasses, but some SNP arrays provide only the
                                         # genotypes in AA AB BB form, so need to switch it up....
                                         #  colClasses <- c('character',rep('numeric',nrow(sampledat)))
-    datamat <- suppressWarnings(read.delim(con,sep="\t",header=TRUE,
-                                           na.strings=c('NA','null','NULL','Null'),
-                                           comment.char=""))
-    close(con)
-    tmprownames = datamat[,1]
+    datamat <- read_tsv(fname,quote='"',
+                        na=c('NA','null','NULL','Null'), skip = sum(grepl('^!',dat)),
+                        comment = '!series_matrix_table_end')
+    tmprownames = datamat[[1]]
                                         # need the as.matrix for single-sample or empty GSE
     datamat <- as.matrix(datamat[!is.na(tmprownames),-1])
     rownames(datamat) <- tmprownames[!is.na(tmprownames)]
-    ## All the series matrix files are assumed to end with
-    ## the line "!series_matrix_table_end", so we remove
-    ## that line from the datamatrix (it has been read)
-    if(nrow(datamat)==1) {
-        ## empty gse
-        datamat <- datamat[1:(nrow(datamat)-1),]
-    } else {
-        datamat <- as.matrix(datamat[1:(nrow(datamat)-1),])
-    }
+    datamat <- as.matrix(datamat)
     rownames(sampledat) <- colnames(datamat)
     GPL=as.character(sampledat[1,grep('platform_id',colnames(sampledat),ignore.case=TRUE)])
     ## if getGPL is FALSE, skip this and featureData is then a data.frame with no columns

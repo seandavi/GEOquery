@@ -1,3 +1,9 @@
+Version 2.45
+
+  Improvements:
+    * GDS parsing is 2-3x faster
+    * GSEMatrix parsing is 2-3x faster
+
 Version 2.36
     
   New Features
