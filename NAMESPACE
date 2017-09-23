@@ -8,6 +8,8 @@ importFrom(XML,
 	xmlValue)
 importFrom(RCurl,
 	getURL)
+importFrom(xml2,
+	read_html)
 importFrom(httr,
 	GET,
         content)

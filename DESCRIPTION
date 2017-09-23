@@ -7,7 +7,7 @@ Author: Sean Davis <sdavis2@mail.nih.gov>
 Maintainer: Sean Davis <sdavis2@mail.nih.gov>
 BugReports: https://github.com/seandavi/GEOquery/issues/new
 Depends: methods, Biobase
-Imports: XML, RCurl, httr, readr
+Imports: XML, RCurl, httr, readr, xml2
 Suggests: limma, knitr, rmarkdown, RUnit, BiocGenerics,
     testthat
 VignetteBuilder: knitr
