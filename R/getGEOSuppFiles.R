@@ -1,25 +1,16 @@
+#' get a directory listing from NCBI GEO
+#'
+#' This one makes some assumptions about the
+#' structure of the HTML response returned.
+#'
+#' @importFrom httr GET
+#' @importFrom xml2 xml_find_all
+#' 
 getDirListing <- function(url) {
-  message(url)
   # Takes a URL and returns a character vector of filenames
-  a <- getURL(url)
-  ## Renaud Gaujoux reported problems behind firewall
-  ## where the ftp index was converted to html content
-  ## The IF statement here is his fix--harmless for the rest
-  ## of us.
-  if( grepl("<HTML", a, ignore.case=T) ){ # process HTML content
-    doc <- XML::htmlParse(a)
-    links <- XML::xpathSApply(doc, "//a/@href")
-    XML::free(doc)
-    
-    b <- as.matrix(links)
-    message('OK')
-  } else { # standard processing of txt content
-    tmpcon <- textConnection(a, "r")
-    b <- read.table(tmpcon)
-    close(tmpcon)
-  }
-  b <- as.character(b[,ncol(b)])
-  return(b)
+    a <- xml2::read_html(url)
+    fnames = grep('^G',xml_text(xml_find_all(a,'//a/@href')),value=TRUE)
+  return(fnames)
 }
 
 getGEOSuppFiles <- function(GEO,makeDirectory=TRUE,baseDir=getwd()) {
