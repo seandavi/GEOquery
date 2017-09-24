@@ -340,7 +340,11 @@ parseGSM <- function(fname) {
         txt = txt[1:tbl_begin[1]]
         dat3 <- read_tsv(fname, comment='!sample_table_end', skip = tbl_begin[1],
                          guess_max = 10000, na = .na_strings)
+    } else {
+        # empty data table
+        dat3 = data.frame()
     }
+
     cols <- parseGeoColumns(txt)
     meta <- parseGeoMeta(txt)
     geoDataTable <- new('GEODataTable',columns=cols,table=as.data.frame(dat3))
@@ -366,10 +370,14 @@ parseGPL <- function(fname) {
     }
     txt = read_lines(fname)
     tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)
+    
     if(length(tbl_begin>0)) {
         txt = txt[1:tbl_begin[1]]
         dat3 <- suppressMessages(read_tsv(fname, comment='!platform_table_end', skip = tbl_begin[1],
                          guess_max = 10000, na = .na_strings))
+    } else {
+        # empty data table
+        dat3 = data.frame()
     }
     cols <- parseGeoColumns(txt)
     meta <- parseGeoMeta(txt)
