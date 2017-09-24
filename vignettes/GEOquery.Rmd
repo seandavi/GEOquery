@@ -18,7 +18,7 @@ output:
 
 ```{r pre,echo=FALSE,results='hide'}
 library(knitr)
-opts_chunk$set(warning=FALSE,message=FALSE,cache=TRUE)
+opts_chunk$set(warning=FALSE,message=FALSE,cache=FALSE)
 ```
 
 # Overview of GEO
