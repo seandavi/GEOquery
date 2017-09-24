@@ -128,13 +128,6 @@ parseGeoColumns <- function(txt) {
                dataTable = geoDataTable)
 }
 
-parseGSM <- function(fname) {
-    con <- fileOpen(fname)
-    ret <- .parseGSMWithLimits(con)
-    close(con)
-    return(ret)
-}
-
 
 ### This function does a grep on a file
 ### by doing a readline in chunks of size
@@ -340,6 +333,23 @@ parseGDS <- function(fname) {
                dataTable = geoDataTable)
 }
 
+parseGSM <- function(fname) {
+    txt = read_lines(fname)
+    tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)
+    if(length(tbl_begin>0)) {
+        txt = txt[1:tbl_begin[1]]
+        dat3 <- read_tsv(fname, comment='!sample_table_end', skip = tbl_begin[1],
+                         guess_max = 10000, na = .na_strings)
+    }
+    cols <- parseGeoColumns(txt)
+    meta <- parseGeoMeta(txt)
+    geoDataTable <- new('GEODataTable',columns=cols,table=as.data.frame(dat3))
+    geo <- new('GSM',
+               header=meta,
+               dataTable = geoDataTable)
+    return(geo)
+}
+
 ### In memory cache for GPL objects parsed from locally cached versions of GPL SOFT files.
 ### It is disabled by default with options('GEOquery.inmemory.gpl'=FALSE).
 GPLcache <- new.env(parent=emptyenv())
@@ -354,11 +364,20 @@ parseGPL <- function(fname) {
             return(cache$gpl)
         }
     }
-    con <- fileOpen(fname)
-    ret <- .parseGPLWithLimits(con)
-    close(con)
-    if(getOption('GEOquery.inmemory.gpl')) GPLcache[[fname]] <- list(gpl=ret,info=info)
-    return(ret)
+    txt = read_lines(fname)
+    tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)
+    if(length(tbl_begin>0)) {
+        txt = txt[1:tbl_begin[1]]
+        dat3 <- suppressMessages(read_tsv(fname, comment='!platform_table_end', skip = tbl_begin[1],
+                         guess_max = 10000, na = .na_strings))
+    }
+    cols <- parseGeoColumns(txt)
+    meta <- parseGeoMeta(txt)
+    geoDataTable <- new('GEODataTable',columns=cols,table=as.data.frame(dat3))
+    geo <- new('GPL',
+               header=meta,
+               dataTable = geoDataTable)
+    return(geo)
 }
 
 txtGrab <- function(regex,x) {
