@@ -12,3 +12,16 @@ test_that("generic GPL parsing works as expected", {
     expect_is(Table(gpl), 'data.frame') #Table(gpl) should be a data.frame')
     expect_is(dataTable(gpl), 'GEODataTable') #dataTable(gpl) should be a GEODataTable')
 })
+
+test_that("quoted GPL works", {
+    gpl = getGEO('GPL4133')
+
+    expect_equivalent(45220,nrow(Table(gpl))) #GPL4133 should have 45220 rows
+})
+
+test_that("short GPL works", {
+    gpl = getGEO('GPL15505')
+    
+    expect_is(gpl,'GPL')
+    expect_equivalent(52,nrow(Table(gpl))) #GPL4133 should have 45220 rows
+})
