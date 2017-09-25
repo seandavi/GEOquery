@@ -8,6 +8,17 @@ importFrom(XML,
 	xmlValue)
 importFrom(RCurl,
 	getURL)
+importFrom(dplyr,
+           select,
+           contains,
+           filter,
+           mutate)
+importFrom(tidyr,
+           spread,
+           gather,
+           separate)
+importFrom(magrittr,
+           `%>%`)
 importFrom(xml2,
            read_html,
            xml_find_all,

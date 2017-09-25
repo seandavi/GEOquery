@@ -424,6 +424,9 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE) {
     return(ret)
 }
 
+#' @importFrom dplyr select, filter, mutate
+#' @importFrom tidyr gather, spread, separate
+#' @importFrom magrittr %>%
 parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
     dat <- read_lines(fname)
     ## get the number of !Series and !Sample lines
@@ -438,6 +441,27 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
     tmptmp <- t(tmpdat)
     sampledat <- rbind(data.frame(),tmptmp[-1,])
     colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
+    # Lots of GSEs now use "characteristics_ch1" and
+    # "characteristics_ch2" for key-value pairs of
+    # annotation. If that is the case, this simply
+    # cleans those up and transforms the keys to column
+    # names and the values to column values.
+    if(length(grep('characteristics_ch',colnames(sampledat)))) {
+        pd = sampledat %>%
+            dplyr::select(dplyr::contains('characteristics_ch')) %>%
+            dplyr::mutate(accession = rownames(.)) %>%
+            tidyr::gather(characteristics, kvpair, -accession) %>%
+            dplyr::filter(!kvpair=='') %>%
+            dplyr::mutate(characteristics=ifelse(grepl('_ch2',characteristics),'ch2','ch1')) %>%
+            tidyr::separate(kvpair, into= c('k','v'), sep=":") %>%
+            dplyr::mutate(k = paste(k,characteristics,sep=":")) %>%
+            dplyr::select(-characteristics) %>%
+            tidyr::spread(k,v)
+        sampledat = sampledat %>% dplyr::select(-dplyr::contains('characteristics_ch')) %>%
+            dplyr::mutate(accession = rownames(sampledat)) %>%
+            dplyr::left_join(pd,by=c('accession'='accession'))
+    }
+    
                                         # used to be able to use colclasses, but some SNP arrays provide only the
                                         # genotypes in AA AB BB form, so need to switch it up....
                                         #  colClasses <- c('character',rep('numeric',nrow(sampledat)))
