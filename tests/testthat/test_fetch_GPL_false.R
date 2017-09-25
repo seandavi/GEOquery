@@ -17,4 +17,4 @@ test_that("GDS without GPL works", {
     expect_true(validObject(eset))
     expect_equivalent(0,ncol(fData(eset)))
     expect_equivalent(39114,nrow(fData(eset)))
-}
+})
