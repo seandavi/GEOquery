@@ -1,3 +1,10 @@
+version 2.47.1
+
+  Bug fixes:
+    * Fixes problems with intermittent connection issues
+      (which were not intermittend connection problems,
+      it seems)
+
 version 2.45.2
 
   Improvements:
