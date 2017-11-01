@@ -6,23 +6,10 @@
 #' @importFrom xml2 xml_find_all, xml_text, read_html
 #' 
 getDirListing <- function(url) {
-    message(url)
-    # Takes a URL and returns a character vector of filenames
-    a <- RCurl::getURL(url)
-    if( grepl("<HTML", a, ignore.case=T) ){ # process HTML content
-        doc <- XML::htmlParse(a)
-        links <- XML::xpathSApply(doc, "//a/@href")
-        links <- links[!grepl('/$', links)]   # !!!
-        XML::free(doc)
-        b <- as.matrix(links)
-        message('OK')
-    } else { # standard processing of txt content
-        tmpcon <- textConnection(a, "r")
-        b <- read.table(tmpcon)
-        close(tmpcon)
-    }
-    b <- as.character(b[,ncol(b)])
-    return(b)
+  # Takes a URL and returns a character vector of filenames
+    a <- xml2::read_html(url)
+    fnames = grep('^G',xml_text(xml_find_all(a,'//a/@href')),value=TRUE)
+  return(fnames)
 }
 
 getGEOSuppFiles <- function(GEO,makeDirectory=TRUE,baseDir=getwd()) {
