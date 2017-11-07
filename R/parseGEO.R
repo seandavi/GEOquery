@@ -440,6 +440,7 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
     sampledat <- rbind(data.frame(),tmptmp[-1,])
     rownames(sampledat) = sampledat[['geo_accession']]
     colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
+    sampledat[['geo_accession']]=as.character(sampledat[['geo_accession']])
     ## Lots of GSEs now use "characteristics_ch1" and
     ## "characteristics_ch2" for key-value pairs of
     ## annotation. If that is the case, this simply
