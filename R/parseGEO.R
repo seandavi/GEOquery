@@ -451,12 +451,22 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
             dplyr::select(dplyr::contains('characteristics_ch')) %>%
             dplyr::mutate(accession = rownames(.)) %>%
             tidyr::gather(characteristics, kvpair, -accession) %>%
-            dplyr::filter(!kvpair=='') %>%
-            dplyr::mutate(characteristics=ifelse(grepl('_ch2',characteristics),'ch2','ch1')) %>%
-            tidyr::separate(kvpair, into= c('k','v'), sep=":") %>%
-            dplyr::mutate(k = paste(k,characteristics,sep=":")) %>%
-            dplyr::select(-characteristics) %>%
-            tidyr::spread(k,v)
+            dplyr::filter(!kvpair=='') 
+        # sometimes the "characteristics_ch1" fields are empty and contain no 
+        # key:value pairs. spread() will fail when called on an
+        # empty data_frame.  We catch this case and remove the 
+        # "charactics_ch1" column instead
+        if(nrow(pd)) {
+            pd = pd %>%
+                dplyr::mutate(characteristics=ifelse(grepl('_ch2',characteristics),'ch2','ch1')) %>%
+                tidyr::separate(kvpair, into= c('k','v'), sep=":") %>%
+                dplyr::mutate(k = paste(k,characteristics,sep=":")) %>%
+                dplyr::select(-characteristics) %>%
+                tidyr::spread(k,v)
+        } else {
+            pd = pd %>% 
+                dplyr::select(accession)
+        }
         sampledat = sampledat %>% dplyr::select(-dplyr::contains('characteristics_ch')) %>%
             dplyr::mutate(accession = rownames(sampledat)) %>%
             dplyr::left_join(pd,by=c('accession'='accession'))
