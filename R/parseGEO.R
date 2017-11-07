@@ -98,7 +98,7 @@ parseGeoColumns <- function(txt) {
     i <- 0
     hasDataTable=FALSE
     while(i <- i+1) {
-        tmp <- try(readLines(con,1))
+        tmp <- try(read_lines(con,1))
         if(inherits(tmp,"try-error") | length(tmp)==0) {
             i <- i-1  # counted an extra line
             hasDataTable=FALSE
@@ -163,46 +163,30 @@ parseGSE <- function(fname,GSElimits=NULL) {
     gsmlist <- list()
     gpllist <- list()
     GSMcount <- 0
-    writeLines('Parsing....')
-    con <- fileOpen(fname)
-    lineCounts <- filegrep(con,"\\^(SAMPLE|PLATFORM)",chunksize=10000)
-    message(sprintf("Found %d entities...",nrow(lineCounts)))
-    close(con)
+    message('Reading file....')
+    lines = read_lines(fname)
+    message('Parsing....')
+    lineCounts <- grep("\\^(SAMPLE|PLATFORM)",lines)
+    message(sprintf("Found %d entities...",length(lineCounts)))
     ## I close and reopen the file because on Windows, the seek
     ## function is pretty much guaranteed to NOT work
-    con <- fileOpen(fname)
     ## This gets the header information for the GSE
-    a <- readLines(con,lineCounts[1,1]-1)
+    a <- lines[1:(lineCounts[1]-1)]
     header=parseGeoMeta(a)
+    lineCounts = c(lineCounts,length(lines))
     ## parse the actual entities, now
-    for(j in 1:nrow(lineCounts)) {
-        tmp <- strsplit(as.character(lineCounts[j,2])," = ")[[1]]
+    for(j in 1:(length(lineCounts)-1)) {
+        tmp <- strsplit(lines[lineCounts[j]]," = ")[[1]]
         accession <- tmp[2]
-        message(sprintf("%s (%d of %d entities)",accession,j,nrow(lineCounts)))
+        message(sprintf("%s (%d of %d entities)",accession,j,length(lineCounts)))
         entityType <- tolower(sub("\\^","",tmp[1]))
-        nLinesToRead <- lineCounts[j+1,1]-lineCounts[j,1]-1
-        if(j==nrow(lineCounts)) {
-            nLinesToRead <- NULL
-        }
         if(entityType=="sample") {
-            GSMcount=GSMcount+1
-            if(is.null(GSElimits)) {
-                gsmlist[[accession]] <- .parseGSMWithLimits(con,n=nLinesToRead)
-            } else {
-                if((GSMcount>=GSElimits[1]) & (GSMcount<=GSElimits[2])) {
-                    gsmlist[[accession]] <- .parseGSMWithLimits(con,n=nLinesToRead)
-                } else {
-                    if(!is.null(nLinesToRead)) {
-                        readLines(con,n=nLinesToRead)
-                    }
-                }
-            }
+            gsmlist[[accession]] <- .parseGSMTxt(lines[lineCounts[j]:(lineCounts[j+1]-1)])
         }
         if(entityType=="platform") {
-            gpllist[[accession]] <- .parseGPLWithLimits(con,n=nLinesToRead)
+            gpllist[[accession]] <- .parseGPLTxt(lines[lineCounts[j]:(lineCounts[j+1]-1)])
         }
     }
-    close(con)
     return(new("GSE",
                header= header,
                gsms  = gsmlist,
@@ -212,8 +196,7 @@ parseGSE <- function(fname,GSElimits=NULL) {
 
 findFirstEntity <- function(con) {
     while(TRUE) {
-        line <- suppressWarnings(readLines(con,1))
-        if(length(line)==0) return(0)
+        line <- suppressWarnings(readLines(con,100))
         entity.line <- grep('^\\^(DATASET|SAMPLE|SERIES|PLATFORM|ANNOTATION)',
                             line,ignore.case=TRUE,value=TRUE,perl=TRUE)
         entity.line <- gsub('annotation','platform',entity.line,ignore.case=TRUE)
@@ -223,6 +206,7 @@ findFirstEntity <- function(con) {
             return(ret)
         }
     }
+    return(0)
 }
 
 fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
@@ -333,12 +317,12 @@ parseGDS <- function(fname) {
                dataTable = geoDataTable)
 }
 
-parseGSM <- function(fname) {
-    txt = read_lines(fname)
+.parseGSMTxt <- function(txt) {
     tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)
     if(length(tbl_begin>0)) {
+        tbltxt = txt[(tbl_begin[1]+1):length(txt)]
         txt = txt[1:tbl_begin[1]]
-        dat3 <- read_tsv(fname, comment='!sample_table_end', skip = tbl_begin[1],
+        dat3 <- read_tsv(paste(tbltxt,collapse="\n"), comment='!sample_table_end',
                          guess_max = 10000, na = .na_strings)
     } else {
         # empty data table
@@ -353,27 +337,24 @@ parseGSM <- function(fname) {
                dataTable = geoDataTable)
     return(geo)
 }
+    
+
+parseGSM <- function(fname) {
+    txt = read_lines(fname)
+    return(.parseGSMTxt(txt))
+}
 
 ### In memory cache for GPL objects parsed from locally cached versions of GPL SOFT files.
 ### It is disabled by default with options('GEOquery.inmemory.gpl'=FALSE).
 GPLcache <- new.env(parent=emptyenv())
 
-parseGPL <- function(fname) {
-    if(getOption('GEOquery.inmemory.gpl')) {
-        info <- file.info(fname,extra_cols=FALSE)
-        cache <- get0(fname,envir=GPLcache,inherits=FALSE)
-        ## Check if the locally cached version wasn't modified.
-        if(!is.null(cache) && cache$info$mtime==info$mtime) {
-            message("Using GPL object found in memory from locally cached version.")
-            return(cache$gpl)
-        }
-    }
-    txt = read_lines(fname)
+.parseGPLTxt <- function(txt) {
     tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)
     
     if(length(tbl_begin>0)) {
+        tbltxt = txt[(tbl_begin[1]+1):length(txt)]
         txt = txt[1:tbl_begin[1]]
-        dat3 <- suppressMessages(read_tsv(fname, comment='!platform_table_end', skip = tbl_begin[1],
+        dat3 <- suppressMessages(read_tsv(paste(tbltxt,collapse="\n"), comment='!platform_table_end',
                          guess_max = 10000, na = .na_strings))
     } else {
         # empty data table
@@ -387,6 +368,23 @@ parseGPL <- function(fname) {
                dataTable = geoDataTable)
     return(geo)
 }
+
+
+
+parseGPL <- function(fname) {
+    if(getOption('GEOquery.inmemory.gpl')) {
+        info <- file.info(fname,extra_cols=FALSE)
+        cache <- get0(fname,envir=GPLcache,inherits=FALSE)
+        ## Check if the locally cached version wasn't modified.
+        if(!is.null(cache) && cache$info$mtime==info$mtime) {
+            message("Using GPL object found in memory from locally cached version.")
+            return(cache$gpl)
+        }
+    }
+    txt = read_lines(fname)
+    return(.parseGPLTxt(txt))
+}
+    
 
 txtGrab <- function(regex,x) {
     x <- as.character(x)
@@ -440,31 +438,48 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
                                           sep="\t",header=FALSE))
     tmptmp <- t(tmpdat)
     sampledat <- rbind(data.frame(),tmptmp[-1,])
+    rownames(sampledat) = sampledat[['geo_accession']]
     colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
-    # Lots of GSEs now use "characteristics_ch1" and
-    # "characteristics_ch2" for key-value pairs of
-    # annotation. If that is the case, this simply
-    # cleans those up and transforms the keys to column
-    # names and the values to column values.
-    if(length(grep('characteristics_ch',colnames(sampledat)))) {
+    ## Lots of GSEs now use "characteristics_ch1" and
+    ## "characteristics_ch2" for key-value pairs of
+    ## annotation. If that is the case, this simply
+    ## cleans those up and transforms the keys to column
+    ## names and the values to column values.
+    if(length(grep('characteristics_ch',colnames(sampledat)))>0) {
         pd = sampledat %>%
             dplyr::select(dplyr::contains('characteristics_ch')) %>%
             dplyr::mutate(accession = rownames(.)) %>%
             tidyr::gather(characteristics, kvpair, -accession) %>%
-            dplyr::filter(!kvpair=='') %>%
-            dplyr::mutate(characteristics=ifelse(grepl('_ch2',characteristics),'ch2','ch1')) %>%
-            tidyr::separate(kvpair, into= c('k','v'), sep=":") %>%
-            dplyr::mutate(k = paste(k,characteristics,sep=":")) %>%
-            dplyr::select(-characteristics) %>%
-            tidyr::spread(k,v)
-        sampledat = sampledat %>% dplyr::select(-dplyr::contains('characteristics_ch')) %>%
-            dplyr::mutate(accession = rownames(sampledat)) %>%
-            dplyr::left_join(pd,by=c('accession'='accession'))
+            dplyr::filter(!kvpair=='' || !is.na(kvpair))
+        # Thx to Mike Smith (@grimbough) for this code
+        # sometimes the "characteristics_ch1" fields are empty and contain no 
+        # key:value pairs. spread() will fail when called on an
+        # empty data_frame.  We catch this case and remove the 
+        # "charactics_ch1" column instead
+        if(nrow(pd)) {
+            pd = pd %>%
+                dplyr::mutate(characteristics=ifelse(grepl('_ch2',characteristics),'ch2','ch1')) %>%
+                tidyr::separate(kvpair, into= c('k','v'), sep=":") %>%
+                dplyr::mutate(k = paste(k,characteristics,sep=":")) %>%
+                dplyr::select(-characteristics) %>%
+                tidyr::spread(k,v)
+        } else {
+            pd = pd %>% 
+                dplyr::select(accession)
+        }
+        ##     dplyr::mutate(characteristics=ifelse(grepl('_ch2',characteristics),'ch2','ch1')) %>%
+        ##     dplyr::filter(grepl(':',kvpair)) %>% 
+        ##     tidyr::separate(kvpair, into= c('k','v'), sep=":")
+        ## if(nrow(pd)>0) {
+        ##     pd = pd %>% dplyr::mutate(k = paste(k,characteristics,sep=":")) %>%
+        ##         dplyr::select(-characteristics) %>%
+        ##         tidyr::spread(k,v)
+        sampledat = sampledat %>% dplyr::left_join(pd,by=c('geo_accession'='accession'))
     }
     
-                                        # used to be able to use colclasses, but some SNP arrays provide only the
-                                        # genotypes in AA AB BB form, so need to switch it up....
-                                        #  colClasses <- c('character',rep('numeric',nrow(sampledat)))
+    ## used to be able to use colclasses, but some SNP arrays provide only the
+    ## genotypes in AA AB BB form, so need to switch it up....
+    ##  colClasses <- c('character',rep('numeric',nrow(sampledat)))
     datamat <- read_tsv(fname,quote='"',
                         na=c('NA','null','NULL','Null'), skip = sum(grepl('^!',dat)),
                         comment = '!series_matrix_table_end')
