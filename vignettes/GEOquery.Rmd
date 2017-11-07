@@ -182,14 +182,14 @@ Converting a `GSE` object to an `ExpressionSet` object currently takes a bit of 
 First, we need to make sure that all of the `GSMs` are from the same platform:
 
 ```{r}
-gsmplatforms <- lapply(GSMList(gse),function(x) {Meta(x)$platform})
+gsmplatforms <- lapply(GSMList(gse),function(x) {Meta(x)$platform_id})
 head(gsmplatforms)
 ```
 
 Indeed, there are two GPLs, GPL96 and GPL97, as their platforms (which we could have determined by looking at the GPLList for `gse`).  We can filter the original GSMList to include only those GSMs with the GPL96 platform and use this list for further processing  
 
 ```{r}
-gsmlist = Filter(function(gsm) {Meta(gsm)$platform=='GPL96'},GSMList(gse))
+gsmlist = Filter(function(gsm) {Meta(gsm)$platform_id=='GPL96'},GSMList(gse))
 length(gsmlist)
 ```
 
