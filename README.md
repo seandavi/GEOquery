@@ -1,5 +1,6 @@
 [![Travis Build Status](https://api.travis-ci.org/seandavi/GEOquery.svg?branch=master)](https://travis-ci.org/seandavi/GEOquery)
 [![codecov](https://codecov.io/gh/seandavi/GEOquery/branch/master/graph/badge.svg)](https://codecov.io/gh/seandavi/GEOquery)
+[![month](https://img.shields.io/badge/downloads-3531/month-green.svg?style=flat)](https://bioconductor.org/packages/stats/bioc/GEOquery)
 
 ## Installation
 
