@@ -1,13 +1,4 @@
 import(methods)
-importFrom(XML,
-	xmlRoot,
-	xmlInternalTreeParse,
-	xmlParseDoc,
-	HUGE,
-	getNodeSet,
-	xmlValue)
-importFrom(RCurl,
-	getURL)
 importFrom(dplyr,
            select,
            contains,
