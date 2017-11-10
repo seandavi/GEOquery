@@ -1,6 +1,3 @@
-# need xml2 readr
-
-
 #' Get GSE data tables from GEO into R data structures.
 #' 
 #' In some cases, instead of individual sample records (GSM) containing
@@ -17,13 +14,18 @@
 #' @return A list of data.frames.
 #' @author Sean Davis <sdavis2@@mail.nih.gov>
 #' @seealso \code{\link{getGEO}}
-#' @references http://www.ncbi.nlm.nih.gov/geo
+#'
+#' @importFrom xml2 xml_text xml_find_all read_xml
+#' @importFrom readr read_tsv
+#' 
 #' @keywords IO
 #' @examples
 #' 
 #' dfl = getGSEDataTables("GSE3494")
 #' lapply(dfl,head)
+#'
 #' 
+#' @export 
 getGSEDataTables <- function(GSE) {
     url=sprintf("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?targ=self&form=xml&view=full&acc=%s",GSE)
     doc1 = read_xml(url)

@@ -32,7 +32,8 @@
 #' @examples
 #' 
 #'   # myfile <- getGEOfile('GDS10')
-#' 
+#'
+#' @export
 getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
                        amount=c('full','brief','quick','data'))
   {

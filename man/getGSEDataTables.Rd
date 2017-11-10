@@ -27,9 +27,7 @@ GSE record and parses out the data tables into R data.frames.
 dfl = getGSEDataTables("GSE3494")
 lapply(dfl,head)
 
-}
-\references{
-http://www.ncbi.nlm.nih.gov/geo
+
 }
 \seealso{
 \code{\link{getGEO}}

@@ -118,8 +118,13 @@ that coffee may be involved when parsing....
 
 \examples{
 
-# gds <- getGEO("GDS10")
-# gds
+gds <- getGEO("GDS10")
+gds
+
+gse <- getGEO('GSE10')
+# Returns a list, so look at first item
+
+gse[[1]]
 
 }
 \seealso{

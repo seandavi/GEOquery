@@ -121,6 +121,7 @@ parseGeoColumns <- function(txt) {
 ### parameter n, used by getGSE to limit the number
 ### of lines read to only the size of ONE GSM,
 ### since a single GSE contains many GSMs
+#' @importFrom readr read_lines
 .parseGSMWithLimits <- function(con,n=NULL) {
     txt <- vector('character')
     i <- 0
@@ -187,6 +188,7 @@ filegrep <-
         return(ret) 
     }
 
+#' @importFrom readr read_lines
 parseGSE <- function(fname,GSElimits=NULL) {
     gsmlist <- list()
     gpllist <- list()
@@ -282,7 +284,8 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
 #' of submitted data. NCBI GEO no longer produces these objects, but there are
 #' still thousands available that, in some cases, have much nicer sample
 #' annotation and more standardized annotation for the associated GPLs.
-#' 
+#'
+#' @importFrom readr read_lines read_tsv
 #' 
 #' @param fname the filename of the SOFT format file. May be gzipped.
 #' @keywords internal
@@ -340,6 +343,8 @@ parseGDS <- function(fname) {
                dataTable = geoDataTable)
 }
 
+
+#' @importFrom readr read_tsv
 .parseGSMTxt <- function(txt) {
     tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)
     if(length(tbl_begin>0)) {
@@ -362,6 +367,7 @@ parseGDS <- function(fname) {
 }
     
 
+#' @importFrom readr read_lines
 parseGSM <- function(fname) {
     txt = read_lines(fname)
     return(.parseGSMTxt(txt))
@@ -371,6 +377,8 @@ parseGSM <- function(fname) {
 ### It is disabled by default with options('GEOquery.inmemory.gpl'=FALSE).
 GPLcache <- new.env(parent=emptyenv())
 
+
+#' @importFrom readr read_tsv
 .parseGPLTxt <- function(txt) {
     tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)
     
@@ -393,7 +401,7 @@ GPLcache <- new.env(parent=emptyenv())
 }
 
 
-
+#' @importFrom readr read_lines
 parseGPL <- function(fname) {
     if(getOption('GEOquery.inmemory.gpl')) {
         info <- file.info(fname,extra_cols=FALSE)
@@ -445,8 +453,10 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE) {
     return(ret)
 }
 
-#' @importFrom dplyr select, filter, mutate
-#' @importFrom tidyr gather, spread, separate
+#' @importFrom dplyr select filter mutate
+#' @importFrom tidyr gather spread separate
+#' @importFrom readr read_lines
+#' @importClassesFrom Biobase ExpressionSet
 #' @importFrom magrittr %>%
 parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
     dat <- read_lines(fname)
