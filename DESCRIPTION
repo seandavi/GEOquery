@@ -7,9 +7,7 @@ Author: Sean Davis <sdavis2@mail.nih.gov>
 Maintainer: Sean Davis <sdavis2@mail.nih.gov>
 BugReports: https://github.com/seandavi/GEOquery/issues/new
 Depends: methods, Biobase
-Imports: XML,
-    RCurl,
-    httr,
+Imports: httr,
     readr,
     xml2,
     dplyr,
