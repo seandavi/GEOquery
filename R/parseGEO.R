@@ -1,5 +1,33 @@
 .na_strings = c('NA','null','NULL','Null')
 
+
+
+#' Parse GEO text
+#' 
+#' Workhorse GEO parsers.
+#' 
+#' These are probably not useful to the end-user.  Use getGEO to access these
+#' functions.  parseGEO simply delegates to the appropriate specific parser.
+#' There should be no reason to use the parseGPL, parseGDS, parseGSE, or
+#' parseGSM functions directly.
+#' 
+#' @aliases parseGEO parseGPL parseGSE parseGDS parseGSM
+#' @param fname The filename of a SOFT format file.  If the filename ends in
+#' .gz, a gzfile() connection is used to read the file directly.
+#' @param GSElimits Used to limit the number of GSMs parsed into the GSE
+#' object; useful for memory management for large GSEs.
+#' @param destdir The destination directory into which files will be saved (to
+#' be used for caching)
+#' @param AnnotGPL Fetch the annotation GPL if available
+#' @param getGPL Fetch the GPL associated with a GSEMatrix entity (should
+#' remain TRUE for all normal use cases)
+#' @return parseGEO returns an object of the associated type.  For example, if
+#' it is passed the text from a GDS entry, a GDS object is returned.
+#' @author Sean Davis
+#' @seealso \code{\link{getGEO}}
+#' @keywords IO
+#' 
+#' @export
 parseGEO <- function(fname,GSElimits,destdir=tempdir(),AnnotGPL=FALSE,getGPL=TRUE) {
     con <- fileOpen(fname)
     first.entity <- findFirstEntity(con)
@@ -246,23 +274,18 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
     return(dat3)
 }
 
+
+
 #' parse a GEO dataset (GDS)
-#'
-#' GEO datasets, or GDS, used to be produced
-#' by NCBI GEO as "curated" versions of submitted
-#' data. NCBI GEO no longer produces these objects,
-#' but there are still thousands available that, in
-#' some cases, have much nicer sample annotation and
-#' more standardized annotation for the associated GPLs.
-#'
-#' @param fname the filename of the SOFT format file. May
-#' be gzipped.
-#'
-#' @importFrom readr read_tsv, read_lines
-#'
-#' @rdname low_level_functions
-#' @keywords internal
 #' 
+#' GEO datasets, or GDS, used to be produced by NCBI GEO as "curated" versions
+#' of submitted data. NCBI GEO no longer produces these objects, but there are
+#' still thousands available that, in some cases, have much nicer sample
+#' annotation and more standardized annotation for the associated GPLs.
+#' 
+#' 
+#' @param fname the filename of the SOFT format file. May be gzipped.
+#' @keywords internal
 parseGDS <- function(fname) {
     txt = read_lines(fname)
     tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)
