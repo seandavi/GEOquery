@@ -137,63 +137,75 @@ setGeneric("GSMList",
 setGeneric("Table",
            function(object) standardGeneric("Table"))
 
-
+#' @export
 setMethod("Meta","GEOData",
           function(object) {
             return(object@header)
           }
           )
+#' @export
 setMethod("Meta","GSE",
           function(object) {
             return(object@header)
           }
           )
           
+#' @export
 setMethod("Accession","GEOData",
 		 function(object) {
 		   return(Meta(object)$geo_accession)
 		 }
 		 )
 
+#' @export
 setMethod("dataTable","GEOData",
           function(object) {
             return(object@dataTable)
           }
           )
 
+#' @export
 setMethod("Table","GEODataTable",
           function(object) {
             return(object@table)
           }
           )
+
+#' @export
 setMethod("Columns","GEODataTable",
           function(object) {
             return(object@columns)
           }
           )
 
+#' @export
 setMethod("Table","GEOData",
           function(object) {
             return(Table(dataTable(object)))
           }
           )
 
+#' @export
 setMethod("Columns","GEOData",
           function(object) {
             return(Columns(dataTable(object)))
           }
           )
 
+#' @export
 setMethod("GPLList","GSE",
           function(object) {
             return(object@gpls)
           }
           )
+#' @export
 setMethod("GPL","GDS",
           function(object) {
             return(object@gpl)
           }
           )
+
+#' @export
 setMethod("GSMList","GSE",
           function(object) {
             return(object@gsms)
@@ -201,6 +213,7 @@ setMethod("GSMList","GSE",
           )
           
 
+#' @export
 setMethod("show","GEODataTable",
           function(object) {
             cat("An object of class \"",class(object),"\"\n",sep="")
@@ -210,6 +223,7 @@ setMethod("show","GEODataTable",
             printHead(Table(object))
           })
 
+#' @export
 setMethod("show","GEOData",
           function(object) {
             cat("An object of class \"",class(object),"\"\n",sep="")

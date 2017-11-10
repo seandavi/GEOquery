@@ -1,3 +1,5 @@
+#' @importClassesFrom limma MAList
+#' @export
 "GDS2MA" <-
   function(GDS,do.log2=FALSE,GPL=NULL,AnnotGPL=TRUE,getGPL=TRUE) {
     require(limma)
@@ -32,6 +34,8 @@
     return(MA)
   }
 
+#' @importClassesFrom Biobase ExpressionSet
+#' @export
 "GDS2eSet" <-
   function(GDS,do.log2=FALSE,GPL=NULL,AnnotGPL=TRUE,getGPL=TRUE) {
                                         # exclude non-numeric columns
