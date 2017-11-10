@@ -12,8 +12,9 @@ Imports: httr,
     xml2,
     dplyr,
     tidyr,
-    magrittr
-Suggests: limma, knitr, rmarkdown, RUnit, BiocGenerics,
+    magrittr,
+    limma
+Suggests: knitr, rmarkdown, BiocGenerics,
     testthat, covr
 VignetteBuilder: knitr
 URL: https://github.com/seandavi/GEOquery
