@@ -39,6 +39,7 @@ getDirListing <- function(url) {
 #' # a <- getGEOSuppFiles('GSM1137')
 #' # a
 #' 
+#' @export
 getGEOSuppFiles <- function(GEO,makeDirectory=TRUE,baseDir=getwd()) {
   geotype <- toupper(substr(GEO,1,3))
   storedir <- baseDir

@@ -3,6 +3,7 @@
 export(GDS2MA)
 export(GDS2eSet)
 export(getGEO)
+export(getGEOSuppFiles)
 export(getGEOfile)
 export(getGSEDataTables)
 export(parseGEO)
