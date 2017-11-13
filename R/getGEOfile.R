@@ -137,6 +137,13 @@ getGEORaw <- function(GEO,destdir=tempdir()) {
 #' @author Original author: Henrik Bengtsson
 #' @seealso \code{\link{gzfile}}
 #' @keywords IO
+#'
+#' @examples
+#' 
+#' # gunzip('file.gz',remove=FALSE)
+#' 
+#' 
+#' @export
 gunzip <- function(filename, destname=gsub("[.]gz$", "", filename), overwrite=FALSE, remove=TRUE, BFR.SIZE=1e7) {
   if (filename == destname) 
     stop(sprintf("Argument 'filename' and 'destname' are identical: %s", filename));
