@@ -30,6 +30,12 @@ gunzip a file
 This function was stripped out of R.utils due to breaking some stuff on the
 bioconductor build machine.
 }
+\examples{
+
+# gunzip('file.gz',remove=FALSE)
+
+
+}
 \seealso{
 \code{\link{gzfile}}
 }
