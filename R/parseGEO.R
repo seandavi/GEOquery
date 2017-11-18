@@ -453,7 +453,7 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE) {
     return(ret)
 }
 
-#' @importFrom dplyr select filter mutate
+#' @importFrom dplyr select filter mutate mutate_all
 #' @importFrom tidyr gather spread separate
 #' @importFrom readr read_lines
 #' @importClassesFrom Biobase ExpressionSet
