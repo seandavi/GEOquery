@@ -458,6 +458,10 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE) {
 #' @importFrom readr read_lines
 #' @importClassesFrom Biobase ExpressionSet
 #' @importFrom magrittr %>%
+#' @param fname 
+#' @param AnnotGPL 
+#' @param destdir 
+#' @param getGPL 
 parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
     dat <- read_lines(fname)
     ## get the number of !Series and !Sample lines
@@ -465,10 +469,11 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
     #nsamples <- sum(grepl("^!Sample_", dat))
     #con <- fileOpen(fname)
     ## Read the !Series_ and !Sample_ lines
-    header <- suppressWarnings(read.table(textConnection(grep("^!Series_", dat, value = TRUE)),
-                                          sep="\t",header=FALSE))
-    tmpdat <- suppressWarnings(read.table(textConnection(grep("^!Sample_", dat, value = TRUE)),
-                                          sep="\t",header=FALSE))
+    header <- read.table(textConnection(grep("^!Series_", dat, value = TRUE)),
+                                          sep="\t",header=FALSE)
+    #browser()
+    tmpdat <- read.table(textConnection(grep("^!Sample_", dat, value = TRUE)),
+                                          sep="\t",header=FALSE)
     tmptmp <- t(tmpdat)
     sampledat <- rbind(data.frame(),tmptmp[-1,])
     colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
@@ -483,20 +488,24 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
         pd = sampledat %>%
             dplyr::select(dplyr::contains('characteristics_ch')) %>%
             dplyr::mutate(accession = rownames(.)) %>%
+            # these next two lines avoid warnings due
+            # to columns having different factor levels
+            # (attributes).
+            apply(2,as.character) %>%
+            as.data.frame(stringsAsFactors = FALSE) %>%
             tidyr::gather(characteristics, kvpair, -accession) %>%
-            dplyr::filter(!kvpair=='' || !is.na(kvpair))
+            dplyr::filter(!grepl(':',kvpair) && !is.na(kvpair))
         # Thx to Mike Smith (@grimbough) for this code
         # sometimes the "characteristics_ch1" fields are empty and contain no 
         # key:value pairs. spread() will fail when called on an
         # empty data_frame.  We catch this case and remove the 
         # "charactics_ch1" column instead
         if(nrow(pd)) {
-            pd = pd %>%
-                dplyr::mutate(characteristics=ifelse(grepl('_ch2',characteristics),'ch2','ch1')) %>%
-                tidyr::separate(kvpair, into= c('k','v'), sep=":") %>%
+            pd = dplyr::mutate(pd, characteristics=ifelse(grepl('_ch2',characteristics),'ch2','ch1')) %>%
+                tidyr::separate(kvpair, into= c('k','v'), sep=":", fill = 'right') %>%
                 dplyr::mutate(k = paste(k,characteristics,sep=":")) %>%
                 dplyr::select(-characteristics) %>%
-                tidyr::spread(k,v)
+                tidyr::spread(k, v)
         } else {
             pd = pd %>% 
                 dplyr::select(accession)
