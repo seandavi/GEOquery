@@ -491,8 +491,7 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
             # these next two lines avoid warnings due
             # to columns having different factor levels
             # (attributes).
-            apply(2,as.character) %>%
-            as.data.frame(stringsAsFactors = FALSE) %>%
+            mutate_all(as.character) %>%
             tidyr::gather(characteristics, kvpair, -accession) %>%
             dplyr::filter(!grepl(':',kvpair) && !is.na(kvpair))
         # Thx to Mike Smith (@grimbough) for this code
