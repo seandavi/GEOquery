@@ -84,6 +84,9 @@
 #' featureData using Bioconductor tools rather than relying on information
 #' provided through NCBI GEO.  Download times can also be greatly reduced by
 #' specifying FALSE.
+#' @param parseCharacteristics A boolean defaulting to TRUE as to whether or not
+#' to parse the characteristics information (if available) for a GSE Matrix file.
+#' Set this to FALSE if you experience trouble while parsing the characteristics.
 #' @return An object of the appropriate class (GDS, GPL, GSM, or GSE) is
 #' returned.  If the GSEMatrix option is used, then a list of ExpressionSet
 #' objects is returned, one for each SeriesMatrix file associated with the GSE
@@ -113,7 +116,8 @@ getGEO <- function(GEO=NULL,
                    destdir=tempdir(),
                    GSElimits=NULL,GSEMatrix=TRUE,
                    AnnotGPL=FALSE,
-                   getGPL=TRUE) {
+                   getGPL=TRUE,
+                   parseCharacteristics=TRUE) {
   con <- NULL
   if(!is.null(GSElimits)) {
     if(length(GSElimits)!=2) {
@@ -127,7 +131,7 @@ getGEO <- function(GEO=NULL,
     GEO <- toupper(GEO)
     geotype <- toupper(substr(GEO,1,3))
     if(GSEMatrix & geotype=='GSE') {
-      return(getAndParseGSEMatrices(GEO,destdir,AnnotGPL=AnnotGPL,getGPL=getGPL))
+      return(getAndParseGSEMatrices(GEO,destdir,AnnotGPL=AnnotGPL,getGPL=getGPL,parseCharacteristics=parseCharacteristics))
     }
     filename <- getGEOfile(GEO,destdir=destdir,AnnotGPL=AnnotGPL)
   }      
