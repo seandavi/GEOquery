@@ -426,7 +426,7 @@ txtGrab <- function(regex,x) {
 ### Function wrapper to get and parse ALL
 ### the GSEMatrix files associated with a GSE
 ### into a list of ExpressionSets
-getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE) {
+getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE,parseCharacteristics=TRUE) {
     GEO <- toupper(GEO)
     ## This stuff functions to get the listing of available files
     ## for a given GSE given that there may be many GSEMatrix
@@ -462,7 +462,7 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE) {
 #' @param AnnotGPL 
 #' @param destdir 
 #' @param getGPL 
-parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
+parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,parseCharacteristics=TRUE) {
     dat <- read_lines(fname)
     ## get the number of !Series and !Sample lines
     #nseries <- sum(grepl("^!Series_", dat))
@@ -484,7 +484,7 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE) {
     ## annotation. If that is the case, this simply
     ## cleans those up and transforms the keys to column
     ## names and the values to column values.
-    if(length(grep('characteristics_ch',colnames(sampledat)))>0) {
+    if(length(grep('characteristics_ch',colnames(sampledat)))>0 && parseCharacteristics) {
         pd = sampledat %>%
             dplyr::select(dplyr::contains('characteristics_ch')) %>%
             dplyr::mutate(accession = rownames(.)) %>%
