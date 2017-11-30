@@ -235,6 +235,14 @@ findFirstEntity <- function(con) {
                      strsplit(entity.line,' = ')[[1]][2])
             return(ret)
         }
+        # catch GSE SeriesMatrix files
+        checkline = grep('^!Series_title',line,ignore.case=TRUE,value=TRUE,perl=TRUE)
+        # Messy, but GSEMatrix files use tab-separation rather
+        # than '=' for separation, so if the ' = ' is not present,
+        # we presume to have a GSEMatrix file (return 0)
+        if(length(checkline) > 0) {
+            if(!grepl(' = ',checkline)) return(0)
+        }
     }
     return(0)
 }
