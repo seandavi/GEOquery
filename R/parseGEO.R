@@ -461,17 +461,24 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE,parseCharact
     return(ret)
 }
 
+#' Parse a GSE mstrix file
+#'
+#' Not meant for user calling, but parses
+#' a single GSEMatrix file.
+#'
 #' @importFrom dplyr select filter mutate mutate_all
 #' @importFrom tidyr gather spread separate
 #' @importFrom readr read_lines
 #' @importClassesFrom Biobase ExpressionSet
 #' @importFrom magrittr %>%
 #'
-#' @param fname 
-#' @param AnnotGPL 
-#' @param destdir 
-#' @param getGPL
-#' @internal 
+#' @param fname filename
+#' @param AnnotGPL set to TRUE to get the annotation GPL version
+#' @param destdir the destdination directory for download
+#' @param getGPL whether or not to get the GPL associated
+#' @param parseCharacteristics Whether or not to do full "characteristic" parsing
+#' @keywords internal
+#' 
 parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,parseCharacteristics=TRUE) {
     dat <- read_lines(fname)
     ## get the number of !Series and !Sample lines

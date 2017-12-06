@@ -5,7 +5,8 @@
 \title{Get a GEO object from NCBI or file}
 \usage{
 getGEO(GEO = NULL, filename = NULL, destdir = tempdir(),
-  GSElimits = NULL, GSEMatrix = TRUE, AnnotGPL = FALSE, getGPL = TRUE)
+  GSElimits = NULL, GSEMatrix = TRUE, AnnotGPL = FALSE, getGPL = TRUE,
+  parseCharacteristics = TRUE)
 }
 \arguments{
 \item{GEO}{A character string representing a GEO object for download and
@@ -46,6 +47,10 @@ set this to FALSE if you know that you are going to annotate your
 featureData using Bioconductor tools rather than relying on information
 provided through NCBI GEO.  Download times can also be greatly reduced by
 specifying FALSE.}
+
+\item{parseCharacteristics}{A boolean defaulting to TRUE as to whether or not
+to parse the characteristics information (if available) for a GSE Matrix file.
+Set this to FALSE if you experience trouble while parsing the characteristics.}
 }
 \value{
 An object of the appropriate class (GDS, GPL, GSM, or GSE) is

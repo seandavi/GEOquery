@@ -4,7 +4,7 @@
 #' 
 #' The main documentation is in the Class documentation
 #' 
-#' 
+#' @name GEOData-accessors
 #' @aliases dataTable Accession Columns GPLList GSMList Meta Table
 #' @author Sean Davis
 #' @seealso \code{\link{GEOData-class}}
@@ -41,6 +41,8 @@ NULL
 #' This function just rearranges one data structure into another.  For GDS, it
 #' also deals appropriately with making the "targets" list item for the limma
 #' data structure and the phenoData slot of ExpressionSets.
+#'
+#' @name coercion
 #' 
 #' @aliases GDS2MA GDS2eSet
 #' @param GDS The GDS datastructure returned by getGEO

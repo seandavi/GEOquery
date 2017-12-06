@@ -25,6 +25,10 @@
 #' @param amount Amount of information to pull from GEO.  Only applies to GSE,
 #' GPL, or GSM.  See details...
 #' @return Invisibly returns the full path of the downloaded file.
+#'
+#' @importFrom utils download.file
+#'
+#' 
 #' @author Sean Davis
 #' @seealso \code{\link{getGEO}}
 #' @references http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi
