@@ -456,7 +456,8 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE,parseCharact
                                   stub,GEO,b[i]),destfile=destfile,mode='wb',
                           method=getOption('download.file.method.GEOquery'))
         }
-        ret[[b[i]]] <- parseGSEMatrix(destfile,destdir=destdir,AnnotGPL=AnnotGPL,getGPL=getGPL)$eset
+        ret[[b[i]]] <- parseGSEMatrix(destfile,destdir=destdir,AnnotGPL=AnnotGPL,getGPL=getGPL,
+                                      parseCharacteristics=parseCharacteristics)$eset
     }
     return(ret)
 }
@@ -471,17 +472,19 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE,parseCharact
 #' @param destdir 
 #' @param getGPL 
 parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,parseCharacteristics=TRUE) {
-    dat <- read_lines(fname)
+    x <- scan(fname, what = 'character', sep = '\n', quote='"')
+    # get rid of new lines inside the fields, as they mess up the analysis
+    dat <- gsub('\n', '', x)
     ## get the number of !Series and !Sample lines
     #nseries <- sum(grepl("^!Series_", dat))
     #nsamples <- sum(grepl("^!Sample_", dat))
     #con <- fileOpen(fname)
     ## Read the !Series_ and !Sample_ lines
     header <- read.table(textConnection(grep("^!Series_", dat, value = TRUE)),
-                                          sep="\t",header=FALSE)
+                                          sep="\t",header=FALSE, fill = TRUE)
     #browser()
     tmpdat <- read.table(textConnection(grep("^!Sample_", dat, value = TRUE)),
-                                          sep="\t",header=FALSE)
+                                          sep="\t",header=FALSE, fill = TRUE)
     tmptmp <- t(tmpdat)
     sampledat <- rbind(data.frame(),tmptmp[-1,])
     colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
@@ -530,9 +533,7 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     ## used to be able to use colclasses, but some SNP arrays provide only the
     ## genotypes in AA AB BB form, so need to switch it up....
     ##  colClasses <- c('character',rep('numeric',nrow(sampledat)))
-    datamat <- read_tsv(fname,quote='"',
-                        na=c('NA','null','NULL','Null'), skip = sum(grepl('^!',dat)),
-                        comment = '!series_matrix_table_end')
+    datamat <- read.delim(textConnection(dat), na=c('NA','null','NULL','Null'), comment='!')
     tmprownames = datamat[[1]]
                                         # need the as.matrix for single-sample or empty GSE
     datamat <- as.matrix(datamat[!is.na(tmprownames),-1])
