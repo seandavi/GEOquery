@@ -479,10 +479,10 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     #con <- fileOpen(fname)
     ## Read the !Series_ and !Sample_ lines
     header <- read.table(textConnection(grep("^!Series_", dat, value = TRUE)),
-                                          sep="\t",header=FALSE)
+                                          sep="\t",header=FALSE, fill = TRUE)
     #browser()
     tmpdat <- read.table(textConnection(grep("^!Sample_", dat, value = TRUE)),
-                                          sep="\t",header=FALSE)
+                                          sep="\t",header=FALSE, fill = TRUE)
     tmptmp <- t(tmpdat)
     sampledat <- rbind(data.frame(),tmptmp[-1,])
     colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
