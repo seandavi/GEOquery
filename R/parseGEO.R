@@ -472,7 +472,9 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE,parseCharact
 #' @param destdir 
 #' @param getGPL 
 parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,parseCharacteristics=TRUE) {
-    dat <- read_lines(fname)
+    x <- scan(fn, what = 'character', sep = '\n', quote='"')
+    # get rid of new lines inside the fields, as they mess up the analysis
+    dat <- gsub('\n', '', x)
     ## get the number of !Series and !Sample lines
     #nseries <- sum(grepl("^!Series_", dat))
     #nsamples <- sum(grepl("^!Sample_", dat))
