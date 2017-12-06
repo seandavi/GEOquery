@@ -466,22 +466,26 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE,parseCharact
 #' @importFrom readr read_lines
 #' @importClassesFrom Biobase ExpressionSet
 #' @importFrom magrittr %>%
+#'
 #' @param fname 
 #' @param AnnotGPL 
 #' @param destdir 
-#' @param getGPL 
+#' @param getGPL
+#' @internal 
 parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,parseCharacteristics=TRUE) {
     dat <- read_lines(fname)
     ## get the number of !Series and !Sample lines
-    #nseries <- sum(grepl("^!Series_", dat))
-    #nsamples <- sum(grepl("^!Sample_", dat))
+    series_header_row_count <- sum(grepl("^!Series_", dat))
+    samples_header_row_count <- sum(grepl("^!Sample_", dat))
+    series_table_begin_line = grep("^!series_matrix_table_begin", dat)
+    if(length(series_table_begin_line) != 1) {
+        stop("parsing failed--expected only one '!series_data_table_begin'")
+    }
     #con <- fileOpen(fname)
     ## Read the !Series_ and !Sample_ lines
-    header <- read.table(textConnection(grep("^!Series_", dat, value = TRUE)),
-                                          sep="\t",header=FALSE)
-    #browser()
-    tmpdat <- read.table(textConnection(grep("^!Sample_", dat, value = TRUE)),
-                                          sep="\t",header=FALSE)
+    header <- read.table(fname,sep="\t",header=FALSE,nrows=series_header_row_count)
+    tmpdat <- read.table(fname,sep="\t",header=FALSE,nrows=samples_header_row_count,
+                         skip=series_header_row_count)
     tmptmp <- t(tmpdat)
     sampledat <- rbind(data.frame(),tmptmp[-1,])
     colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
@@ -509,9 +513,10 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
         # "charactics_ch1" column instead
         if(nrow(pd)) {
             pd = dplyr::mutate(pd, characteristics=ifelse(grepl('_ch2',characteristics),'ch2','ch1')) %>%
-                tidyr::separate(kvpair, into= c('k','v'), sep=":", fill = 'right') %>%
+                tidyr::separate(kvpair, into= c('k','v'), sep=":", fill = 'right', extra = "merge") %>%
                 dplyr::mutate(k = paste(k,characteristics,sep=":")) %>%
                 dplyr::select(-characteristics) %>%
+                dplyr::filter(!is.na(v)) %>%
                 tidyr::spread(k, v)
         } else {
             pd = pd %>% 
@@ -531,7 +536,7 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     ## genotypes in AA AB BB form, so need to switch it up....
     ##  colClasses <- c('character',rep('numeric',nrow(sampledat)))
     datamat <- read_tsv(fname,quote='"',
-                        na=c('NA','null','NULL','Null'), skip = sum(grepl('^!',dat)),
+                        na=c('NA','null','NULL','Null'), skip = series_table_begin_line,
                         comment = '!series_matrix_table_end')
     tmprownames = datamat[[1]]
                                         # need the as.matrix for single-sample or empty GSE
