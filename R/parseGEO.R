@@ -533,9 +533,7 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     ## used to be able to use colclasses, but some SNP arrays provide only the
     ## genotypes in AA AB BB form, so need to switch it up....
     ##  colClasses <- c('character',rep('numeric',nrow(sampledat)))
-    datamat <- read_tsv(fname,quote='"',
-                        na=c('NA','null','NULL','Null'), skip = sum(grepl('^!',dat)),
-                        comment = '!series_matrix_table_end')
+    datamat <- read.delim(textConnection(dat), na=c('NA','null','NULL','Null'))
     tmprownames = datamat[[1]]
                                         # need the as.matrix for single-sample or empty GSE
     datamat <- as.matrix(datamat[!is.na(tmprownames),-1])
