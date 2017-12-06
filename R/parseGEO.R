@@ -456,7 +456,8 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE,parseCharact
                                   stub,GEO,b[i]),destfile=destfile,mode='wb',
                           method=getOption('download.file.method.GEOquery'))
         }
-        ret[[b[i]]] <- parseGSEMatrix(destfile,destdir=destdir,AnnotGPL=AnnotGPL,getGPL=getGPL)$eset
+        ret[[b[i]]] <- parseGSEMatrix(destfile,destdir=destdir,AnnotGPL=AnnotGPL,getGPL=getGPL,
+                                      parseCharacteristics=parseCharacteristics)$eset
     }
     return(ret)
 }
