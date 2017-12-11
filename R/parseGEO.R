@@ -378,6 +378,13 @@ parseGDS <- function(fname) {
 #' @importFrom readr read_lines
 parseGSM <- function(fname) {
     txt = read_lines(fname)
+    # read_lines reads separate blank lines
+    # on windows, so remove them before 
+    # proceeding. NOT doing so results in 
+    # the Table header being repeated as the
+    # first line of the Table and test failures
+    # galore.
+    txt = txt[txt != '']
     return(.parseGSMTxt(txt))
 }
 
@@ -421,6 +428,13 @@ parseGPL <- function(fname) {
         }
     }
     txt = read_lines(fname)
+    # read_lines reads separate blank lines
+    # on windows, so remove them before 
+    # proceeding. NOT doing so results in 
+    # the Table header being repeated as the
+    # first line of the Table and test failures
+    # galore.
+    txt = txt[txt != '']
     return(.parseGPLTxt(txt))
 }
     
