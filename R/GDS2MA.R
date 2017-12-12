@@ -2,7 +2,6 @@
 #' @export
 "GDS2MA" <-
   function(GDS,do.log2=FALSE,GPL=NULL,AnnotGPL=TRUE,getGPL=TRUE) {
-    require(limma)
     if(!is.null(GPL) & getGPL) {
       GPL <- getGEO(Meta(GDS)$platform,AnnotGPL=AnnotGPL)
       ord.table <- match(Table(GDS)[,1],Table(GPL)[,1])

@@ -286,17 +286,7 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
 
 
 
-#' parse a GEO dataset (GDS)
-#' 
-#' GEO datasets, or GDS, used to be produced by NCBI GEO as "curated" versions
-#' of submitted data. NCBI GEO no longer produces these objects, but there are
-#' still thousands available that, in some cases, have much nicer sample
-#' annotation and more standardized annotation for the associated GPLs.
-#'
 #' @importFrom readr read_lines read_tsv
-#' 
-#' @param fname the filename of the SOFT format file. May be gzipped.
-#' @keywords internal
 parseGDS <- function(fname) {
     txt = read_lines(fname)
     tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)

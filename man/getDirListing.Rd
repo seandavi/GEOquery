@@ -6,6 +6,10 @@
 \usage{
 getDirListing(url)
 }
+\arguments{
+\item{url}{A URL, assumed to return an NCBI-formatted
+index page}
+}
 \description{
 This one makes some assumptions about the structure of the HTML response
 returned.

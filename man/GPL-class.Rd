@@ -3,6 +3,8 @@
 \docType{class}
 \name{GPL-class}
 \alias{GPL-class}
+\alias{GPL}
+\alias{GPL,GDS-method}
 \title{Class "GPL"}
 \description{
 Contains a full GEO Platform entity

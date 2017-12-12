@@ -2,6 +2,9 @@
 #' 
 #' This one makes some assumptions about the structure of the HTML response
 #' returned.
+#'
+#' @param url A URL, assumed to return an NCBI-formatted
+#'   index page
 #' 
 #' @importFrom xml2 read_html xml_text xml_find_all 
 getDirListing <- function(url) {

@@ -198,6 +198,7 @@ setMethod("GPLList","GSE",
             return(object@gpls)
           }
           )
+
 #' @export
 setMethod("GPL","GDS",
           function(object) {

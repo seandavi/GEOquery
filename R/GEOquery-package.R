@@ -31,8 +31,6 @@ NULL
 
 
 
-
-
 #' Convert a GDS data structure to a BioConductor data structure
 #' 
 #' Functions to take a GDS data structure from getGEO and coerce it to limma
@@ -129,7 +127,7 @@ NULL
 #' 
 #' Contains a full GEO Platform entity
 #' 
-#' 
+#' @aliases GPL GPL,GDS-method
 #' @name GPL-class
 #' @docType class
 #' @section Objects from the Class: Objects can be created by calls of the form
