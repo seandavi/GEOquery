@@ -89,8 +89,9 @@ getGEOSuppFiles <- function(GEO, makeDirectory = TRUE,
                         method=getOption('download.file.method.GEOquery'))
           fileinfo[[file.path(storedir,i)]] <- file.info(file.path(storedir,i))
       }
-      invisible(do.call(rbind,fileinfo))
+      return(do.call(rbind,fileinfo))
+  } else {
+      return(data.frame(fname = fnames, url = file.path(url, fnames)))
   }
-  return(data.frame(fname = fnames, url = file.path(url, fnames)))
 }
     
