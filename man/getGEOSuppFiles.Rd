@@ -4,7 +4,8 @@
 \alias{getGEOSuppFiles}
 \title{Get Supplemental Files from GEO}
 \usage{
-getGEOSuppFiles(GEO, makeDirectory = TRUE, baseDir = getwd())
+getGEOSuppFiles(GEO, makeDirectory = TRUE, baseDir = getwd(),
+  fetch_files = TRUE, filter_regex = NULL)
 }
 \arguments{
 \item{GEO}{A GEO accession number such as GPL1073 or GSM1137}
@@ -15,11 +16,22 @@ into the baseDir.}
 
 \item{baseDir}{The base directory for the downloads.  Default is the current
 working directory.}
+
+\item{fetch_files}{logical(1). If TRUE, then actually download the
+files. If FALSE, just return the filenames that would have been
+downloaded. Useful for testing and getting a list of files
+without actual download.}
+
+\item{filter_regex}{A character(1) regular expression that will be
+used to filter the filenames from GEO to limit those files that
+will be downloaded. This is useful to limit to, for example,
+bed files only.}
 }
 \value{
-A data frame is returned invisibly with rownames representing the
+If fetch_files=TRUE, a data frame is returned invisibly with rownames representing the
 full path of the resulting downloaded files and the records in the
 data.frame the output of file.info for each downloaded file.
+If fetch_files=FALSE, a data.frame of URLs and filenames is returned.
 }
 \description{
 NCBI GEO allows supplemental files to be attached to GEO Series (GSE), GEO
@@ -33,8 +45,8 @@ Again, just a note that the files are simply downloaded.
 }
 \examples{
 
-# a <- getGEOSuppFiles('GSM1137')
-# a
+a <- getGEOSuppFiles('GSM1137', fetch_files = FALSE)
+a
 
 }
 \author{

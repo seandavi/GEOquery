@@ -32,18 +32,29 @@ getDirListing <- function(url) {
 #' into the baseDir.
 #' @param baseDir The base directory for the downloads.  Default is the current
 #' working directory.
-#' @return A data frame is returned invisibly with rownames representing the
+#' @param filter_regex A character(1) regular expression that will be
+#'     used to filter the filenames from GEO to limit those files that
+#'     will be downloaded. This is useful to limit to, for example,
+#'     bed files only.
+#' @param fetch_files logical(1). If TRUE, then actually download the
+#'     files. If FALSE, just return the filenames that would have been
+#'     downloaded. Useful for testing and getting a list of files
+#'     without actual download.
+#' @return If fetch_files=TRUE, a data frame is returned invisibly with rownames representing the
 #' full path of the resulting downloaded files and the records in the
 #' data.frame the output of file.info for each downloaded file.
+#' If fetch_files=FALSE, a data.frame of URLs and filenames is returned.
 #' @author Sean Davis <sdavis2@@mail.nih.gov>
 #' @keywords IO database
 #' @examples
 #' 
-#' # a <- getGEOSuppFiles('GSM1137')
-#' # a
+#' a <- getGEOSuppFiles('GSM1137', fetch_files = FALSE)
+#' a
 #' 
 #' @export
-getGEOSuppFiles <- function(GEO,makeDirectory=TRUE,baseDir=getwd()) {
+getGEOSuppFiles <- function(GEO, makeDirectory = TRUE,
+                            baseDir = getwd(), fetch_files = TRUE,
+                            filter_regex = NULL) {
   geotype <- toupper(substr(GEO,1,3))
   storedir <- baseDir
   fileinfo <- list()
@@ -67,13 +78,19 @@ getGEOSuppFiles <- function(GEO,makeDirectory=TRUE,baseDir=getwd()) {
   if(makeDirectory) {
     suppressWarnings(dir.create(storedir <- file.path(baseDir,GEO)))
   }
-  for(i in fnames) {
-    download.file(paste(file.path(url,i),'tool=geoquery',sep="?"),
-                  destfile=file.path(storedir,i),
-                  mode='wb',
-                  method=getOption('download.file.method.GEOquery'))
-    fileinfo[[file.path(storedir,i)]] <- file.info(file.path(storedir,i))
+  if(!is.null(filter_regex)) {
+      fnames = fnames[grepl(filter_regex, fnames)]
   }
-  invisible(do.call(rbind,fileinfo))
+  if(fetch_files) {
+      for(i in fnames) {
+          download.file(paste(file.path(url,i),'tool=geoquery',sep="?"),
+                        destfile=file.path(storedir,i),
+                        mode='wb',
+                        method=getOption('download.file.method.GEOquery'))
+          fileinfo[[file.path(storedir,i)]] <- file.info(file.path(storedir,i))
+      }
+      invisible(do.call(rbind,fileinfo))
+  }
+  return(data.frame(fname = fnames, url = file.path(url, fnames)))
 }
     
