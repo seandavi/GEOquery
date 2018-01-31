@@ -487,6 +487,7 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     dat <- read_lines(fname)
     ## get the number of !Series and !Sample lines
     series_header_row_count <- sum(grepl("^!Series_", dat))
+    sample_header_start <- grep("^!Sample_", dat)[1]
     samples_header_row_count <- sum(grepl("^!Sample_", dat))
     series_table_begin_line = grep("^!series_matrix_table_begin", dat)
     if(length(series_table_begin_line) != 1) {
@@ -494,9 +495,10 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     }
     #con <- fileOpen(fname)
     ## Read the !Series_ and !Sample_ lines
+    browser()
     header <- read.table(fname,sep="\t",header=FALSE,nrows=series_header_row_count)
     tmpdat <- read.table(fname,sep="\t",header=FALSE,nrows=samples_header_row_count,
-                         skip=series_header_row_count)
+                         skip=sample_header_start-1)
     tmptmp <- t(tmpdat)
     sampledat <- rbind(data.frame(),tmptmp[-1,])
     colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
