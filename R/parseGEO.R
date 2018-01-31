@@ -487,6 +487,10 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     dat <- read_lines(fname)
     ## get the number of !Series and !Sample lines
     series_header_row_count <- sum(grepl("^!Series_", dat))
+    # In the case of ^M in the metadata (GSE781, for example), the line counts
+    # for "skip" and read.table are different.
+    # This next line gets the "skip" line count for use
+    # below in the tmpdat reading "skip"
     sample_header_start <- grep("^!Sample_", dat)[1]
     samples_header_row_count <- sum(grepl("^!Sample_", dat))
     series_table_begin_line = grep("^!series_matrix_table_begin", dat)
@@ -495,7 +499,6 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     }
     #con <- fileOpen(fname)
     ## Read the !Series_ and !Sample_ lines
-    browser()
     header <- read.table(fname,sep="\t",header=FALSE,nrows=series_header_row_count)
     tmpdat <- read.table(fname,sep="\t",header=FALSE,nrows=samples_header_row_count,
                          skip=sample_header_start-1)
