@@ -533,7 +533,10 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
                 dplyr::mutate(k = paste(k,characteristics,sep=":")) %>%
                 dplyr::select(-characteristics) %>%
                 dplyr::filter(!is.na(v)) %>%
-                tidyr::spread(k, v)
+                dplyr::group_by(accession,k) %>%
+                dplyr::mutate(v = paste0(trimws(v), collapse = ";")) %>%
+                unique() %>%
+                tidyr::spread(k,v)
         } else {
             pd = pd %>% 
                 dplyr::select(accession)

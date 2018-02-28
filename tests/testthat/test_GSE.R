@@ -42,3 +42,10 @@ test_that("generic SOFT format GSE handled correctly", {
         expect_equivalent(12625, nrow(Table(x)))}) # all GSMs should have the 12625 rows
     expect_is(GPLList(gse)[[1]],'GPL')
 })
+
+test_that("GSE with more than one value per characteristic handled", {
+  gse = getGEO("GSE71989")
+  
+  expect_equivalent(nrow(gse[[1]]), 54675)
+  expect_equivalent(ncol(gse[[1]]), 22)
+})
