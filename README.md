@@ -12,8 +12,9 @@
 To install from Bioconductor, use the following code:
 
 ```{r}
-source("http://bioconductor.org/biocLite.R")
-biocLite("GEOquery")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("GEOquery")
 ```
 
 To install directly from github:
