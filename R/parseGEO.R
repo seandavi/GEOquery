@@ -511,15 +511,20 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
                              as.character(Reduce(function (a,b) {paste(a,b,sep = "\n")}, x))
                            })
     
+    link = "https://www.ncbi.nlm.nih.gov/geo/"
+    if (!is.null(headerlist$web_link)) {
+      link <- headerlist$web_link
+    } else if (!is.null(headerlist$geo_accession)) {
+      link <- paste(link, 'query/acc.cgi?acc=', headerlist$geo_accession, sep="")
+    }
+    
     ed <- new ("MIAME",
                name = ifelse(is.null(headerlist$contact_name), '', headerlist$contact_name),
-               title = ifelse(is.null(headerlist$title), '', headerlist$title),
+               title = headerlist$title,
                contact = ifelse(is.null(headerlist$contact_email), '', headerlist$contact_email),
                pubMedIds = ifelse(is.null(headerlist$pubmed_id), '', headerlist$pubmed_id), 
                abstract = ifelse(is.null(headerlist$summary), '', headerlist$summary),
-               url = ifelse(is.null(headerlist$contact_website),
-                            "https://www.ncbi.nlm.nih.gov/geo/",
-                            headerlist$contact_website),
+               url = link,
                other = headerlist)
     
     tmptmp <- t(tmpdat)
