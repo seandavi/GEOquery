@@ -1,3 +1,10 @@
+version 2.51.1
+
+  Improvements:
+    * Add formal experimentData slot
+      to GSE records. Of class MIAME.
+      [from @vlakam]
+      
 version 2.47.1
 
   Bug fixes:
