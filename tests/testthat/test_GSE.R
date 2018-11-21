@@ -62,7 +62,7 @@ test_that("GSE has populated experimentData", {
   expect_equivalent(ei[2], "") #lab
   expect_equivalent(ei[3], "hackney.jason@gene.com")
   expect_equivalent(ei[4], "NRROS negatively regulates ROS in phagocytes during host defense and autoimmunity")
-  expect_equivalent(ei[5], "https://www.ncbi.nlm.nih.gov/geo/") #url
+  expect_equivalent(ei[5], "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE53986") #url
 })
 
 test_that("GSE populates experimentData as much as possible", {
@@ -76,18 +76,18 @@ test_that("GSE populates experimentData as much as possible", {
   expect_equivalent(ei[2], "") #lab
   expect_equivalent(ei[3], "john_mariani@urmc.rochester.edu")
   expect_equivalent(ei[4], "RNA-Sequencing of Stat3 silenced oligodendrocyte progenitor cells.")
-  expect_equivalent(ei[5], "https://www.ncbi.nlm.nih.gov/geo/") #url
+  expect_equivalent(ei[5], "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE99709") #url
   # ----------------------------------------------------------------
   gse = getGEO("GSE27712")
   
   ed <- experimentData(gse[[1]])
   expect_equal(pubMedIds(ed), "22253802")
-  
+   
   ei <- expinfo(ed)
   expect_equivalent(ei[1], "Joachim,L,Schultze")
   expect_equivalent(ei[2], "") #lab
   expect_equivalent(ei[3], "j.schultze@uni-bonn.de")
   expect_equivalent(ei[4], "GC424 tumor cells and gastric tumors")
-  expect_equivalent(ei[5], "https://www.ncbi.nlm.nih.gov/geo/") #url
+  expect_equivalent(ei[5], "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE27712") #url
   expect_equivalent(abstract(ed), "This SuperSeries is composed of the SubSeries listed below.")
 })
