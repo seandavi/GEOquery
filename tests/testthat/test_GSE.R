@@ -49,3 +49,45 @@ test_that("GSE with more than one value per characteristic handled", {
   expect_equivalent(nrow(gse[[1]]), 54675)
   expect_equivalent(ncol(gse[[1]]), 22)
 })
+
+
+test_that("GSE has populated experimentData", {
+  gse = getGEO("GSE53986")
+  
+  ed <- experimentData(gse[[1]])
+  expect_equal(pubMedIds(ed), "24739962")
+  
+  ei <- expinfo(ed)
+  expect_equivalent(ei[1], "Jason,A,Hackney")
+  expect_equivalent(ei[2], "") #lab
+  expect_equivalent(ei[3], "hackney.jason@gene.com")
+  expect_equivalent(ei[4], "NRROS negatively regulates ROS in phagocytes during host defense and autoimmunity")
+  expect_equivalent(ei[5], "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE53986") #url
+})
+
+test_that("GSE populates experimentData as much as possible", {
+  gse = getGEO("GSE99709")
+  
+  ed <- experimentData(gse[[1]])
+  expect_equal(pubMedIds(ed), "")
+  
+  ei <- expinfo(ed)
+  expect_equivalent(ei[1], "John,,Mariani")
+  expect_equivalent(ei[2], "") #lab
+  expect_equivalent(ei[3], "john_mariani@urmc.rochester.edu")
+  expect_equivalent(ei[4], "RNA-Sequencing of Stat3 silenced oligodendrocyte progenitor cells.")
+  expect_equivalent(ei[5], "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE99709") #url
+  # ----------------------------------------------------------------
+  gse = getGEO("GSE27712")
+  
+  ed <- experimentData(gse[[1]])
+  expect_equal(pubMedIds(ed), "22253802")
+   
+  ei <- expinfo(ed)
+  expect_equivalent(ei[1], "Joachim,L,Schultze")
+  expect_equivalent(ei[2], "") #lab
+  expect_equivalent(ei[3], "j.schultze@uni-bonn.de")
+  expect_equivalent(ei[4], "GC424 tumor cells and gastric tumors")
+  expect_equivalent(ei[5], "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE27712") #url
+  expect_equivalent(abstract(ed), "This SuperSeries is composed of the SubSeries listed below.")
+})

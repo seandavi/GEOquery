@@ -502,6 +502,31 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     header <- read.table(fname,sep="\t",header=FALSE,nrows=series_header_row_count)
     tmpdat <- read.table(fname,sep="\t",header=FALSE,nrows=samples_header_row_count,
                          skip=sample_header_start-1)
+    
+    headertmp <- t(header)
+    headerdata <- rbind(data.frame(), headertmp[-1,])
+    colnames(headerdata) <- sub('!Series_','',as.character(header[,1]))
+    headerlist <- lapply(split.default(headerdata, names(headerdata)),
+                           function(x) {
+                             as.character(Reduce(function (a,b) {paste(a,b,sep = "\n")}, x))
+                           })
+    
+    link = "https://www.ncbi.nlm.nih.gov/geo/"
+    if (!is.null(headerlist$web_link)) {
+      link <- headerlist$web_link
+    } else if (!is.null(headerlist$geo_accession)) {
+      link <- paste(link, 'query/acc.cgi?acc=', headerlist$geo_accession, sep="")
+    }
+    
+    ed <- new ("MIAME",
+               name = ifelse(is.null(headerlist$contact_name), '', headerlist$contact_name),
+               title = headerlist$title,
+               contact = ifelse(is.null(headerlist$contact_email), '', headerlist$contact_email),
+               pubMedIds = ifelse(is.null(headerlist$pubmed_id), '', headerlist$pubmed_id), 
+               abstract = ifelse(is.null(headerlist$summary), '', headerlist$summary),
+               url = link,
+               other = headerlist)
+    
     tmptmp <- t(tmpdat)
     sampledat <- rbind(data.frame(),tmptmp[-1,])
     colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
@@ -607,6 +632,7 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
                 phenoData=as(sampledat,'AnnotatedDataFrame'),
                 annotation=GPL,
                 featureData=fd,
+                experimentData=ed,
                 exprs=as.matrix(datamat))
     return(list(GPL=as.character(sampledat[1,grep('platform_id',colnames(sampledat),ignore.case=TRUE)]),eset=eset))
 }
