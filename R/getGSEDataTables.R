@@ -33,7 +33,6 @@ getGSEDataTables <- function(GSE) {
     dTables = sapply(dTableNodes,function(x) {
         cnames=sapply(xml_find_all(x,"d1:Column/d1:Name"),xml_text)
         dTableText=xml_text(xml_find_all(x,"d1:Internal-Data")[[1]])
-        browser()
         dTable = suppressWarnings(read_tsv(dTableText, col_names = FALSE))
         colnames(dTable)=cnames
         return(dTable)
