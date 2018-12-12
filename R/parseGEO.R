@@ -584,8 +584,9 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
                         # somewhere in the past month or so, read_tsv changed
                         # the way it dealt with skip!!! Had to add the -1 to
                         # avoid the problem.
-                        skip = series_table_begin_line-1,
-                        comment = '!series_matrix_table_end')
+                        skip = series_table_begin_line,
+                        comment = '!series_matrix_table_end',
+                        skip_empty_rows = FALSE)
     tmprownames = datamat[[1]]
                                         # need the as.matrix for single-sample or empty GSE
     datamat <- as.matrix(datamat[!is.na(tmprownames),-1])
