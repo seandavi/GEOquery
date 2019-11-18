@@ -546,7 +546,7 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
             # (attributes).
             mutate_all(as.character) %>%
             tidyr::gather(characteristics, kvpair, -accession) %>%
-            dplyr::filter(grepl(':',kvpair) && !is.na(kvpair))
+            dplyr::filter(grepl(':',kvpair) & !is.na(kvpair))
         # Thx to Mike Smith (@grimbough) for this code
         # sometimes the "characteristics_ch1" fields are empty and contain no 
         # key:value pairs. spread() will fail when called on an
