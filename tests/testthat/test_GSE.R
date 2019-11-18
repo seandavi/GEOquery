@@ -91,3 +91,7 @@ test_that("GSE populates experimentData as much as possible", {
   expect_equivalent(ei[5], "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE27712") #url
   expect_equivalent(abstract(ed), "This SuperSeries is composed of the SubSeries listed below.")
 })
+
+test_that("Empty files produces an error", {
+  expect_error(getGEO(filename = system.file('extdata/GPLbroken.soft.gz', package="GEOquery")))
+})

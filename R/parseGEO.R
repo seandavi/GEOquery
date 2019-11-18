@@ -227,6 +227,7 @@ parseGSE <- function(fname,GSElimits=NULL) {
 findFirstEntity <- function(con) {
     while(TRUE) {
         line <- suppressWarnings(readLines(con,100))
+        if (length(line) == 0) return(0)
         entity.line <- grep('^\\^(DATASET|SAMPLE|SERIES|PLATFORM|ANNOTATION)',
                             line,ignore.case=TRUE,value=TRUE,perl=TRUE)
         entity.line <- gsub('annotation','platform',entity.line,ignore.case=TRUE)
@@ -546,7 +547,7 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
             # (attributes).
             mutate_all(as.character) %>%
             tidyr::gather(characteristics, kvpair, -accession) %>%
-            dplyr::filter(grepl(':',kvpair) && !is.na(kvpair))
+            dplyr::filter(grepl(':',kvpair) & !is.na(kvpair))
         # Thx to Mike Smith (@grimbough) for this code
         # sometimes the "characteristics_ch1" fields are empty and contain no 
         # key:value pairs. spread() will fail when called on an
