@@ -227,6 +227,7 @@ parseGSE <- function(fname,GSElimits=NULL) {
 findFirstEntity <- function(con) {
     while(TRUE) {
         line <- suppressWarnings(readLines(con,100))
+        if (length(line) == 0) return(0)
         entity.line <- grep('^\\^(DATASET|SAMPLE|SERIES|PLATFORM|ANNOTATION)',
                             line,ignore.case=TRUE,value=TRUE,perl=TRUE)
         entity.line <- gsub('annotation','platform',entity.line,ignore.case=TRUE)
