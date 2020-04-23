@@ -1,14 +1,14 @@
 CHANGES IN VERSION 2.55.1
 ---------------------------
 
-  Bug fixes:
-    * Fix test failure due to stricter
-      boolean check lengths
-      [#568ae94fb95, from @russHyde]
-    * Fix failure on empty file
-      [#88741521a0e, from @vlakam]
+Bug fixes:
+
+    * Fix test failure due to stricter boolean check lengths [#568ae94fb95, from @russHyde]
+
+    * Fix failure on empty file [#88741521a0e, from @vlakam]
 
 CHANGES IN VERSION 2.51.1
+---------------------------
 
 Improvements:
 
