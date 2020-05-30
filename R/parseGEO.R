@@ -485,7 +485,10 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE,parseCharact
 #' @keywords internal
 #' 
 parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,parseCharacteristics=TRUE) {
-    dat <- read_lines(fname)
+    # line split consistent with read_tsv (rearging to ^M)
+    text <- readr::read_file(fname)
+    dat <- strsplit(text, "\n", fixed=T)[[1]]
+    
     ## get the number of !Series and !Sample lines
     series_header_row_count <- sum(grepl("^!Series_", dat))
     # In the case of ^M in the metadata (GSE781, for example), the line counts
@@ -500,13 +503,13 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     }
     #con <- fileOpen(fname)
     ## Read the !Series_ and !Sample_ lines
-    header <- read.table(fname,sep="\t",header=FALSE,nrows=series_header_row_count)
-    tmpdat <- read.table(fname,sep="\t",header=FALSE,nrows=samples_header_row_count,
-                         skip=sample_header_start-1)
+    header <- read_tsv(fname, col_names = FALSE, n_max=series_header_row_count)
+    tmpdat <- read_tsv(fname, col_names = FALSE, n_max=samples_header_row_count,
+                       skip=sample_header_start-1, skip_empty_rows = FALSE)
     
     headertmp <- t(header)
     headerdata <- rbind(data.frame(), headertmp[-1,])
-    colnames(headerdata) <- sub('!Series_','',as.character(header[,1]))
+    colnames(headerdata) <- sub('!Series_','',as.character(header[[1]]))
     headerlist <- lapply(split.default(headerdata, names(headerdata)),
                            function(x) {
                              as.character(Reduce(function (a,b) {paste(a,b,sep = "\n")}, x))
@@ -530,7 +533,7 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     
     tmptmp <- t(tmpdat)
     sampledat <- rbind(data.frame(),tmptmp[-1,])
-    colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[,1])))
+    colnames(sampledat) <- make.unique(sub('!Sample_','',as.character(tmpdat[[1]])))
     sampledat[['geo_accession']]=as.character(sampledat[['geo_accession']])
     rownames(sampledat) = sampledat[['geo_accession']]
     ## Lots of GSEs now use "characteristics_ch1" and
