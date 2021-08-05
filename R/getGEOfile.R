@@ -86,10 +86,11 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
       } 
       gseurl <- "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
       myurl <- paste(gseurl,'?targ=self&acc=',GEO,'&form=text&view=',amount,sep='')
-      destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
+      destfile <- file.path(destdir,paste(GEO,'.soft.gz',sep=""))
       mode <- 'w'
       if(!file.exists(destfile)) {
-        download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
+        download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'),
+                      headers = c("accept-encoding"="gzip"))
         message('File stored at: ')
         message(destfile)
       } else {
