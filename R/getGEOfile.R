@@ -71,7 +71,7 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
         # use it, else move on to submitter GPL
         res=try({
           if(!file.exists(destfile)) {
-            download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
+            downloadFile(myurl, destfile, mode)
             message('File stored at: ')
             message(destfile)
           } else {
@@ -89,7 +89,7 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
       destfile <- file.path(destdir,paste(GEO,'.soft',sep=""))
       mode <- 'w'
       if(!file.exists(destfile)) {
-        download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
+        downloadFile(myurl, destfile, mode)
         message('File stored at: ')
         message(destfile)
       } else {
@@ -104,7 +104,7 @@ getGEOfile <- function(GEO,destdir=tempdir(),AnnotGPL=FALSE,
       mode <- 'w'
     }
     if(!file.exists(destfile)) {
-      download.file(myurl,destfile,mode=mode,quiet=TRUE,method=getOption('download.file.method.GEOquery'))
+      downloadFile(myurl, destfile, mode)
       message('File stored at: ')
       message(destfile)
     } else {
@@ -177,4 +177,27 @@ gunzip <- function(filename, destname=gsub("[.]gz$", "", filename), overwrite=FA
   }
     
   invisible(nbytes);
+}
+
+#'
+#' Wrapper for download.file() that removes files upon download failure 
+#'
+downloadFile <- function(url, destfile, mode, quiet=TRUE) {
+    result <- tryCatch({
+      res <- download.file(url, destfile=destfile, mode=mode, quiet=quiet,
+                           method=getOption('download.file.method.GEOquery'))
+      ## download.file returns a "0" on success
+      res == 0
+    },
+    error = function(e) return(FALSE),
+    warning = function(w) return(FALSE))
+
+    ## if the download failed, remove the corrupted file and report the error
+    if (!result) {
+      if (file.exists(destfile)) {
+        file.remove(destfile)
+      }
+      stop(sprintf('Failed to download %s!', destfile))
+    }
+    return(0)
 }

@@ -83,11 +83,29 @@ getGEOSuppFiles <- function(GEO, makeDirectory = TRUE,
   }
   if(fetch_files) {
       for(i in fnames) {
-          download.file(paste(file.path(url,i),'tool=geoquery',sep="?"),
-                        destfile=file.path(storedir,i),
+        destfile <- file.path(storedir,i)
+
+        result <- tryCatch({
+          res <- download.file(paste(file.path(url,i),'tool=geoquery',sep="?"),
+                        destfile=destfile,
                         mode='wb',
                         method=getOption('download.file.method.GEOquery'))
-          fileinfo[[file.path(storedir,i)]] <- file.info(file.path(storedir,i))
+          ## download.file returns a "0" on success
+          res == 0
+        },
+        error = function(e) return(FALSE),
+        warning = function(w) return(FALSE))
+
+        ## if the download failed, remove the corrupted file and report the error
+        if (!result) {
+          if (file.exists(destfile)) {
+            file.remove(destfile)
+          }
+          stop(sprintf('Failed to download %s!', destfile))
+        }
+        ###
+        ###
+          fileinfo[[destfile]] <- file.info(destfile)
       }
       return(do.call(rbind,fileinfo))
   } else {
