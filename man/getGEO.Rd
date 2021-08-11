@@ -4,9 +4,16 @@
 \alias{getGEO}
 \title{Get a GEO object from NCBI or file}
 \usage{
-getGEO(GEO = NULL, filename = NULL, destdir = tempdir(),
-  GSElimits = NULL, GSEMatrix = TRUE, AnnotGPL = FALSE, getGPL = TRUE,
-  parseCharacteristics = TRUE)
+getGEO(
+  GEO = NULL,
+  filename = NULL,
+  destdir = tempdir(),
+  GSElimits = NULL,
+  GSEMatrix = TRUE,
+  AnnotGPL = FALSE,
+  getGPL = TRUE,
+  parseCharacteristics = TRUE
+)
 }
 \arguments{
 \item{GEO}{A character string representing a GEO object for download and

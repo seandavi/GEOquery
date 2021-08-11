@@ -8,8 +8,13 @@
 \alias{parseGSM}
 \title{Parse GEO text}
 \usage{
-parseGEO(fname, GSElimits, destdir = tempdir(), AnnotGPL = FALSE,
-  getGPL = TRUE)
+parseGEO(
+  fname,
+  GSElimits,
+  destdir = tempdir(),
+  AnnotGPL = FALSE,
+  getGPL = TRUE
+)
 }
 \arguments{
 \item{fname}{The filename of a SOFT format file.  If the filename ends in

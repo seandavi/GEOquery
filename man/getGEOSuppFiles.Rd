@@ -4,8 +4,13 @@
 \alias{getGEOSuppFiles}
 \title{Get Supplemental Files from GEO}
 \usage{
-getGEOSuppFiles(GEO, makeDirectory = TRUE, baseDir = getwd(),
-  fetch_files = TRUE, filter_regex = NULL)
+getGEOSuppFiles(
+  GEO,
+  makeDirectory = TRUE,
+  baseDir = getwd(),
+  fetch_files = TRUE,
+  filter_regex = NULL
+)
 }
 \arguments{
 \item{GEO}{A GEO accession number such as GPL1073 or GSM1137}

@@ -4,8 +4,12 @@
 \alias{getGEOfile}
 \title{Download a file from GEO soft file to the local machine}
 \usage{
-getGEOfile(GEO, destdir = tempdir(), AnnotGPL = FALSE, amount = c("full",
-  "brief", "quick", "data"))
+getGEOfile(
+  GEO,
+  destdir = tempdir(),
+  AnnotGPL = FALSE,
+  amount = c("full", "brief", "quick", "data")
+)
 }
 \arguments{
 \item{GEO}{Character string, the GEO accession for download (eg., GDS84,

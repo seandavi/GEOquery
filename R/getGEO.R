@@ -97,6 +97,9 @@
 #' them can take quite some time and memory.  So, particularly when working
 #' with large GSE entries, expect that you may need a good chunk of memory and
 #' that coffee may be involved when parsing....
+#' 
+#' @importFrom readr problems
+#' 
 #' @author Sean Davis
 #' @seealso \code{\link{getGEOfile}}
 #' @keywords IO
