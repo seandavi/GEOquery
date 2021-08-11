@@ -457,9 +457,23 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE,parseCharact
         if(file.exists(destfile)) {
             message(sprintf('Using locally cached version: %s',destfile))
         } else {
-            download.file(sprintf('https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/matrix/%s',
-                                  stub,GEO,b[i]),destfile=destfile,mode='wb',
-                          method=getOption('download.file.method.GEOquery'))
+            result <- tryCatch({
+              res <- download.file(sprintf('https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/matrix/%s',
+                                   stub,GEO,b[i]),destfile=destfile,mode='wb',
+                            method=getOption('download.file.method.GEOquery'))
+              ## download.file returns a "0" on success
+              res == 0
+            },
+            error = function(e) return(FALSE),
+            warning = function(w) return(FALSE))
+
+            ## if the download failed, remove the corrupted file and report the error
+            if (!result) {
+              if (file.exists(destfile)) {
+                file.remove(destfile)
+                stop(sprintf('Failed to download %s!', destfile))
+              }
+            }
         }
         ret[[b[i]]] <- parseGSEMatrix(destfile,destdir=destdir,AnnotGPL=AnnotGPL,getGPL=getGPL)$eset
     }
