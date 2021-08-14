@@ -15,7 +15,7 @@ Imports: httr,
     magrittr,
     limma
 Suggests: knitr, rmarkdown, BiocGenerics,
-    testthat, covr
+    testthat, covr, markdown
 VignetteBuilder: knitr
 URL: https://github.com/seandavi/GEOquery
 biocViews: Microarray, DataImport, OneChannel, TwoChannel, SAGE
