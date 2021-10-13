@@ -1,6 +1,10 @@
 .na_strings = c('NA','null','NULL','Null')
 
 
+#' @importFrom data.table fread
+.read_lines <- function(...) {
+  data.table::fread(..., sep="")
+}
 
 #' Parse GEO text
 #' 
@@ -194,7 +198,7 @@ parseGSE <- function(fname,GSElimits=NULL) {
     gpllist <- list()
     GSMcount <- 0
     message('Reading file....')
-    lines = read_lines(fname)
+    lines = .read_lines(fname)
     message('Parsing....')
     lineCounts <- grep("\\^(SAMPLE|PLATFORM)",lines)
     message(sprintf("Found %d entities...",length(lineCounts)))
@@ -287,17 +291,25 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
 
 
 
-#' @importFrom readr read_lines read_tsv
+#' @importFrom data.table fread
 parseGDS <- function(fname) {
-    txt = read_lines(fname)
-    tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)
-    if(length(tbl_begin>0)) {
-        txt = txt[1:tbl_begin[1]]
-        dat3 <- read_tsv(fname, comment='!dataset_table_end', skip = tbl_begin[1],
-                         guess_max = 10000, na = .na_strings)
+    txt = data.table::fread(fname,sep="")[[1]]
+    # Find first line of the table 
+    tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)[1] + 1
+    # Find last line of the table
+    # Edge case is that the record does not have a table end 
+    # line, in which case we use all lines
+    tbl_end = grep('!\\w+_table_end',txt,perl=TRUE)
+    metadata_rows = 1:(tbl_begin-2)
+    if(length(tbl_end)==0) {
+      tbl_end = length(txt)
+    } else {
+      tbl_end = tbl_end[1]-1
     }
-    cols <- parseGDSSubsets(txt)
-    meta <- parseGeoMeta(txt)
+    dat3 <- data.table::fread(text=txt[tbl_begin:tbl_end],
+                              na = .na_strings)
+    cols <- parseGDSSubsets(txt[metadata_rows])
+    meta <- parseGeoMeta(txt[metadata_rows])
     geoDataTable <- new('GEODataTable',columns=cols,table=as.data.frame(dat3))
     gds <- new('GDS',
                header=meta,
@@ -366,9 +378,9 @@ parseGDS <- function(fname) {
 }
     
 
-#' @importFrom readr read_lines
+#' @importFrom data.table fread
 parseGSM <- function(fname) {
-    txt = read_lines(fname)
+    txt = data.table::fread(fname,sep="")[[1]]
     # read_lines reads separate blank lines
     # on windows, so remove them before 
     # proceeding. NOT doing so results in 
@@ -391,8 +403,9 @@ GPLcache <- new.env(parent=emptyenv())
     if(length(tbl_begin>0)) {
         tbltxt = txt[(tbl_begin[1]+1):length(txt)]
         txt = txt[1:tbl_begin[1]]
-        dat3 <- suppressMessages(read_tsv(paste(tbltxt,collapse="\n"), comment='!platform_table_end',
-                         guess_max = 10000, na = .na_strings))
+        dat3 <- suppressMessages(data.table::fread(text=tbltxt, na=.na_strings))
+                                                   #,comment='!platform_table_end',
+                         #guess_max = 10000, 
     } else {
         # empty data table
         dat3 = data.frame()
@@ -418,7 +431,7 @@ parseGPL <- function(fname) {
             return(cache$gpl)
         }
     }
-    txt = read_lines(fname)
+    txt = data.table::fread(fname,sep="")[[1]]
     # read_lines reads separate blank lines
     # on windows, so remove them before 
     # proceeding. NOT doing so results in 
@@ -499,9 +512,11 @@ getAndParseGSEMatrices <- function(GEO,destdir,AnnotGPL,getGPL=TRUE,parseCharact
 #' @keywords internal
 #' 
 parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,parseCharacteristics=TRUE) {
-    # line split consistent with read_tsv (rearging to ^M)
-    text <- readr::read_file(fname)
-    dat <- strsplit(text, "\n", fixed=T)[[1]]
+    # Convenient VERY fast line reader based on data.table
+    # See: https://stackoverflow.com/a/32924981/459633
+    # data read into single character column, so subset to get
+    # just text.
+    dat <- data.table::fread(fname, sep="")[[1]]
     
     ## get the number of !Series and !Sample lines
     series_header_row_count <- sum(grepl("^!Series_", dat))
@@ -517,9 +532,11 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     }
     #con <- fileOpen(fname)
     ## Read the !Series_ and !Sample_ lines
-    header <- read_tsv(fname, col_names = FALSE, n_max=series_header_row_count)
-    tmpdat <- read_tsv(fname, col_names = FALSE, n_max=samples_header_row_count,
-                       skip=sample_header_start-1, skip_empty_rows = FALSE)
+    header <- data.table::fread(fname, header = FALSE, 
+                                nrows=series_header_row_count)
+    tmpdat <- data.table::fread(fname, header = FALSE, 
+                                nrows=samples_header_row_count,
+                                skip=sample_header_start-1)
     
     headertmp <- t(header)
     headerdata <- rbind(data.frame(), headertmp[-1,])
@@ -594,17 +611,11 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
         sampledat = sampledat %>% dplyr::left_join(pd,by=c('geo_accession'='accession'))
     }
     
-    ## used to be able to use colclasses, but some SNP arrays provide only the
-    ## genotypes in AA AB BB form, so need to switch it up....
-    ##  colClasses <- c('character',rep('numeric',nrow(sampledat)))
-    datamat <- read_tsv(fname,quote='"',
-                        na=c('NA','null','NULL','Null'), 
-                        # somewhere in the past month or so, read_tsv changed
-                        # the way it dealt with skip!!! Had to add the -1 to
-                        # avoid the problem.
-                        skip = series_table_begin_line,
-                        comment = '!series_matrix_table_end',
-                        skip_empty_rows = FALSE)
+
+    datamat <- data.table::fread(fname,quote='"',
+                                 na.strings=c('NA','null','NULL','Null'),
+                                 skip = series_table_begin_line)
+    #comment.char = '!series_matrix_table_end')
     tmprownames = datamat[[1]]
                                         # need the as.matrix for single-sample or empty GSE
     datamat <- as.matrix(datamat[!is.na(tmprownames),-1])
@@ -612,7 +623,8 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     datamat <- as.matrix(datamat)
     rownames(sampledat) <- colnames(datamat)
     GPL=as.character(sampledat[1,grep('platform_id',colnames(sampledat),ignore.case=TRUE)])
-    ## if getGPL is FALSE, skip this and featureData is then a data.frame with no columns
+    ## if getGPL is FALSE, skip this and featureData is 
+    ## then a data.frame with no columns
     fd = new("AnnotatedDataFrame",data=data.frame(row.names=rownames(datamat)))
     if(getGPL) {
         gpl <- getGEO(GPL,AnnotGPL=AnnotGPL,destdir=destdir)
