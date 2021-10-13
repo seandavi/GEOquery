@@ -289,30 +289,37 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
     return(dat3)
 }
 
-
+.genericGEOTableParser <- function(txt) {
+  # Find first line of the table 
+  tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)[1] + 1
+  # Find last line of the table
+  # Edge case is that the record does not have a table end 
+  # line, in which case we use all lines
+  tbl_end = grep('!\\w+_table_end',txt,perl=TRUE)
+  metadata_rows = 1:(tbl_begin-2)
+  if(length(tbl_end)==0) {
+    tbl_end = length(txt)
+  } else {
+    tbl_end = tbl_end[1]-1
+  }
+  dat3 <- data.table::fread(text=txt[tbl_begin:tbl_end],
+                            na = .na_strings)
+  return(list(meta_text = txt[metadata_rows], data_frame = dat3))
+}
 
 #' @importFrom data.table fread
 parseGDS <- function(fname) {
     txt = data.table::fread(fname,sep="")[[1]]
-    # Find first line of the table 
-    tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)[1] + 1
-    # Find last line of the table
-    # Edge case is that the record does not have a table end 
-    # line, in which case we use all lines
-    tbl_end = grep('!\\w+_table_end',txt,perl=TRUE)
-    metadata_rows = 1:(tbl_begin-2)
-    if(length(tbl_end)==0) {
-      tbl_end = length(txt)
-    } else {
-      tbl_end = tbl_end[1]-1
-    }
-    dat3 <- data.table::fread(text=txt[tbl_begin:tbl_end],
-                              na = .na_strings)
-    cols <- parseGDSSubsets(txt[metadata_rows])
-    meta <- parseGeoMeta(txt[metadata_rows])
-    geoDataTable <- new('GEODataTable',columns=cols,table=as.data.frame(dat3))
+    
+    parser_results = .genericGEOTableParser(txt)
+    
+    cols <- parseGDSSubsets(parser_results$meta_text)
+    meta <- parseGeoMeta(parser_results$meta_text)
+    geoDataTable <- new('GEODataTable',
+                        columns=cols,
+                        table=parser_results$data_frame)
     gds <- new('GDS',
-               header=meta,
+               header= meta,
                dataTable = geoDataTable)
     return(gds)
 }
@@ -357,24 +364,17 @@ parseGDS <- function(fname) {
 
 #' @importFrom readr read_tsv
 .parseGSMTxt <- function(txt) {
-    tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)
-    if(length(tbl_begin>0)) {
-        tbltxt = txt[(tbl_begin[1]+1):length(txt)]
-        txt = txt[1:tbl_begin[1]]
-        dat3 <- read_tsv(paste(tbltxt,collapse="\n"), comment='!sample_table_end',
-                         guess_max = 10000, na = .na_strings)
-    } else {
-        # empty data table
-        dat3 = data.frame()
-    }
-
-    cols <- parseGeoColumns(txt)
-    meta <- parseGeoMeta(txt)
-    geoDataTable <- new('GEODataTable',columns=cols,table=as.data.frame(dat3))
-    geo <- new('GSM',
-               header=meta,
-               dataTable = geoDataTable)
-    return(geo)
+  parser_results = .genericGEOTableParser(txt)
+  
+  cols <- parseGeoColumns(parser_results$meta_text)
+  meta <- parseGeoMeta(parser_results$meta_text)
+  geoDataTable <- new('GEODataTable',
+                      columns=cols,
+                      table=parser_results$data_frame)
+  geo <- new('GSM',
+             header=meta,
+             dataTable = geoDataTable)
+  return(geo)
 }
     
 
@@ -398,25 +398,18 @@ GPLcache <- new.env(parent=emptyenv())
 
 #' @importFrom readr read_tsv
 .parseGPLTxt <- function(txt) {
-    tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)
-    
-    if(length(tbl_begin>0)) {
-        tbltxt = txt[(tbl_begin[1]+1):length(txt)]
-        txt = txt[1:tbl_begin[1]]
-        dat3 <- suppressMessages(data.table::fread(text=tbltxt, na=.na_strings))
-                                                   #,comment='!platform_table_end',
-                         #guess_max = 10000, 
-    } else {
-        # empty data table
-        dat3 = data.frame()
-    }
-    cols <- parseGeoColumns(txt)
-    meta <- parseGeoMeta(txt)
-    geoDataTable <- new('GEODataTable',columns=cols,table=as.data.frame(dat3))
-    geo <- new('GPL',
-               header=meta,
-               dataTable = geoDataTable)
-    return(geo)
+  
+  parser_results = .genericGEOTableParser(txt)
+  
+  cols <- parseGeoColumns(parser_results$meta_text)
+  meta <- parseGeoMeta(parser_results$meta_text)
+  geoDataTable <- new('GEODataTable',
+                      columns=cols,
+                      table=parser_results$data_frame)
+  geo <- new('GPL',
+             header=meta,
+             dataTable = geoDataTable)
+  return(geo)
 }
 
 
