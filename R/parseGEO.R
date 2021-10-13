@@ -3,7 +3,7 @@
 
 #' @importFrom data.table fread
 .read_lines <- function(...) {
-  data.table::fread(..., sep="")
+  data.table::fread(..., sep="",header=FALSE)[[1]]
 }
 
 #' Parse GEO text
@@ -291,7 +291,13 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
 
 .genericGEOTableParser <- function(txt) {
   # Find first line of the table 
+  has_table = TRUE
   tbl_begin = grep('!\\w+_table_begin',txt,perl=TRUE)[1] + 1
+  # No data table at all, so everything is header info
+  if(is.na(tbl_begin)) {
+    tbl_begin=length(txt)
+    has_table = FALSE
+  }
   # Find last line of the table
   # Edge case is that the record does not have a table end 
   # line, in which case we use all lines
@@ -302,8 +308,11 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
   } else {
     tbl_end = tbl_end[1]-1
   }
-  dat3 <- data.table::fread(text=txt[tbl_begin:tbl_end],
+  dat3 = data.frame()
+  if(has_table) {
+    dat3 <- data.table::fread(text=txt[tbl_begin:tbl_end],
                             na = .na_strings)
+  }
   return(list(meta_text = txt[metadata_rows], data_frame = dat3))
 }
 
@@ -520,6 +529,7 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     sample_header_start <- grep("^!Sample_", dat)[1]
     samples_header_row_count <- sum(grepl("^!Sample_", dat))
     series_table_begin_line = grep("^!series_matrix_table_begin", dat)
+    series_table_end_line   = grep("^!series_matrix_table_end", dat)
     if(length(series_table_begin_line) != 1) {
         stop("parsing failed--expected only one '!series_data_table_begin'")
     }
@@ -604,10 +614,14 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
         sampledat = sampledat %>% dplyr::left_join(pd,by=c('geo_accession'='accession'))
     }
     
-
-    datamat <- data.table::fread(fname,quote='"',
-                                 na.strings=c('NA','null','NULL','Null'),
-                                 skip = series_table_begin_line)
+    datamat = NULL
+    if(series_table_end_line-series_table_begin_line==2){
+      datamat = read.table(textConnection(dat[(series_table_begin_line+1):(series_table_end_line-1)]),header=TRUE,sep="\t")
+    } else {
+      datamat <- data.table::fread(text=dat[(series_table_begin_line+1):(series_table_end_line-1)],quote='"',
+                                 na.strings=c('NA','null','NULL','Null'))
+    }
+                                 ## kip = series_table_begin_line)
     #comment.char = '!series_matrix_table_end')
     tmprownames = datamat[[1]]
                                         # need the as.matrix for single-sample or empty GSE

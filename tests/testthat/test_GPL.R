@@ -23,5 +23,12 @@ test_that("short GPL works", {
     gpl = getGEO('GPL15505')
     
     expect_is(gpl,'GPL')
-    expect_equivalent(52,nrow(Table(gpl))) #GPL4133 should have 45220 rows
+    expect_equivalent(52,nrow(Table(gpl))) #GPL15505 should have 52 rows
+})
+
+test_that("GPL with no data table works", {
+    gpl = getGEO("GPL5082")
+    
+    expect_is(gpl,'GPL')
+    expect_equivalent(0,nrow(Table(gpl))) #GPL5082 has no data table!
 })

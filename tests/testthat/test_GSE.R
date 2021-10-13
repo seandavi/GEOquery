@@ -93,5 +93,7 @@ test_that("GSE populates experimentData as much as possible", {
 })
 
 test_that("Empty files produces an error", {
-  expect_error(getGEO(filename = system.file('extdata/GPLbroken.soft.gz', package="GEOquery")))
+  suppressWarnings(
+    expect_error(getGEO(filename = system.file('extdata/GPLbroken.soft.gz', package="GEOquery")))
+  )
 })
