@@ -180,9 +180,7 @@ gunzip <- function(filename, destname=gsub("[.]gz$", "", filename), overwrite=FA
   invisible(nbytes);
 }
 
-#'
-#' Wrapper for download.file() that removes files upon download failure 
-#'
+# internal use only
 downloadFile <- function(url, destfile, mode, quiet=TRUE) {
     result <- tryCatch({
       res <- download.file(url, destfile=destfile, mode=mode, quiet=quiet,
