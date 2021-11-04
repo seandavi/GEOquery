@@ -298,11 +298,18 @@ fastTabRead <- function(con,sep="\t",header=TRUE,sampleRows=100,
     tbl_begin=length(txt)
     has_table = FALSE
   }
+  
+  if (has_table) {
+    metadata_rows <- seq_len(tbl_begin-2)
+  } else {
+    metadata_rows <- seq_along(txt) 
+  }
+  
+  
   # Find last line of the table
   # Edge case is that the record does not have a table end 
   # line, in which case we use all lines
   tbl_end = grep('!\\w+_table_end',txt,perl=TRUE)
-  metadata_rows = 1:(tbl_begin-2)
   if(length(tbl_end)==0) {
     tbl_end = length(txt)
   } else {
