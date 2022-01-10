@@ -616,7 +616,7 @@ parseGSEMatrix <- function(fname,AnnotGPL=FALSE,destdir=tempdir(),getGPL=TRUE,pa
     }
                                  ## kip = series_table_begin_line)
     #comment.char = '!series_matrix_table_end')
-    tmprownames = datamat[[1]]
+    tmprownames = as.character(datamat[[1]])
                                         # need the as.matrix for single-sample or empty GSE
     datamat <- as.matrix(datamat[!is.na(tmprownames),-1])
     rownames(datamat) <- tmprownames[!is.na(tmprownames)]

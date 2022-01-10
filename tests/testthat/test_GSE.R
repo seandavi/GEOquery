@@ -97,3 +97,10 @@ test_that("Empty files produces an error", {
     expect_error(getGEO(filename = system.file('extdata/GPLbroken.soft.gz', package="GEOquery")))
   )
 })
+
+test_that("GSE/GPL with integer64 columns handled correctly", {
+  gse = getGEO("GSE7864")[[1]]
+  fdata = fData(gse)
+  expect_s3_class(fdata$ID, "integer64")
+  expect_is(rownames(fdata), "character")
+})
