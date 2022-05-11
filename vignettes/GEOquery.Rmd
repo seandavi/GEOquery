@@ -10,11 +10,11 @@ output:
     toc: yes
   pdf_document:
     toc: yes
+vignette: >
+  %\VignetteIndexEntry{Using GEOquery}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8} 
 ---
-<!--
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteIndexEntry{Using GEOquery}
--->
 
 ```{r pre,echo=FALSE,results='hide'}
 library(knitr)
