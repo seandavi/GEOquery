@@ -26,14 +26,14 @@
     
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.63.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.65.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div id="navbar" class="collapse navbar-collapse ms-2">
+    <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="active nav-item">
   <a class="nav-link" href="../articles/GEOquery.html">Get started</a>
@@ -62,6 +62,9 @@
     
   </div>
 </nav><div class="container template-article">
+
+
+
 <script src="GEOquery_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <main id="main"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Using the GEOquery Package</h1>
@@ -79,35 +82,35 @@
 %\VignetteEngine{knitr::rmarkdown}
 %\VignetteIndexEntry{Using GEOquery}
 -->
-<div class="section level1">
-<h1 id="overview-of-geo">Overview of GEO<a class="anchor" aria-label="anchor" href="#overview-of-geo"></a>
-</h1>
+<div class="section level2">
+<h2 id="overview-of-geo">Overview of GEO<a class="anchor" aria-label="anchor" href="#overview-of-geo"></a>
+</h2>
 <p>The NCBI Gene Expression Omnibus (GEO) serves as a public repository for a wide range of high-throughput experimental data. These data include single and dual channel microarray-based experiments measuring mRNA, genomic DNA, and protein abundance, as well as non-array techniques such as serial analysis of gene expression (SAGE), mass spectrometry proteomic data, and high-throughput sequencing data.</p>
 <p>At the most basic level of organization of GEO, there are four basic entity types. The first three (Sample, Platform, and Series) are supplied by users; the fourth, the dataset, is compiled and curated by GEO staff from the user-submitted data. See <a href="https://www.ncbi.nlm.nih.gov/geo/" class="external-link">the GEO home page</a> for more information.</p>
-<div class="section level2">
-<h2 id="platforms">Platforms<a class="anchor" aria-label="anchor" href="#platforms"></a>
-</h2>
+<div class="section level3">
+<h3 id="platforms">Platforms<a class="anchor" aria-label="anchor" href="#platforms"></a>
+</h3>
 <p>A Platform record describes the list of elements on the array (e.g., cDNAs, oligonucleotide probesets, ORFs, antibodies) or the list of elements that may be detected and quantified in that experiment (e.g., SAGE tags, peptides). Each Platform record is assigned a unique and stable GEO accession number (GPLxxx). A Platform may reference many Samples that have been submitted by multiple submitters.</p>
 </div>
-<div class="section level2">
-<h2 id="samples">Samples<a class="anchor" aria-label="anchor" href="#samples"></a>
-</h2>
+<div class="section level3">
+<h3 id="samples">Samples<a class="anchor" aria-label="anchor" href="#samples"></a>
+</h3>
 <p>A Sample record describes the conditions under which an individual Sample was handled, the manipulations it underwent, and the abundance measurement of each element derived from it. Each Sample record is assigned a unique and stable GEO accession number (GSMxxx). A Sample entity must reference only one Platform and may be included in multiple Series.</p>
 </div>
-<div class="section level2">
-<h2 id="series">Series<a class="anchor" aria-label="anchor" href="#series"></a>
-</h2>
+<div class="section level3">
+<h3 id="series">Series<a class="anchor" aria-label="anchor" href="#series"></a>
+</h3>
 <p>A Series record defines a set of related Samples considered to be part of a group, how the Samples are related, and if and how they are ordered. A Series provides a focal point and description of the experiment as a whole. Series records may also contain tables describing extracted data, summary conclusions, or analyses. Each Series record is assigned a unique and stable GEO accession number (GSExxx). Series records are available in a couple of formats which are handled by GEOquery independently. The smaller and new GSEMatrix files are quite fast to parse; a simple flag is used by GEOquery to choose to use GSEMatrix files (see below).</p>
 </div>
-<div class="section level2">
-<h2 id="datasets">Datasets<a class="anchor" aria-label="anchor" href="#datasets"></a>
-</h2>
+<div class="section level3">
+<h3 id="datasets">Datasets<a class="anchor" aria-label="anchor" href="#datasets"></a>
+</h3>
 <p>GEO DataSets (GDSxxx) are curated sets of GEO Sample data. A GDS record represents a collection of biologically and statistically comparable GEO Samples and forms the basis of GEO’s suite of data display and analysis tools. Samples within a GDS refer to the same Platform, that is, they share a common set of probe elements. Value measurements for each Sample within a GDS are assumed to be calculated in an equivalent manner, that is, considerations such as background processing and normalization are consistent across the dataset. Information reflecting experimental design is provided through GDS subsets.</p>
 </div>
 </div>
-<div class="section level1">
-<h1 id="getting-started-using-geoquery">Getting Started using GEOquery<a class="anchor" aria-label="anchor" href="#getting-started-using-geoquery"></a>
-</h1>
+<div class="section level2">
+<h2 id="getting-started-using-geoquery">Getting Started using GEOquery<a class="anchor" aria-label="anchor" href="#getting-started-using-geoquery"></a>
+</h2>
 <p>Getting data from GEO is really quite easy. There is only one command that is needed, <code>getGEO</code>. This one function interprets its input to determine how to get the data from GEO and then parse the data into useful R data structures. Usage is quite simple. This loads the GEOquery library.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/seandavi/GEOquery" class="external-link">GEOquery</a></span><span class="op">)</span></code></pre></div>
@@ -125,13 +128,13 @@
 <span class="co"># gds &lt;- getGEO("GSM11805")</span>
 <span class="va">gsm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span>filename<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/GSM11805.txt.gz"</span>,package<span class="op">=</span><span class="st">"GEOquery"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="geoquery-data-structures">GEOquery Data Structures<a class="anchor" aria-label="anchor" href="#geoquery-data-structures"></a>
-</h1>
-<p>The GEOquery data structures really come in two forms. The first, comprising <code>GDS</code>, <code>GPL</code>, and <code>GSM</code> all behave similarly and accessors have similar effects on each. The fourth GEOquery data structure, <code>GSE</code> is a composite data type made up of a combination of <code>GSM</code> and <code>GPL</code> objects. I will explain the first three together first.</p>
 <div class="section level2">
-<h2 id="the-gds-gsm-and-gpl-classes">The GDS, GSM, and GPL classes<a class="anchor" aria-label="anchor" href="#the-gds-gsm-and-gpl-classes"></a>
+<h2 id="geoquery-data-structures">GEOquery Data Structures<a class="anchor" aria-label="anchor" href="#geoquery-data-structures"></a>
 </h2>
+<p>The GEOquery data structures really come in two forms. The first, comprising <code>GDS</code>, <code>GPL</code>, and <code>GSM</code> all behave similarly and accessors have similar effects on each. The fourth GEOquery data structure, <code>GSE</code> is a composite data type made up of a combination of <code>GSM</code> and <code>GPL</code> objects. I will explain the first three together first.</p>
+<div class="section level3">
+<h3 id="the-gds-gsm-and-gpl-classes">The GDS, GSM, and GPL classes<a class="anchor" aria-label="anchor" href="#the-gds-gsm-and-gpl-classes"></a>
+</h3>
 <p>Each of these classes is comprised of a metadata header (taken nearly verbatim from the SOFT format header) and a GEODataTable. The GEODataTable has two simple parts, a Columns part which describes the column headers on the Table part. There is also a <code>show</code> method for each class. For example, using the gsm from above:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Look at gsm metadata:</span>
@@ -196,9 +199,9 @@
 <span class="co">## 16 GSM12301        normal          3</span>
 <span class="co">## 17 GSM12448        normal          4</span></code></pre>
 </div>
-<div class="section level2">
-<h2 id="the-gse-class">The GSE class<a class="anchor" aria-label="anchor" href="#the-gse-class"></a>
-</h2>
+<div class="section level3">
+<h3 id="the-gse-class">The GSE class<a class="anchor" aria-label="anchor" href="#the-gse-class"></a>
+</h3>
 <p>The <code>GSE</code> entity is the most confusing of the GEO entities. A GSE entry can represent an arbitrary number of samples run on an arbitrary number of platforms. The <code>GSE</code> class has a metadata section, just like the other classes. However, it doesn’t have a GEODataTable. Instead, it contains two lists, accessible using the <code>GPLList</code> and <code>GSMList</code> methods, that are each lists of <code>GPL</code> and <code>GSM</code> objects. To show an example:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Again, with good network access, one would do:</span>
@@ -322,13 +325,13 @@
 <p><em>See below for an additional, preferred method of obtaining GSE information.</em></p>
 </div>
 </div>
-<div class="section level1">
-<h1 id="converting-to-bioconductor-expressionsets-and-limma-malists">Converting to BioConductor ExpressionSets and limma MALists<a class="anchor" aria-label="anchor" href="#converting-to-bioconductor-expressionsets-and-limma-malists"></a>
-</h1>
-<p>GEO datasets are (unlike some of the other GEO entities), quite similar to the <code>limma</code> data structure <code>MAList</code> and to the <code>Biobase</code> data structure <code>ExpressionSet</code>. Therefore, there are two functions, <code>GDS2MA</code> and <code>GDS2eSet</code> that accomplish that task.</p>
 <div class="section level2">
-<h2 id="getting-gse-series-matrix-files-as-an-expressionset">Getting GSE Series Matrix files as an ExpressionSet<a class="anchor" aria-label="anchor" href="#getting-gse-series-matrix-files-as-an-expressionset"></a>
+<h2 id="converting-to-bioconductor-expressionsets-and-limma-malists">Converting to BioConductor ExpressionSets and limma MALists<a class="anchor" aria-label="anchor" href="#converting-to-bioconductor-expressionsets-and-limma-malists"></a>
 </h2>
+<p>GEO datasets are (unlike some of the other GEO entities), quite similar to the <code>limma</code> data structure <code>MAList</code> and to the <code>Biobase</code> data structure <code>ExpressionSet</code>. Therefore, there are two functions, <code>GDS2MA</code> and <code>GDS2eSet</code> that accomplish that task.</p>
+<div class="section level3">
+<h3 id="getting-gse-series-matrix-files-as-an-expressionset">Getting GSE Series Matrix files as an ExpressionSet<a class="anchor" aria-label="anchor" href="#getting-gse-series-matrix-files-as-an-expressionset"></a>
+</h3>
 <p>GEO Series are collections of related experiments. In addition to being available as SOFT format files, which are quite large, NCBI GEO has prepared a simpler format file based on tab-delimited text. The <code>getGEO</code> function can handle this format and will parse very large GSEs quite quickly. The data structure returned from this parsing is a list of ExpressionSets. As an example, we download and parse GSE2553.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Note that GSEMatrix=TRUE is the default</span>
@@ -365,9 +368,9 @@
 <span class="co">## GSM48684 Malignant Peripheral Nerve Sheath Tumor</span>
 <span class="co">## GSM48685                             Liposarcoma</span></code></pre>
 </div>
-<div class="section level2">
-<h2 id="converting-gds-to-an-expressionset">Converting GDS to an ExpressionSet<a class="anchor" aria-label="anchor" href="#converting-gds-to-an-expressionset"></a>
-</h2>
+<div class="section level3">
+<h3 id="converting-gds-to-an-expressionset">Converting GDS to an ExpressionSet<a class="anchor" aria-label="anchor" href="#converting-gds-to-an-expressionset"></a>
+</h3>
 <p>Taking our <code>gds</code> object from above, we can simply do:</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">eset</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coercion.html">GDS2eSet</a></span><span class="op">(</span><span class="va">gds</span>,do.log2<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
@@ -410,9 +413,9 @@
 <span class="co">## GSM12301 GSM12301        normal          3</span>
 <span class="co">## GSM12448 GSM12448        normal          4</span></code></pre>
 </div>
-<div class="section level2">
-<h2 id="converting-gds-to-an-malist">Converting GDS to an MAList<a class="anchor" aria-label="anchor" href="#converting-gds-to-an-malist"></a>
-</h2>
+<div class="section level3">
+<h3 id="converting-gds-to-an-malist">Converting GDS to an MAList<a class="anchor" aria-label="anchor" href="#converting-gds-to-an-malist"></a>
+</h3>
 <p>No annotation information (called platform information by GEO) was retrieved from because <code>ExpressionSet</code> does not contain slots for gene information, typically. However, it is easy to obtain this information. First, we need to know what platform this GDS used. Then, another call to <code>getGEO</code> will get us what we need.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#get the platform from the GDS metadata</span>
@@ -430,9 +433,9 @@
 <span class="co">## [1] "limma"</span></code></pre>
 <p>Now, <code>MA</code> is of class <code>MAList</code> and contains not only the data, but the sample information and gene information associated with GDS507.</p>
 </div>
-<div class="section level2">
-<h2 id="converting-gse-to-an-expressionset">Converting GSE to an ExpressionSet<a class="anchor" aria-label="anchor" href="#converting-gse-to-an-expressionset"></a>
-</h2>
+<div class="section level3">
+<h3 id="converting-gse-to-an-expressionset">Converting GSE to an ExpressionSet<a class="anchor" aria-label="anchor" href="#converting-gse-to-an-expressionset"></a>
+</h3>
 <p><em>First, make sure that using the method described above in the section ``Getting GSE Series Matrix files as an ExpressionSet’’ for using GSE Series Matrix files is not sufficient for the task, as it is much faster and simpler.</em> If it is not (i.e., other columns from each GSM are needed), then this method will be needed.</p>
 <p>Converting a <code>GSE</code> object to an <code>ExpressionSet</code> object currently takes a bit of R data manipulation due to the varied data that can be stored in a <code>GSE</code> and the underlying <code>GSM</code> and <code>GPL</code> objects. However, using a simple example will hopefully be illustrative of the technique.</p>
 <p>First, we need to make sure that all of the <code>GSMs</code> are from the same platform:</p>
@@ -543,18 +546,18 @@
 <p>So, using a combination of <code>lapply</code> on the GSMList, one can extract as many columns of interest as necessary to build the data structure of choice. Because the GSM data from the GEO website are fully downloaded and included in the <code>GSE</code> object, one can extract foreground and background as well as quality for two-channel arrays, for example. Getting array annotation is also a bit more complicated, but by replacing ``platform’’ in the lapply call to get platform information for each array, one can get other information associated with each array.</p>
 </div>
 </div>
-<div class="section level1">
-<h1 id="accessing-raw-data-from-geo">Accessing Raw Data from GEO<a class="anchor" aria-label="anchor" href="#accessing-raw-data-from-geo"></a>
-</h1>
+<div class="section level2">
+<h2 id="accessing-raw-data-from-geo">Accessing Raw Data from GEO<a class="anchor" aria-label="anchor" href="#accessing-raw-data-from-geo"></a>
+</h2>
 <p>NCBI GEO accepts (but has not always required) raw data such as .CEL files, .CDF files, images, etc. Sometimes, it is useful to get quick access to such data. A single function, <code>getGEOSuppFiles</code>, can take as an argument a GEO accession and will download all the raw data associate with that accession. By default, the function will create a directory in the current working directory to store the raw data for the chosen GEO accession. Combining a simple <code>sapply</code> statement or other loop structure with <code>getGEOSuppFiles</code> makes for a very simple way to get gobs of raw data quickly and easily without needing to know the specifics of GEO raw data URLs.</p>
 </div>
-<div class="section level1">
-<h1 id="use-cases">Use Cases<a class="anchor" aria-label="anchor" href="#use-cases"></a>
-</h1>
-<p>GEOquery can be quite powerful for gathering a lot of data quickly. A few examples can be useful to show how this might be done for data mining purposes.</p>
 <div class="section level2">
-<h2 id="getting-all-series-records-for-a-given-platform">Getting all Series Records for a Given Platform<a class="anchor" aria-label="anchor" href="#getting-all-series-records-for-a-given-platform"></a>
+<h2 id="use-cases">Use Cases<a class="anchor" aria-label="anchor" href="#use-cases"></a>
 </h2>
+<p>GEOquery can be quite powerful for gathering a lot of data quickly. A few examples can be useful to show how this might be done for data mining purposes.</p>
+<div class="section level3">
+<h3 id="getting-all-series-records-for-a-given-platform">Getting all Series Records for a Given Platform<a class="anchor" aria-label="anchor" href="#getting-all-series-records-for-a-given-platform"></a>
+</h3>
 <p>For data mining purposes, it is sometimes useful to be able to pull all the GSE records for a given platform. GEOquery makes this very easy, but a little bit of knowledge of the GPL record is necessary to get started. The GPL record contains both the GSE and GSM accessions that reference it. Some code is useful to illustrate the point:</p>
 <div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gpl97</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">'GPL97'</span><span class="op">)</span>
@@ -580,13 +583,13 @@
 <pre><code><span class="co">## [1] "GSM3922" "GSM3924" "GSM3926" "GSM3928" "GSM3930"</span></code></pre>
 </div>
 </div>
-<div class="section level1">
-<h1 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
-</h1>
-<p>The GEOquery package provides a bridge to the vast array resources contained in the NCBI GEO repositories. By maintaining the full richness of the GEO data rather than focusing on getting only the ``numbers’’, it is possible to integrate GEO data into current Bioconductor data structures and to perform analyses on that data quite quickly and easily. These tools will hopefully open GEO data more fully to the array community at large.</p>
 <div class="section level2">
-<h2 id="citing-geoquery">Citing GEOquery<a class="anchor" aria-label="anchor" href="#citing-geoquery"></a>
+<h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h2>
+<p>The GEOquery package provides a bridge to the vast array resources contained in the NCBI GEO repositories. By maintaining the full richness of the GEO data rather than focusing on getting only the ``numbers’’, it is possible to integrate GEO data into current Bioconductor data structures and to perform analyses on that data quite quickly and easily. These tools will hopefully open GEO data more fully to the array community at large.</p>
+<div class="section level3">
+<h3 id="citing-geoquery">Citing GEOquery<a class="anchor" aria-label="anchor" href="#citing-geoquery"></a>
+</h3>
 <p>Please consider citing GEOquery if used in support of your own research:</p>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"GEOquery"</span><span class="op">)</span></code></pre></div>
@@ -608,21 +611,21 @@
 <span class="co">##     pages = {1846--1847},</span>
 <span class="co">##   }</span></code></pre>
 </div>
-<div class="section level2">
-<h2 id="reporting-problems-or-bugs">Reporting problems or bugs<a class="anchor" aria-label="anchor" href="#reporting-problems-or-bugs"></a>
-</h2>
+<div class="section level3">
+<h3 id="reporting-problems-or-bugs">Reporting problems or bugs<a class="anchor" aria-label="anchor" href="#reporting-problems-or-bugs"></a>
+</h3>
 <p>If you run into problems using GEOquery, the <a href="https://support.bioconductor.org/" class="external-link">Bioconductor Support site</a> is a good first place to ask for help. If you are convinced that there is a bug in GEOquery (this is pretty unusual, but not unheard of), feel free to submit an issue on the <a href="https://github.com/seandavi/GEOquery" class="external-link">GEOquery github site</a> or file a bug report directly from R (will open a new github issue):</p>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/bug.report.html" class="external-link">bug.report</a></span><span class="op">(</span>package<span class="op">=</span><span class="st">'GEOquery'</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
-<div class="section level1">
-<h1 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
-</h1>
+<div class="section level2">
+<h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
+</h2>
 <p>The following package and versions were used in the production of this vignette.</p>
-<pre><code><span class="co">## R version 4.1.2 (2021-11-01)</span>
+<pre><code><span class="co">## R version 4.2.0 (2022-04-22)</span>
 <span class="co">## Platform: x86_64-pc-linux-gnu (64-bit)</span>
-<span class="co">## Running under: Ubuntu 20.04.3 LTS</span>
+<span class="co">## Running under: Ubuntu 20.04.4 LTS</span>
 <span class="co">## </span>
 <span class="co">## Matrix products: default</span>
 <span class="co">## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0</span>
@@ -638,23 +641,24 @@
 <span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span>
 <span class="co">## </span>
 <span class="co">## other attached packages:</span>
-<span class="co">## [1] GEOquery_2.63.3     Biobase_2.54.0      BiocGenerics_0.40.0</span>
-<span class="co">## [4] knitr_1.37         </span>
+<span class="co">## [1] GEOquery_2.65.1     Biobase_2.56.0      BiocGenerics_0.42.0</span>
+<span class="co">## [4] knitr_1.39         </span>
 <span class="co">## </span>
 <span class="co">## loaded via a namespace (and not attached):</span>
-<span class="co">##  [1] bslib_0.3.1       compiler_4.1.2    pillar_1.6.4      jquerylib_0.1.4  </span>
-<span class="co">##  [5] R.methodsS3_1.8.1 R.utils_2.11.0    tools_4.1.2       digest_0.6.29    </span>
-<span class="co">##  [9] jsonlite_1.7.2    evaluate_0.14     memoise_2.0.1     lifecycle_1.0.1  </span>
-<span class="co">## [13] tibble_3.1.6      pkgconfig_2.0.3   rlang_0.4.12      curl_4.3.2       </span>
-<span class="co">## [17] yaml_2.2.1        pkgdown_2.0.1     xfun_0.29         fastmap_1.1.0    </span>
-<span class="co">## [21] xml2_1.3.3        stringr_1.4.0     dplyr_1.0.7       hms_1.1.1        </span>
-<span class="co">## [25] desc_1.4.0        generics_0.1.1    fs_1.5.2          sass_0.4.0       </span>
-<span class="co">## [29] vctrs_0.3.8       systemfonts_1.0.3 tidyselect_1.1.1  rprojroot_2.0.2  </span>
-<span class="co">## [33] glue_1.6.0        data.table_1.14.2 R6_2.5.1          textshaping_0.3.6</span>
-<span class="co">## [37] fansi_1.0.0       rmarkdown_2.11    limma_3.50.0      tidyr_1.1.4      </span>
-<span class="co">## [41] tzdb_0.2.0        readr_2.1.1       purrr_0.3.4       magrittr_2.0.1   </span>
-<span class="co">## [45] htmltools_0.5.2   ellipsis_0.3.2    ragg_1.2.1        utf8_1.2.2       </span>
-<span class="co">## [49] stringi_1.7.6     cachem_1.0.6      crayon_1.4.2      R.oo_1.24.0</span></code></pre>
+<span class="co">##  [1] bslib_0.3.1       compiler_4.2.0    pillar_1.7.0      jquerylib_0.1.4  </span>
+<span class="co">##  [5] R.methodsS3_1.8.1 R.utils_2.11.0    tools_4.2.0       digest_0.6.29    </span>
+<span class="co">##  [9] tibble_3.1.7      jsonlite_1.8.0    evaluate_0.15     memoise_2.0.1    </span>
+<span class="co">## [13] lifecycle_1.0.1   pkgconfig_2.0.3   rlang_1.0.2       cli_3.3.0        </span>
+<span class="co">## [17] curl_4.3.2        yaml_2.3.5        pkgdown_2.0.3     xfun_0.31        </span>
+<span class="co">## [21] fastmap_1.1.0     xml2_1.3.3        stringr_1.4.0     dplyr_1.0.9      </span>
+<span class="co">## [25] hms_1.1.1         desc_1.4.1        generics_0.1.2    fs_1.5.2         </span>
+<span class="co">## [29] sass_0.4.1        vctrs_0.4.1       systemfonts_1.0.4 tidyselect_1.1.2 </span>
+<span class="co">## [33] rprojroot_2.0.3   glue_1.6.2        data.table_1.14.2 R6_2.5.1         </span>
+<span class="co">## [37] textshaping_0.3.6 fansi_1.0.3       rmarkdown_2.14    limma_3.52.0     </span>
+<span class="co">## [41] tidyr_1.2.0       tzdb_0.3.0        readr_2.1.2       purrr_0.3.4      </span>
+<span class="co">## [45] magrittr_2.0.3    htmltools_0.5.2   ellipsis_0.3.2    ragg_1.2.2       </span>
+<span class="co">## [49] utf8_1.2.2        stringi_1.7.6     cachem_1.0.6      crayon_1.5.1     </span>
+<span class="co">## [53] R.oo_1.24.0</span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
@@ -669,7 +673,7 @@
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
     </footer>
