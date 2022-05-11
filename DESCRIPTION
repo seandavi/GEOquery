@@ -1,8 +1,8 @@
 Package: GEOquery
 Type: Package
 Title: Get data from NCBI Gene Expression Omnibus (GEO)
-Version: 2.65.0
-Date: 2022-01-11
+Version: 2.65.1
+Date: 2022-05-11
 Author: Sean Davis <sdavis2@mail.nih.gov>
 Maintainer: Sean Davis <sdavis2@mail.nih.gov>
 BugReports: https://github.com/seandavi/GEOquery/issues/new
