@@ -15,7 +15,7 @@ NULL
 
 
 
-#' Class "GDS"
+#' Class 'GDS'
 #' 
 #' A class describing a GEO GDS entity
 #' 
@@ -23,7 +23,7 @@ NULL
 #' @name GDS-class
 #' @docType class
 #' @section Objects from the Class: Objects can be created by calls of the form
-#' \code{new("GDS", ...)}
+#' \code{new('GDS', ...)}
 #' @author Sean Davis
 #' @seealso \code{\link{GEOData-class}}
 #' @keywords classes
@@ -37,7 +37,7 @@ NULL
 #' MALists or ExpressionSets.
 #' 
 #' This function just rearranges one data structure into another.  For GDS, it
-#' also deals appropriately with making the "targets" list item for the limma
+#' also deals appropriately with making the 'targets' list item for the limma
 #' data structure and the phenoData slot of ExpressionSets.
 #'
 #' @name coercion
@@ -79,7 +79,7 @@ NULL
 
 
 
-#' Class "GEOData"
+#' Class 'GEOData'
 #' 
 #' A virtual class for holding GEO samples, platforms, and datasets
 #' 
@@ -90,7 +90,7 @@ NULL
 #' show,GEOData-method
 #' @docType class
 #' @section Objects from the Class: Objects can be created by calls of the form
-#' \code{new("GEOData", ...)}.
+#' \code{new('GEOData', ...)}.
 #' @author Sean Davis
 #' @seealso \code{\link{GDS-class}}, \code{\link{GPL-class}},
 #' \code{\link{GSM-class}}, \code{\link{GEODataTable-class}},
@@ -101,7 +101,7 @@ NULL
 
 
 
-#' Class "GEODataTable"
+#' Class 'GEODataTable'
 #' 
 #' Contains the column descriptions and data for the datatable part of a GEO
 #' object
@@ -114,7 +114,7 @@ NULL
 #' show,GEODataTable-method
 #' @docType class
 #' @section Objects from the Class: Objects can be created by calls of the form
-#' \code{new("GEODataTable", ...)}.
+#' \code{new('GEODataTable', ...)}.
 #' @author Sean Davis
 #' @keywords classes
 NULL
@@ -123,7 +123,7 @@ NULL
 
 
 
-#' Class "GPL"
+#' Class 'GPL'
 #' 
 #' Contains a full GEO Platform entity
 #' 
@@ -131,7 +131,7 @@ NULL
 #' @name GPL-class
 #' @docType class
 #' @section Objects from the Class: Objects can be created by calls of the form
-#' \code{new("GPL", ...)}.
+#' \code{new('GPL', ...)}.
 #' @author Sean Davis
 #' @seealso \code{\link{GEOData-class}}
 #' @keywords classes
@@ -141,7 +141,7 @@ NULL
 
 
 
-#' Class "GSE"
+#' Class 'GSE'
 #' 
 #' Contains a GEO Series entity
 #' 
@@ -150,7 +150,7 @@ NULL
 #' @aliases GSE-class GPLList,GSE-method GSMList,GSE-method Meta,GSE-method
 #' @docType class
 #' @section Objects from the Class: Objects can be created by calls of the form
-#' \code{new("GSE", ...)}.
+#' \code{new('GSE', ...)}.
 #' @author Sean Davis
 #' @seealso \code{\link{GPL-class}},\code{\link{GSM-class}}
 #' @keywords classes
@@ -160,7 +160,7 @@ NULL
 
 
 
-#' Class "GSM"
+#' Class 'GSM'
 #' 
 #' A class containing a GEO Sample entity
 #' 
@@ -168,7 +168,7 @@ NULL
 #' @name GSM-class
 #' @docType class
 #' @section Objects from the Class: Objects can be created by calls of the form
-#' \code{new("GSM", ...)}.
+#' \code{new('GSM', ...)}.
 #' @author Sean Davis
 #' @seealso \code{\link{GEOData-class}}
 #' @keywords classes
