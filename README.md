@@ -27,3 +27,7 @@ See the full vignette in [rmarkdown](https://github.com/seandavi/GEOquery/blob/m
 
 - [Release version](http://www.bioconductor.org/packages/release/bioc/html/GEOquery.html)
 - [Devel version](http://www.bioconductor.org/packages/devel/bioc/html/GEOquery.html)
+
+## How to contribute
+
+Contributions to GEOquery development can be submitted as a [pull request](https://github.com/seandavi/GEOquery/pulls) or a [feature request issue](https://github.com/seandavi/GEOquery/issues). We recommend following the [Bioconductor coding standards](https://contributions.bioconductor.org/r-code.html) where possible.  
