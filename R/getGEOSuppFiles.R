@@ -52,8 +52,13 @@ getDirListing <- function(url) {
 #' a
 #' 
 #' @export
-getGEOSuppFiles <- function(GEO, makeDirectory = TRUE, baseDir = getwd(), fetch_files = TRUE,
-    filter_regex = NULL) {
+getGEOSuppFiles2 <- function(
+    GEO,
+    makeDirectory = TRUE,
+    baseDir = getwd(),
+    fetch_files = TRUE,
+    filter_regex = NULL
+) {
     geotype <- toupper(substr(GEO, 1, 3))
     storedir <- baseDir
     fileinfo <- list()
@@ -88,9 +93,15 @@ getGEOSuppFiles <- function(GEO, makeDirectory = TRUE, baseDir = getwd(), fetch_
             destfile <- file.path(storedir, i)
 
             result <- tryCatch({
-                res <- download.file(paste(file.path(url, i), "tool=geoquery", sep = "?"),
-                  destfile = destfile, mode = "wb", method = getOption("download.file.method.GEOquery"))
-                ## download.file returns a '0' on success
+                if (!file.exists(destfile)) {
+                    res <- download.file(paste(file.path(url, i), "tool=geoquery", sep = "?"), destfile = destfile, mode = "wb", method = getOption("download.file.method.GEOquery"))
+                    ## download.file returns a '0' on success
+                } else {
+                  message(sprintf("Using locally cached version of supplementary file(s) %s found here:\n%s ",
+                    GEO, destfile))
+                    res <- 0
+                }
+
                 res == 0
             }, error = function(e) return(FALSE), warning = function(w) return(FALSE))
 
