@@ -52,7 +52,7 @@ getDirListing <- function(url) {
 #' a
 #' 
 #' @export
-getGEOSuppFiles2 <- function(
+getGEOSuppFiles <- function(
     GEO,
     makeDirectory = TRUE,
     baseDir = getwd(),
