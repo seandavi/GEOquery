@@ -48,25 +48,25 @@ getGEOfile <- function(GEO, destdir = tempdir(), AnnotGPL = FALSE, amount = c("f
     if (geotype == "GDS") {
         gdsurl <- "https://ftp.ncbi.nlm.nih.gov/geo/datasets/%s/%s/soft/%s"
         myurl <- sprintf(gdsurl, stub, GEO, paste0(GEO, ".soft.gz"))
-        destfile <- file.path(destdir, paste0(GEO, ".soft.gz"))
+        destfile <- fs::path(destdir, GEO, ext = "soft.gz")
     }
     if (geotype == "GSE" & amount == "full") {
         gseurl <- "https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/soft/%s"
         myurl <- sprintf(gseurl, stub, GEO, paste0(GEO, "_family.soft.gz"))
-        destfile <- file.path(destdir, paste(GEO, ".soft.gz", sep = ""))
+        destfile <- fs::path(destdir, GEO, ext = "soft.gz")
     }
     if (geotype == "GSE" & amount != "full" & amount != "table") {
         gseurl <- "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
         myurl <- paste(gseurl, "?targ=self&acc=", GEO, "&form=text&view=", amount,
             sep = "")
-        destfile <- file.path(destdir, paste(GEO, ".soft", sep = ""))
+        destfile <- fs::path(destdir, GEO, ext = "soft")
         mode <- "w"
     }
     if (geotype == "GPL") {
         if (AnnotGPL) {
             gplurl <- "https://ftp.ncbi.nlm.nih.gov/geo/platforms/%s/%s/annot/%s"
             myurl <- sprintf(gplurl, stub, GEO, paste0(GEO, ".annot.gz"))
-            destfile <- file.path(destdir, paste(GEO, ".annot.gz", sep = ""))
+            destfile <- fs::path(destdir, GEO, ext = "annot.gz")
             # check to see if Annotation GPL is present.  If so, use it, else
             # move on to submitter GPL
             res = try({
@@ -86,7 +86,7 @@ getGEOfile <- function(GEO, destdir = tempdir(), AnnotGPL = FALSE, amount = c("f
         gseurl <- "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
         myurl <- paste(gseurl, "?targ=self&acc=", GEO, "&form=text&view=", amount,
             sep = "")
-        destfile <- file.path(destdir, paste(GEO, ".soft.gz", sep = ""))
+        destfile <- fs::path(destdir, GEO, ext = "soft.gz")
         mode <- "w"
         if (!file.exists(destfile)) {
             downloadFile(myurl, destfile, mode = mode, quiet = TRUE)
@@ -100,7 +100,7 @@ getGEOfile <- function(GEO, destdir = tempdir(), AnnotGPL = FALSE, amount = c("f
         gseurl <- "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
         myurl <- paste(gseurl, "?targ=self&acc=", GEO, "&form=text&view=", amount,
             sep = "")
-        destfile <- file.path(destdir, paste(GEO, ".soft", sep = ""))
+        destfile <- fs::path(destdir, GEO, ext = "soft")
         mode <- "w"
     }
     if (!file.exists(destfile)) {
