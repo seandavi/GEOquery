@@ -83,18 +83,18 @@ getGEOSuppFiles <- function(
         return(NULL)
     }
     if (makeDirectory) {
-        suppressWarnings(dir.create(storedir <- file.path(baseDir, GEO)))
+        suppressWarnings(dir.create(storedir <- fs::path(baseDir, GEO)))
     }
     if (!is.null(filter_regex)) {
         fnames = fnames[grepl(filter_regex, fnames)]
     }
     if (fetch_files) {
         for (i in fnames) {
-            destfile <- file.path(storedir, i)
+            destfile <- fs::path(storedir, i)
 
             result <- tryCatch({
                 if (!file.exists(destfile)) {
-                    res <- download.file(paste(file.path(url, i), "tool=geoquery", sep = "?"), destfile = destfile, mode = "wb", method = getOption("download.file.method.GEOquery"))
+                    res <- download.file(paste(fs::path(url, i), "tool=geoquery", sep = "?"), destfile = destfile, mode = "wb", method = getOption("download.file.method.GEOquery"))
                     ## download.file returns a '0' on success
                 } else {
                   message(sprintf("Using locally cached version of supplementary file(s) %s found here:\n%s ",
@@ -118,6 +118,6 @@ getGEOSuppFiles <- function(
         }
         return(do.call(rbind, fileinfo))
     } else {
-        return(data.frame(fname = fnames, url = file.path(url, fnames)))
+        return(data.frame(fname = fnames, url = fs::path(url, fnames)))
     }
 }
