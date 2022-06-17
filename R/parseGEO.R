@@ -441,7 +441,7 @@ getAndParseGSEMatrices <- function(GEO, destdir, AnnotGPL, getGPL = TRUE, parseC
     ## Loop over the files, returning a list, one element for each file
     for (i in 1:length(b)) {
         message(b[i])
-        destfile = file.path(destdir, b[i])
+        destfile = fs::path(destdir, b[i])
         if (file.exists(destfile)) {
             message(sprintf("Using locally cached version: %s", destfile))
         } else {
