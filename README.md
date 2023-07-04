@@ -2,6 +2,7 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/seandavi/GEOquery/workflows/R-CMD-check/badge.svg)](https://github.com/seandavi/GEOquery/actions)
+[![R-CMD-check](https://github.com/seandavi/GEOquery/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/seandavi/GEOquery/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## Installation
