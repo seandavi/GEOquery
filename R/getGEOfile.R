@@ -182,7 +182,7 @@ gunzip <- function(filename, destname = gsub("[.]gz$", "", filename), overwrite 
 downloadFile <- function(url, destfile, mode, quiet = TRUE) {
     h <- curl::new_handle()
     curl::handle_setheaders(h, `accept-encoding` = "gzip")
-    timeout_seconds = 120
+    timeout_seconds <- max(getOption("timeout"), 120)
     curl::handle_setopt(h, timeout_ms = timeout_seconds * 1000)
     result = tryCatch({
         curl::curl_download(url, destfile, mode = mode, quiet = quiet, handle = h)
