@@ -104,3 +104,9 @@ test_that("GSE/GPL with integer64 columns handled correctly", {
   expect_s3_class(fdata$ID, "integer64")
   expect_is(rownames(fdata), "character")
 })
+
+test_that("Test regression against issue 144", {
+  gse = getGEO("GSE225759")[[1]]
+  expect_equivalent(nrow(gse), 442)
+  expect_equivalent(ncol(gse), 272)
+})

@@ -581,7 +581,7 @@ parseGSEMatrix <- function(fname, AnnotGPL = FALSE, destdir = tempdir(), getGPL 
     rownames(datamat) <- tmprownames[!is.na(tmprownames)]
     datamat <- as.matrix(datamat)
     rownames(sampledat) <- colnames(datamat)
-    GPL = as.character(sampledat[1, grep("platform_id", colnames(sampledat), ignore.case = TRUE)])
+    GPL = as.character(sampledat[1, grep("^platform_id", colnames(sampledat), ignore.case = TRUE)])
     ## if getGPL is FALSE, skip this and featureData is then a data.frame with no
     ## columns
     fd = new("AnnotatedDataFrame", data = data.frame(row.names = rownames(datamat)))
