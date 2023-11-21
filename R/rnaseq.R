@@ -43,7 +43,7 @@ available_gse_files <- function(gse) {
   )
 
   data.frame(link = links, id = link_ids) |>
-    dplyr::filter(grepl("^download", id)) |>
+    dplyr::filter(grepl("^download", id)) |> # nolint: object_usage_linter.
     dplyr::mutate(id = sub("download_", "", id)) |>
     dplyr::left_join(.gse_download_types, by = "id")
 }
