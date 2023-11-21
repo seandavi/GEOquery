@@ -26,6 +26,8 @@
 #' @export
 available_gse_files <- function(gse) {
   # TODO: check if gse is valid
+  # TODO: need to add support for downloading annotation for RNA-seq
+  # TODO: should add file size and date where available
 
   url <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=", gse)
   page <- rvest::read_html(url)
