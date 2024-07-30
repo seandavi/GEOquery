@@ -110,21 +110,6 @@ readRNAQuantRawCounts <- function(link) {
 #' @return A list with two elements: quants (a matrix of raw counts) and
 #' annotation (a data frame of annotation information).
 #'
-#' @examples
-#' res <- getRNASeqQuantResults("GSE83322")
-#'
-#' # get dimensions of the raw counts and annotation
-#' sapply(res, dim)
-#'
-#' # check the structure of the results
-#' sapply(res, class)
-#'
-#' # check the structure of the results
-#' head(res$quants)
-#' head(res$annotation)
-#'
-#' nrows(res$quants) == nrow(res$annotation)
-#'
 #' @keywords internal
 getRNASeqQuantResults <- function(gse) {
   links <- getGSEDownloadPageURLs(gse)

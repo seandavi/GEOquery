@@ -17,20 +17,4 @@ annotation (a data frame of annotation information).
 This function downloads the raw counts and annotation files from GEO
 for a given GEO accession number.
 }
-\examples{
-res <- getRNASeqQuantResults("GSE83322")
-
-# get dimensions of the raw counts and annotation
-sapply(res, dim)
-
-# check the structure of the results
-sapply(res, class)
-
-# check the structure of the results
-head(res$quants)
-head(res$annotation)
-
-nrows(res$quants) == nrow(res$annotation)
-
-}
 \keyword{internal}
