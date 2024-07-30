@@ -10,15 +10,17 @@
 
 To install from Bioconductor, use the following code:
 
-```{r}
-if (!requireNamespace("BiocManager", quietly=TRUE))
-    install.packages("BiocManager")
+```
+# if needed, install BiocManager
+install.packages("BiocManager")
+
+# install GEOquery
 BiocManager::install("GEOquery")
 ```
 
 To install directly from github:
 
-```{r}
+```
 BiocManager::install('seandavi/GEOquery')
 ```
 
