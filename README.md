@@ -18,8 +18,7 @@ BiocManager::install("GEOquery")
 To install directly from github:
 
 ```{r}
-library(devtools)
-install_github('seandavi/GEOquery')
+BiocManager::install('seandavi/GEOquery')
 ```
 
 ## Usage
