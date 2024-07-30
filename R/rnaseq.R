@@ -12,7 +12,7 @@ getGSEDownloadPageURLs <- function(gse) {
   page <- rvest::read_html(url)
   links <- rvest::html_nodes(page, "a") |>
     rvest::html_attr("href") |>
-    stringr::str_replace("^/geo/", "https://ncbi.nlm.nih.gov/geo/") |>
+    stringr::str_replace("^/geo/", "https://www.ncbi.nlm.nih.gov/geo/") |>
     stringr::str_replace("^ftp://", "https://")
   class(links) <- c("geoDownloadLinks", class(links))
   return(links)
@@ -91,7 +91,7 @@ readRNAQuantAnnotation <- function(link) {
 #' @return A matrix of raw counts with gene IDs as row names
 #'
 #' @keywords internal
-readRNAQuantificationRawCounts <- function(link) {
+readRNAQuantRawCounts <- function(link) {
   quants <- readr::read_tsv(link, show_col_types = FALSE)
   gene_ids <- as.character(quants$GeneID)
   quants <- as.matrix(quants[, -1])
@@ -138,7 +138,7 @@ getRNASeqQuantResults <- function(gse) {
     )
   }
   annotation_link <- getRNAQuantAnnotationURL(links)
-  quants <- readRNAQuantificationRawCounts(raw_counts_link)
+  quants <- readRNAQuantRawCounts(raw_counts_link)
   annotation <- readRNAQuantAnnotation(annotation_link)
   return(list(quants = quants, annotation = annotation))
 }
@@ -200,7 +200,7 @@ browseWebsiteRNASeqSearch <- function() {
 #' @export
 getRNASeqData <- function(accession) {
   quantifications <- getRNASeqQuantResults(accession)
-  se <- as(
+  se <- SummarizedExperiment::as(
     getGEO(accession)[[1]],
     "SummarizedExperiment"
   )
