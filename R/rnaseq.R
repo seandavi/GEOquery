@@ -200,7 +200,7 @@ browseWebsiteRNASeqSearch <- function() {
 #' @export
 getRNASeqData <- function(accession) {
   quantifications <- getRNASeqQuantResults(accession)
-  se <- SummarizedExperiment::as(
+  se <- SummarizedExperiment::coerce(
     getGEO(accession)[[1]],
     "SummarizedExperiment"
   )
