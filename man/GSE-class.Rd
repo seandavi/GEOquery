@@ -6,13 +6,13 @@
 \alias{GPLList,GSE-method}
 \alias{GSMList,GSE-method}
 \alias{Meta,GSE-method}
-\title{Class "GSE"}
+\title{Class 'GSE'}
 \description{
 Contains a GEO Series entity
 }
 \section{Objects from the Class}{
  Objects can be created by calls of the form
-\code{new("GSE", ...)}.
+\code{new('GSE', ...)}.
 }
 
 \seealso{

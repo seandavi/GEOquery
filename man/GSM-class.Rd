@@ -3,13 +3,13 @@
 \docType{class}
 \name{GSM-class}
 \alias{GSM-class}
-\title{Class "GSM"}
+\title{Class 'GSM'}
 \description{
 A class containing a GEO Sample entity
 }
 \section{Objects from the Class}{
  Objects can be created by calls of the form
-\code{new("GSM", ...)}.
+\code{new('GSM', ...)}.
 }
 
 \seealso{

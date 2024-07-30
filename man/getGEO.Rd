@@ -130,7 +130,7 @@ that coffee may be involved when parsing....
 
 \examples{
 
-gds <- getGEO("GDS10")
+gds <- getGEO('GDS10')
 gds
 
 gse <- getGEO('GSE10')

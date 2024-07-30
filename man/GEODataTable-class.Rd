@@ -9,14 +9,14 @@
 \alias{Table,GEODataTable-method}
 \alias{dataTable,GEODataTable-method}
 \alias{show,GEODataTable-method}
-\title{Class "GEODataTable"}
+\title{Class 'GEODataTable'}
 \description{
 Contains the column descriptions and data for the datatable part of a GEO
 object
 }
 \section{Objects from the Class}{
  Objects can be created by calls of the form
-\code{new("GEODataTable", ...)}.
+\code{new('GEODataTable', ...)}.
 }
 
 \author{

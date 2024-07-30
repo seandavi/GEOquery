@@ -5,13 +5,13 @@
 \alias{GPL-class}
 \alias{GPL}
 \alias{GPL,GDS-method}
-\title{Class "GPL"}
+\title{Class 'GPL'}
 \description{
 Contains a full GEO Platform entity
 }
 \section{Objects from the Class}{
  Objects can be created by calls of the form
-\code{new("GPL", ...)}.
+\code{new('GPL', ...)}.
 }
 
 \seealso{

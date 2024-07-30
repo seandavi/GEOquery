@@ -38,10 +38,10 @@ accession number given.
 This function downloads GEO SOFT files based on accession number.  It does
 not do any parsing.  The first two arguments should be fairly
 self-explanatory, but the last is based on the input to the acc.cgi url at
-the geo website.  In the default "full" mode, the entire SOFT format file is
-downloaded.  Both "brief" and "quick" offer shortened versions of the files,
-good for "peeking" at the file before a big download on a slow connection.
-Finally, "data" downloads only the data table part of the SOFT file and is
+the geo website.  In the default 'full' mode, the entire SOFT format file is
+downloaded.  Both 'brief' and 'quick' offer shortened versions of the files,
+good for 'peeking' at the file before a big download on a slow connection.
+Finally, 'data' downloads only the data table part of the SOFT file and is
 good for downloading a simple EXCEL-like file for use with other programs (a
 convenience).
 }

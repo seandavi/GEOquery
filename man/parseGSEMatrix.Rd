@@ -21,7 +21,7 @@ parseGSEMatrix(
 
 \item{getGPL}{whether or not to get the GPL associated}
 
-\item{parseCharacteristics}{Whether or not to do full "characteristic" parsing}
+\item{parseCharacteristics}{Whether or not to do full 'characteristic' parsing}
 }
 \description{
 Not meant for user calling, but parses

@@ -24,7 +24,7 @@ GSE record and parses out the data tables into R data.frames.
 }
 \examples{
 
-dfl = getGSEDataTables("GSE3494")
+dfl = getGSEDataTables('GSE3494')
 lapply(dfl,head)
 
 

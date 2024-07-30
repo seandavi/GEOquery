@@ -3,13 +3,13 @@
 \docType{class}
 \name{GDS-class}
 \alias{GDS-class}
-\title{Class "GDS"}
+\title{Class 'GDS'}
 \description{
 A class describing a GEO GDS entity
 }
 \section{Objects from the Class}{
  Objects can be created by calls of the form
-\code{new("GDS", ...)}
+\code{new('GDS', ...)}
 }
 
 \seealso{

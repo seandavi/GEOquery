@@ -1,51 +1,213 @@
-.gse_download_types <- readr::read_csv(
-  I(
-    "id,description
-    soft,SOFT formatted metadata and data
-    matrix,GSEmatrix formatted data
-    miniml,MINiML formatted metadata and data
-    suppl_archive,Supplementary files as tar archive
-    raw_counts,Raw RNA-seq counts
-    norm_counts_fpkm,Normalized RNA-seq counts (FPKM)
-    norm_counts_tpm,Normalized RNA-seq counts (TPM)"
-  ),
-  show_col_types = FALSE,
-  progress = FALSE
-)
-
-#' Get available files for a GEO accession number
+#' get all download links from a GEO accession
+#'
+#' This function gets all download links from a GEO accession number.
 #'
 #' @param gse GEO accession number
 #'
-#' @return A list of data frames
+#' @return A character vector with all download links
+#'
+#' @keywords internal
+get_all_gse_download_links <- function(gse) {
+  url <- paste0("https://ncbi.nlm.nih.gov/geo/download/?acc=", gse)
+  page <- rvest::read_html(url)
+  links <- rvest::html_nodes(page, "a") |>
+    rvest::html_attr("href") |>
+    stringr::str_replace("^/geo/", "https://www.ncbi.nlm.nih.gov/geo/")
+  class(links) <- c("geoDownloadLinks", class(links))
+  return(links)
+}
+
+
+#' Get the link to the raw counts file from GEO
+#'
+#' This function extracts the link to the raw counts file from a
+#' geoDownloadLinks object.
+#'
+#' @param links A geoDownloadLinks object
+#'
+#' @return A character vector with the link to the raw counts file
+#'
+#' @keywords internal
+get_rna_quant_raw_counts_link <- function(links) {
+  if (!inherits(links, "geoDownloadLinks")) {
+    stop("Input must be a geoDownloadLinks object")
+  }
+  link <- stringr::str_subset(links, "raw_counts")
+  return(link)
+}
+
+#' Get the RNA-seq quantification annotation link
+#'
+#' This function extracts the link to the RNA-seq quantification annotation
+#' file from a geoDownloadLinks object.
+#'
+#' @param links A geoDownloadLinks object
+#'
+#' @return A character vector with the link to the annotation file
+#'
+#' @keywords internal
+get_rna_quant_annotation_link <- function(links) {
+  if (!inherits(links, "geoDownloadLinks")) {
+    stop("Input must be a geoDownloadLinks object")
+  }
+  link <- stringr::str_subset(links, "annot.tsv.gz")
+  return(link)
+}
+
+
+#' Read RNA-seq quantification annotation from GEO
+#'
+#' This function reads the annotation file from a GEO link. The annotation
+#' file is expected to be a tab-separated file with the first column
+#' containing the gene IDs and the remaining columns containing the
+#' annotation information.
+#'
+#' @param link A link to the annotation file
+#'
+#' @return A data frame of annotation information with gene IDs as row names
+#'
+#' @keywords internal
+read_rna_quant_annotation <- function(link) {
+  annotation <- as.data.frame(readr::read_tsv(link, show_col_types = FALSE))
+  rownames(annotation) <- as.character(annotation$GeneID)
+  return(annotation)
+}
+
+
+#' Read raw counts from GEO
+#'
+#' This function reads the raw counts from a GEO link. The raw counts
+#' are expected to be in a tab-separated file with the first column
+#' containing the gene IDs and the remaining columns containing the
+#' raw counts.
+#'
+#' This function reads the raw counts and returns a matrix with the
+#' gene IDs as the row names, ready for use in creating a
+#' SummarizedExperiment.
+#'
+#' @param link A link to the raw counts file
+#'
+#' @return A matrix of raw counts with gene IDs as row names
+#'
+#' @keywords internal
+read_rna_quant_raw_counts <- function(link) {
+  quants <- readr::read_tsv(link, show_col_types = FALSE)
+  gene_ids <- as.character(quants$GeneID)
+  quants <- as.matrix(quants[, -1])
+  rownames(quants) <- gene_ids
+  return(quants)
+}
+
+
+#' Get RNA-seq quantification and annotation from GEO
+#'
+#' This function downloads the raw counts and annotation files from GEO
+#' for a given GEO accession number.
+#'
+#' @param gse GEO accession number
+#'
+#' @return A list with two elements: quants (a matrix of raw counts) and
+#' annotation (a data frame of annotation information).
 #'
 #' @examples
+#' res <- rnaseq_quantification_results("GSE83322")
 #'
-#' available_gse_files("GSE83322")
+#' # get dimensions of the raw counts and annotation
+#' sapply(res, dim)
+#'
+#' # check the structure of the results
+#' sapply(res, class)
+#'
+#' # check the structure of the results
+#' head(res$quants)
+#' head(res$annotation)
+#'
+#' nrows(res$quants) == nrow(res$annotation)
+#'
+#' @keywords internal
+rnaseq_quantification_results <- function(gse) {
+  links <- get_all_gse_download_links(gse)
+  raw_counts_link <- get_rna_quant_raw_counts_link(links)
+  if (length(raw_counts_link) == 0) {
+    stop(
+      "No raw counts file found.\n",
+      "Navigate to: \n  https://ncbi.nlm.nih.gov/geo/download/?acc=",
+      gse,
+      "\nand check if the 'RNA-Seq raw counts' link is available."
+    )
+  }
+  annotation_link <- get_rna_quant_annotation_link(links)
+  quants <- read_rna_quant_raw_counts(raw_counts_link)
+  annotation <- read_rna_quant_annotation(annotation_link)
+  return(list(quants = quants, annotation = annotation))
+}
+
+#' Browse GEO search website for RNA-seq datasets
+#'
+#' This function opens a browser window to the NCBI GEO website
+#' with a search for RNA-seq datasets. It is included as a convenience
+#' function to remind users of how to search for RNA-seq datasets using
+#' the NCBI GEO website and an "rnaseq counts" filter.
+#'
+#' @examples
+#' \dontrun{
+#' browse_website_rnaseq_search()
+#' }
+#' @export
+browse_website_rnaseq_search <- function() {
+  browseURL(
+    "https://ncbi.nlm.nih.gov/gds?term=%22rnaseq%20counts%22%5BFilter%5D"
+  )
+}
+
+#' Get GEO RNA-seq quantifications as a SummarizedExperiment object
+#'
+#' For human and mouse GEO datasets, NCBI GEO attempts to process
+#' the raw data and provide quantifications in the form of raw counts
+#' and an annotation file. This function downloads the raw counts and
+#' annotation files from GEO and merges that with the metadata from the GEO
+#' object to create a SummarizedExperiment.
+#'
+#' @details
+#' A major barrier to fully exploiting and reanalyzing the massive volumes
+#' of public RNA-seq data archived by SRA is the cost and effort required to
+#' consistently process raw RNA-seq reads into concise formats that summarize
+#' the expression results. To help address this need, the NCBI SRA and GEO
+#' teams have built a pipeline that precomputes RNA-seq gene expression counts
+#' and delivers them as count matrices that may be incorporated into commonly
+#' used differential expression analysis and visualization software.
+#'
+#' The pipeline processes RNA-seq data from SRA using the HISAT2 aligner and
+#' and then generates gene expression counts using the featureCounts program.
+#'
+#' See the
+#' [GEO documentation](https://ncbi.nlm.nih.gov/geo/info/rnaseqcounts.html)
+#' for more details.
+#'
+#'
+#' @param accession GEO accession number
+#'
+#' @return A SummarizedExperiment object with the raw counts as the counts
+#' assay, the annotation as the rowData, and the metadata from GEO as
+#' the colData.
+#'
+#'
+#' @examples
+#' se <- get_rna_seq("GSE164073")
+#' se
 #'
 #' @export
-available_gse_files <- function(gse) {
-  # TODO: check if gse is valid
-  # TODO: need to add support for downloading annotation for RNA-seq
-  # TODO: should add file size and date where available
-
-  url <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=", gse)
-  page <- rvest::read_html(url)
-  anchors <- page |>
-    rvest::html_nodes(xpath = "//li/a")
-  links <- anchors |>
-    rvest::html_attr("href")
-  links <- sub("^ftp", "https", links)
-  link_ids <- anchors |>
-    rvest::html_attr("id")
-
-  links[!grepl("^https://ftp.ncbi.nlm.nih.gov", links)] <- paste0(
-    "https://www.ncbi.nlm.nih.gov",
-    links[!grepl("^https://ftp.ncbi.nlm.nih.gov/", links)]
+get_rna_seq <- function(accession) {
+  quantifications <- rnaseq_quantification_results(accession)
+  se <- as(
+    getGEO(accession)[[1]],
+    "SummarizedExperiment"
   )
-
-  data.frame(link = links, id = link_ids) |>
-    dplyr::filter(grepl("^download", id)) |> # nolint: object_usage_linter.
-    dplyr::mutate(id = sub("download_", "", id)) |>
-    dplyr::left_join(.gse_download_types, by = "id")
+  new_se <- SummarizedExperiment::SummarizedExperiment(
+    assays = list(counts = quantifications$quants),
+    rowData = quantifications$annotation,
+    colData = SummarizedExperiment::colData(se),
+    metadata = S4Vectors::metadata(se)
+  )
+  new_se
 }

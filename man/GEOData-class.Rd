@@ -9,13 +9,13 @@
 \alias{Table,GEOData-method}
 \alias{dataTable,GEOData-method}
 \alias{show,GEOData-method}
-\title{Class "GEOData"}
+\title{Class 'GEOData'}
 \description{
 A virtual class for holding GEO samples, platforms, and datasets
 }
 \section{Objects from the Class}{
  Objects can be created by calls of the form
-\code{new("GEOData", ...)}.
+\code{new('GEOData', ...)}.
 }
 
 \seealso{

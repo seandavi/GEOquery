@@ -2,10 +2,12 @@
 
 export(GDS2MA)
 export(GDS2eSet)
+export(browse_website_rnaseq_search)
 export(getGEO)
 export(getGEOSuppFiles)
 export(getGEOfile)
 export(getGSEDataTables)
+export(get_rna_seq)
 export(gunzip)
 export(parseGEO)
 export(searchGEO)

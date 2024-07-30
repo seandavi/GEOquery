@@ -38,7 +38,7 @@ MALists or ExpressionSets.
 }
 \details{
 This function just rearranges one data structure into another.  For GDS, it
-also deals appropriately with making the "targets" list item for the limma
+also deals appropriately with making the 'targets' list item for the limma
 data structure and the phenoData slot of ExpressionSets.
 }
 \examples{
