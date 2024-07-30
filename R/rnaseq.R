@@ -7,12 +7,13 @@
 #' @return A character vector with all download links
 #'
 #' @keywords internal
-getGSEDownloadURLs <- function(gse) {
+getGSEDownloadPageURLs <- function(gse) {
   url <- paste0("https://ncbi.nlm.nih.gov/geo/download/?acc=", gse)
   page <- rvest::read_html(url)
   links <- rvest::html_nodes(page, "a") |>
     rvest::html_attr("href") |>
-    stringr::str_replace("^/geo/", "https://www.ncbi.nlm.nih.gov/geo/")
+    stringr::str_replace("^/geo/", "https://ncbi.nlm.nih.gov/geo/") |>
+    stringr::str_replace("^ftp://", "https://")
   class(links) <- c("geoDownloadLinks", class(links))
   return(links)
 }
@@ -126,7 +127,7 @@ readRNAQuantificationRawCounts <- function(link) {
 #'
 #' @keywords internal
 getRNASeqQuantResults <- function(gse) {
-  links <- getGSEDownloadURLs(gse)
+  links <- getGSEDownloadPageURLs(gse)
   raw_counts_link <- getRNAQuantRawCountsURL(links)
   if (length(raw_counts_link) == 0) {
     stop(
