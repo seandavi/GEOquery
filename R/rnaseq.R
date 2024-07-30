@@ -7,7 +7,7 @@
 #' @return A character vector with all download links
 #'
 #' @keywords internal
-get_all_gse_download_links <- function(gse) {
+getGSEDownloadURLs <- function(gse) {
   url <- paste0("https://ncbi.nlm.nih.gov/geo/download/?acc=", gse)
   page <- rvest::read_html(url)
   links <- rvest::html_nodes(page, "a") |>
@@ -28,7 +28,7 @@ get_all_gse_download_links <- function(gse) {
 #' @return A character vector with the link to the raw counts file
 #'
 #' @keywords internal
-get_rna_quant_raw_counts_link <- function(links) {
+getRNAQuantRawCountsURL <- function(links) {
   if (!inherits(links, "geoDownloadLinks")) {
     stop("Input must be a geoDownloadLinks object")
   }
@@ -46,7 +46,7 @@ get_rna_quant_raw_counts_link <- function(links) {
 #' @return A character vector with the link to the annotation file
 #'
 #' @keywords internal
-get_rna_quant_annotation_link <- function(links) {
+getRNAQuantAnnotationURL <- function(links) {
   if (!inherits(links, "geoDownloadLinks")) {
     stop("Input must be a geoDownloadLinks object")
   }
@@ -67,7 +67,7 @@ get_rna_quant_annotation_link <- function(links) {
 #' @return A data frame of annotation information with gene IDs as row names
 #'
 #' @keywords internal
-read_rna_quant_annotation <- function(link) {
+readRNAQuantAnnotation <- function(link) {
   annotation <- as.data.frame(readr::read_tsv(link, show_col_types = FALSE))
   rownames(annotation) <- as.character(annotation$GeneID)
   return(annotation)
@@ -90,7 +90,7 @@ read_rna_quant_annotation <- function(link) {
 #' @return A matrix of raw counts with gene IDs as row names
 #'
 #' @keywords internal
-read_rna_quant_raw_counts <- function(link) {
+readRNAQuantificationRawCounts <- function(link) {
   quants <- readr::read_tsv(link, show_col_types = FALSE)
   gene_ids <- as.character(quants$GeneID)
   quants <- as.matrix(quants[, -1])
@@ -110,7 +110,7 @@ read_rna_quant_raw_counts <- function(link) {
 #' annotation (a data frame of annotation information).
 #'
 #' @examples
-#' res <- rnaseq_quantification_results("GSE83322")
+#' res <- getRNASeqQuantResults("GSE83322")
 #'
 #' # get dimensions of the raw counts and annotation
 #' sapply(res, dim)
@@ -125,9 +125,9 @@ read_rna_quant_raw_counts <- function(link) {
 #' nrows(res$quants) == nrow(res$annotation)
 #'
 #' @keywords internal
-rnaseq_quantification_results <- function(gse) {
-  links <- get_all_gse_download_links(gse)
-  raw_counts_link <- get_rna_quant_raw_counts_link(links)
+getRNASeqQuantResults <- function(gse) {
+  links <- getGSEDownloadURLs(gse)
+  raw_counts_link <- getRNAQuantRawCountsURL(links)
   if (length(raw_counts_link) == 0) {
     stop(
       "No raw counts file found.\n",
@@ -136,9 +136,9 @@ rnaseq_quantification_results <- function(gse) {
       "\nand check if the 'RNA-Seq raw counts' link is available."
     )
   }
-  annotation_link <- get_rna_quant_annotation_link(links)
-  quants <- read_rna_quant_raw_counts(raw_counts_link)
-  annotation <- read_rna_quant_annotation(annotation_link)
+  annotation_link <- getRNAQuantAnnotationURL(links)
+  quants <- readRNAQuantificationRawCounts(raw_counts_link)
+  annotation <- readRNAQuantAnnotation(annotation_link)
   return(list(quants = quants, annotation = annotation))
 }
 
@@ -151,10 +151,10 @@ rnaseq_quantification_results <- function(gse) {
 #'
 #' @examples
 #' \dontrun{
-#' browse_website_rnaseq_search()
+#' browseWebsiteRNASeqSearch()
 #' }
 #' @export
-browse_website_rnaseq_search <- function() {
+browseWebsiteRNASeqSearch <- function() {
   browseURL(
     "https://ncbi.nlm.nih.gov/gds?term=%22rnaseq%20counts%22%5BFilter%5D"
   )
@@ -193,12 +193,12 @@ browse_website_rnaseq_search <- function() {
 #'
 #'
 #' @examples
-#' se <- get_rna_seq("GSE164073")
+#' se <- getRNASeqData("GSE164073")
 #' se
 #'
 #' @export
-get_rna_seq <- function(accession) {
-  quantifications <- rnaseq_quantification_results(accession)
+getRNASeqData <- function(accession) {
+  quantifications <- getRNASeqQuantResults(accession)
   se <- as(
     getGEO(accession)[[1]],
     "SummarizedExperiment"
