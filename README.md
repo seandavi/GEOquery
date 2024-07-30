@@ -19,7 +19,7 @@ To install directly from github:
 
 ```{r}
 library(devtools)
-install_github('GEOquery','seandavi')
+install_github('seandavi/GEOquery')
 ```
 
 ## Usage
