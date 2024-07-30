@@ -185,6 +185,8 @@ browseWebsiteRNASeqSearch <- function() {
 #' [GEO documentation](https://ncbi.nlm.nih.gov/geo/info/rnaseqcounts.html)
 #' for more details.
 #'
+#' @import SummarizedExperiment
+#'
 #'
 #' @param accession GEO accession number
 #'
