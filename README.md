@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/seandavi/GEOquery/workflows/R-CMD-check/badge.svg)](https://github.com/seandavi/GEOquery/actions)
-[![Downloads]https://bioconductor.org/shields/downloads/release/GEOquery.svg)](https://bioconductor.org/packages/GEOquery)
+[![Downloads](https://bioconductor.org/shields/downloads/release/GEOquery.svg)](https://bioconductor.org/packages/GEOquery)
 [![Years in Bioc](https://bioconductor.org/shields/years-in-bioc/GEOquery.svg)](https://bioconductor.org/packages/GEOquery)
 <!-- badges: end -->
 
