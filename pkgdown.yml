@@ -1,10 +1,9 @@
-pandoc: 2.7.3
-pkgdown: 2.0.6
+pandoc: 3.1.8
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
   GEOquery: GEOquery.html
-last_built: 2022-07-22T16:42Z
+last_built: 2024-07-30T19:04Z
 urls:
   reference: http://seandavi.github.io/GEOquery/reference
   article: http://seandavi.github.io/GEOquery/articles
-
