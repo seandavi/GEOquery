@@ -22,109 +22,111 @@
 #' may choose a smaller value if failed.
 #' @return a data.frame contains the search results
 #' @examples
+#' \dontrun{
 #' GEOquery::searchGEO("diabetes[ALL] AND Homo sapiens[ORGN] AND GSE[ETYP]")
+#' }
 #' @export
 searchGEO <- function(query, step = 500L) {
-    records_num <- rentrez::entrez_search(
-        "gds", query,
-        retmax = 0L
-    )$count
-    seq_starts <- seq(1L, records_num, step)
-    records <- character(length(seq_starts))
-    search_res <- rentrez::entrez_search(
-        "gds", query,
-        use_history = TRUE, retmax = 0L
+  records_num <- rentrez::entrez_search(
+    "gds", query,
+    retmax = 0L
+  )$count
+  seq_starts <- seq(1L, records_num, step)
+  records <- character(length(seq_starts))
+  search_res <- rentrez::entrez_search(
+    "gds", query,
+    use_history = TRUE, retmax = 0L
+  )
+  for (i in seq_along(seq_starts)) {
+    records[[i]] <- rentrez::entrez_fetch(
+      db = "gds", web_history = search_res$web_history,
+      rettype = "summary", retmode = "text",
+      retmax = step, retstart = seq_starts[[i]]
     )
-    for (i in seq_along(seq_starts)) {
-        records[[i]] <- rentrez::entrez_fetch(
-            db = "gds", web_history = search_res$web_history,
-            rettype = "summary", retmode = "text",
-            retmax = step, retstart = seq_starts[[i]]
-        )
-        Sys.sleep(1L)
-    }
-    records <- strsplit(
-        gsub("^\\n|\\n$", "", paste0(records, collapse = "")),
-        "\\n\\n"
-    )[[1L]]
-    name_value_pairs <- parse_name_value_pairs(preprocess_records(records))
-    data.table::setDF(name_value_pairs)
-    name_value_pairs
+    Sys.sleep(1L)
+  }
+  records <- strsplit(
+    gsub("^\\n|\\n$", "", paste0(records, collapse = "")),
+    "\\n\\n"
+  )[[1L]]
+  name_value_pairs <- parse_name_value_pairs(preprocess_records(records))
+  data.table::setDF(name_value_pairs)
+  name_value_pairs
 }
 
 # this function just processed GEO searched results returned by `entrez_fetch`
 # into key-values paris
 preprocess_records <- function(x) {
-    x <- sub("^\\d+\\.", "Title:", x, perl = TRUE)
-    x <- sub(
-        "\\n\\(Submitter supplied\\)\\s*",
-        "\nSummary: ", x,
-        perl = TRUE
-    )
-    x <- gsub(
-        "\\s*\\n?(Platform|Dataset)s?\\s*:\\s*",
-        "\n\\1s: ", x,
-        perl = TRUE
-    )
-    x <- sub("\\tID:\\s*", "\nID: ", x, perl = TRUE)
-    x <- sub(
-        "\\n?\\s*((?:\\s*\\d+(?:\\s*related)?\\s*(?:DataSet|Platform|Sample|Serie)s?)+)([^:])",
-        "\nContains: \\1\\2", x,
-        perl = TRUE
-    )
-    x <- gsub(":\\t+", ": ", x, perl = TRUE)
-    x <- gsub("\\t\\t+", " ", x, perl = TRUE)
-    strsplit(x, "\\n", perl = TRUE)
+  x <- sub("^\\d+\\.", "Title:", x, perl = TRUE)
+  x <- sub(
+    "\\n\\(Submitter supplied\\)\\s*",
+    "\nSummary: ", x,
+    perl = TRUE
+  )
+  x <- gsub(
+    "\\s*\\n?(Platform|Dataset)s?\\s*:\\s*",
+    "\n\\1s: ", x,
+    perl = TRUE
+  )
+  x <- sub("\\tID:\\s*", "\nID: ", x, perl = TRUE)
+  x <- sub(
+    "\\n?\\s*((?:\\s*\\d+(?:\\s*related)?\\s*(?:DataSet|Platform|Sample|Serie)s?)+)([^:])",
+    "\nContains: \\1\\2", x,
+    perl = TRUE
+  )
+  x <- gsub(":\\t+", ": ", x, perl = TRUE)
+  x <- gsub("\\t\\t+", " ", x, perl = TRUE)
+  strsplit(x, "\\n", perl = TRUE)
 }
 
 # parse key-value pairs separeted by ":". For a list of key-value pairs
 # characters (like: `list(c("a:1", "b:2"), c("a:3", "b:4"))`), this function
 # simply cleans those up and transforms the list into a list object, the names
 # of returned value is the unique keys in the pairs, the element of the returned
-# list is the values in the paris. 
+# list is the values in the paris.
 # See parse_name_value_pairs(list(c("a:1", "b:2"), c("a:3", "b:4")))
 #' @return a list, every element of which corresponds to each key-value pairs
 #' group by key in the paris.
 #' @noRd
 parse_name_value_pairs <- function(chr_list, sep = ":") {
-    .characteristic_list <- lapply(chr_list, function(x) {
-        if (!length(x)) {
-            return(data.table::data.table())
-        }
-        # Don't use `data.table::tstrsplit`, as it will split string into three
-        # or more elements.
-        name_value_pairs <- data.table::transpose(
-            str_split(x, paste0("(\\s*+)", sep, "(\\s*+)"))
-        )
-        res <- as.list(name_value_pairs[[2L]])
-        names(res) <- name_value_pairs[[1L]]
-        data.table::setDT(res)
-        res
-    })
-    characteristic_dt <- data.table::rbindlist(
-        .characteristic_list,
-        use.names = TRUE, fill = TRUE
+  .characteristic_list <- lapply(chr_list, function(x) {
+    if (!length(x)) {
+      return(data.table::data.table())
+    }
+    # Don't use `data.table::tstrsplit`, as it will split string into three
+    # or more elements.
+    name_value_pairs <- data.table::transpose(
+      str_split(x, paste0("(\\s*+)", sep, "(\\s*+)"))
     )
-    data.table::setnames(characteristic_dt, make.unique)
+    res <- as.list(name_value_pairs[[2L]])
+    names(res) <- name_value_pairs[[1L]]
+    data.table::setDT(res)
+    res
+  })
+  characteristic_dt <- data.table::rbindlist(
+    .characteristic_list,
+    use.names = TRUE, fill = TRUE
+  )
+  data.table::setnames(characteristic_dt, make.unique)
 
-    # parse text into corresponding atomic vector mode
-    lapply(characteristic_dt, function(x) {
-        data.table::fread(
-            text = x, sep = "", header = FALSE,
-            strip.white = TRUE, blank.lines.skip = FALSE, fill = TRUE
-        )[[1L]]
-    })
+  # parse text into corresponding atomic vector mode
+  lapply(characteristic_dt, function(x) {
+    data.table::fread(
+      text = x, sep = "", header = FALSE,
+      strip.white = TRUE, blank.lines.skip = FALSE, fill = TRUE
+    )[[1L]]
+  })
 }
 
 # split string based on pattern, Only split once, Return a list of character,
 # the length of every element is two
 str_split <- function(string, pattern, ignore.case = FALSE) {
-    regmatches(
-        string,
-        regexpr(pattern, string,
-            perl = TRUE, fixed = FALSE,
-            ignore.case = ignore.case
-        ),
-        invert = TRUE
-    )
+  regmatches(
+    string,
+    regexpr(pattern, string,
+      perl = TRUE, fixed = FALSE,
+      ignore.case = ignore.case
+    ),
+    invert = TRUE
+  )
 }

@@ -35,5 +35,7 @@ rentrez will use it for all requests to the NCBI. Details see
 <https://docs.ropensci.org/rentrez/articles/rentrez_tutorial.html#rate-limiting-and-api-keys>
 }
 \examples{
+\dontrun{
 GEOquery::searchGEO("diabetes[ALL] AND Homo sapiens[ORGN] AND GSE[ETYP]")
+}
 }
