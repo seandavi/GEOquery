@@ -35,3 +35,4 @@ Description: The NCBI Gene Expression Omnibus (GEO) is a public repository of mi
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+Roxygen: list(markdown = TRUE)
