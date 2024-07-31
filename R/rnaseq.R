@@ -9,8 +9,14 @@
 #' @keywords internal
 getGSEDownloadPageURLs <- function(gse) {
   url <- paste0("https://ncbi.nlm.nih.gov/geo/download/?acc=", gse)
-  page <- rvest::read_html(url)
-  links <- rvest::html_nodes(page, "a") |>
+  links <- httr2::request(url) |>
+    httr2::req_timeout(15) |>
+    httr2::req_retry(3) |>
+    httr2::req_url_query(acc = "GSE83322") |>
+    httr2::req_perform() |>
+    httr2::resp_body_string() |>
+    rvest::read_html() |>
+    rvest::html_nodes("a") |>
     rvest::html_attr("href") |>
     stringr::str_replace("^/geo/", "https://www.ncbi.nlm.nih.gov/geo/") |>
     stringr::str_replace("^ftp://", "https://")
