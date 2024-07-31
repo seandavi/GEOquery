@@ -47,7 +47,7 @@ convenience).
 }
 \examples{
 
-  # myfile <- getGEOfile('GDS10')
+# myfile <- getGEOfile('GDS10')
 
 }
 \references{
