@@ -8,7 +8,7 @@
 #'
 #' @keywords internal
 getGSEDownloadPageURLs <- function(gse) {
-  url <- paste0("https://ncbi.nlm.nih.gov/geo/download/?acc=", gse)
+  url <- "https://ncbi.nlm.nih.gov/geo/download/"
   links <- httr2::request(url) |>
     httr2::req_timeout(15) |>
     httr2::req_retry(3) |>
