@@ -35,7 +35,7 @@ each of the important parts of the GEO SOFT format easily accessible."></head><b
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Get a GEO object from NCBI or file</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/HEAD/R/getGEO.R" class="external-link"><code>R/getGEO.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/main/R/getGEO.R" class="external-link"><code>R/getGEO.R</code></a></small>
       <div class="d-none name"><code>getGEO.Rd</code></div>
     </div>
 
@@ -195,8 +195,6 @@ that coffee may be involved when parsing....</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">gds</span> <span class="op">&lt;-</span> <span class="fu">getGEO</span><span class="op">(</span><span class="st">'GDS10'</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using locally cached version of GDS10 found here:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> /var/folders/s3/5l6g4_rj4q9923t7hw7k2lpr0000gq/T//Rtmpflfaoj/GDS10.soft.gz </span>
 <span class="r-in"><span><span class="va">gds</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> An object of class "GDS"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> channel_count </span>
@@ -340,9 +338,6 @@ that coffee may be involved when parsing....</p>
 <span class="r-in"><span><span class="va">gse</span> <span class="op">&lt;-</span> <span class="fu">getGEO</span><span class="op">(</span><span class="st">'GSE10'</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Found 1 file(s)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> GSE10_series_matrix.txt.gz</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using locally cached version: /var/folders/s3/5l6g4_rj4q9923t7hw7k2lpr0000gq/T//Rtmpflfaoj/GSE10_series_matrix.txt.gz</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using locally cached version of GPL4 found here:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> /var/folders/s3/5l6g4_rj4q9923t7hw7k2lpr0000gq/T//Rtmpflfaoj/GPL4.soft.gz </span>
 <span class="r-in"><span><span class="co"># Returns a list, so look at first item</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">gse</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>

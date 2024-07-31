@@ -55,7 +55,7 @@
             
             <h4 data-toc-skip class="date">September 21, 2014</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/HEAD/vignettes/GEOquery.Rmd" class="external-link"><code>vignettes/GEOquery.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/main/vignettes/GEOquery.Rmd" class="external-link"><code>vignettes/GEOquery.Rmd</code></a></small>
       <div class="d-none name"><code>GEOquery.Rmd</code></div>
     </div>
 
@@ -356,14 +356,7 @@ example:</p>
 <span><span class="co">## 1                                                                   ID_REF =</span></span>
 <span><span class="co">## 2                         MAS 5.0 Statistical Algorithm (mean scaled to 500)</span></span>
 <span><span class="co">## 3 MAS 5.0 Absent, Marginal, Present call  with Alpha1 = 0.05, Alpha2 = 0.065</span></span>
-<span><span class="co">## ****** Data Table ******</span></span>
-<span><span class="co">##           ID_REF  VALUE ABS_CALL</span></span>
-<span><span class="co">## 1 AFFX-BioB-5_at  953.9        P</span></span>
-<span><span class="co">## 2 AFFX-BioB-M_at 2982.8        P</span></span>
-<span><span class="co">## 3 AFFX-BioB-3_at 1657.9        P</span></span>
-<span><span class="co">## 4 AFFX-BioC-5_at 2652.7        P</span></span>
-<span><span class="co">## 5 AFFX-BioC-3_at 2019.5        P</span></span>
-<span><span class="co">## 22278 more rows ...</span></span></code></pre>
+<span><span class="co">## ****** Data Table ******</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># and the names of the GPLs represented</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="../reference/GEOData-accessors.html">GPLList</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -393,7 +386,7 @@ GSE2553.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Note that GSEMatrix=TRUE is the default</span></span>
 <span><span class="va">gse2553</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">'GSE2553'</span>,GSEMatrix<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu">show</span><span class="op">(</span><span class="va">gse2553</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/methods/show.html" class="external-link">show</a></span><span class="op">(</span><span class="va">gse2553</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## $GSE2553_series_matrix.txt.gz</span></span>
 <span><span class="co">## ExpressionSet (storageMode: lockedEnvironment)</span></span>
 <span><span class="co">## assayData: 12600 features, 181 samples </span></span>
@@ -411,7 +404,7 @@ GSE2553.</p>
 <span><span class="co">##   pubMedIds: 16230383 </span></span>
 <span><span class="co">## Annotation: GPL1977</span></span></code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html" class="external-link">pData</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html" class="external-link">phenoData</a></span><span class="op">(</span><span class="va">gse2553</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">6</span>,<span class="fl">8</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/methods/show.html" class="external-link">show</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html" class="external-link">pData</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html" class="external-link">phenoData</a></span><span class="op">(</span><span class="va">gse2553</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">6</span>,<span class="fl">8</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                                                  title type</span></span>
 <span><span class="co">## GSM48681                      Patient sample ST18, Dermatofibrosarcoma  RNA</span></span>
 <span><span class="co">## GSM48682                           Patient sample ST410, Ewing Sarcoma  RNA</span></span>
@@ -518,7 +511,7 @@ example will hopefully be illustrative of the technique.</p>
 <p>First, we need to make sure that all of the <code>GSMs</code> are
 from the same platform:</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gsmplatforms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="../reference/GEOData-accessors.html">GSMList</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span>,<span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="../reference/GEOData-accessors.html">Meta</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">$</span><span class="va">platform_id</span><span class="op">}</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">gsmplatforms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="../reference/GEOData-accessors.html">GSMList</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span>,<span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="../reference/GEOData-accessors.html">Meta</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">$</span><span class="va">platform_id</span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gsmplatforms</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## $GSM11805</span></span>
 <span><span class="co">## [1] "GPL96"</span></span>
@@ -543,7 +536,7 @@ from the same platform:</p>
 those GSMs with the GPL96 platform and use this list for further
 processing</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gsmlist</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/funprog.html" class="external-link">Filter</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">gsm</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="../reference/GEOData-accessors.html">Meta</a></span><span class="op">(</span><span class="va">gsm</span><span class="op">)</span><span class="op">$</span><span class="va">platform_id</span><span class="op">==</span><span class="st">'GPL96'</span><span class="op">}</span>,<span class="fu"><a href="../reference/GEOData-accessors.html">GSMList</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">gsmlist</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/funprog.html" class="external-link">Filter</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">gsm</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="../reference/GEOData-accessors.html">Meta</a></span><span class="op">(</span><span class="va">gsm</span><span class="op">)</span><span class="op">$</span><span class="va">platform_id</span><span class="op">==</span><span class="st">'GPL96'</span><span class="op">}</span>,<span class="fu"><a href="../reference/GEOData-accessors.html">GSMList</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">gsmlist</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 17</span></span></code></pre>
 <p>So, now we would like to know what column represents the data that we
@@ -583,9 +576,9 @@ make a matrix of these values like so:</p>
 <span><span class="co"># make the data matrix from the VALUE columns from each GSM</span></span>
 <span><span class="co"># being careful to match the order of the probesets in the platform</span></span>
 <span><span class="co"># with those in the GSMs</span></span>
-<span><span class="va">data.matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="st">'cbind'</span>,<span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">gsmlist</span>,<span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> </span>
+<span><span class="va">data.matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="st">'cbind'</span>,<span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">gsmlist</span>,<span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> </span>
 <span>                                      <span class="op">{</span><span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/GEOData-accessors.html">Table</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span>                                       <span class="va">mymatch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">probesets</span>,<span class="va">tab</span><span class="op">$</span><span class="va">ID_REF</span><span class="op">)</span></span>
+<span>                                       <span class="va">mymatch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">probesets</span>,<span class="va">tab</span><span class="op">$</span><span class="va">ID_REF</span><span class="op">)</span></span>
 <span>                                       <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">tab</span><span class="op">$</span><span class="va">VALUE</span><span class="op">[</span><span class="va">mymatch</span><span class="op">]</span><span class="op">)</span></span>
 <span>                                     <span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">data.matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">data.matrix</span>,<span class="fl">2</span>,<span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span>
@@ -619,8 +612,8 @@ the platform information are in the same order. Finally, to make the
 <span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">data.matrix</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">gsmlist</span><span class="op">)</span></span>
 <span><span class="va">pdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>samples<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">gsmlist</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pdata</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">gsmlist</span><span class="op">)</span></span>
-<span><span class="va">pheno</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">pdata</span>,<span class="st">"AnnotatedDataFrame"</span><span class="op">)</span></span>
-<span><span class="va">eset2</span> <span class="op">&lt;-</span> <span class="fu">new</span><span class="op">(</span><span class="st">'ExpressionSet'</span>,exprs<span class="op">=</span><span class="va">data.matrix</span>,phenoData<span class="op">=</span><span class="va">pheno</span><span class="op">)</span></span>
+<span><span class="va">pheno</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span><span class="va">pdata</span>,<span class="st">"AnnotatedDataFrame"</span><span class="op">)</span></span>
+<span><span class="va">eset2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/new.html" class="external-link">new</a></span><span class="op">(</span><span class="st">'ExpressionSet'</span>,exprs<span class="op">=</span><span class="va">data.matrix</span>,phenoData<span class="op">=</span><span class="va">pheno</span><span class="op">)</span></span>
 <span><span class="va">eset2</span></span></code></pre></div>
 <pre><code><span><span class="co">## ExpressionSet (storageMode: lockedEnvironment)</span></span>
 <span><span class="co">## assayData: 22283 features, 17 samples </span></span>
@@ -721,9 +714,10 @@ research:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"GEOquery"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Please cite the following if utilizing the GEOquery software:</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">##   Davis, S. and Meltzer, P. S. GEOquery: a bridge between the Gene</span></span>
-<span><span class="co">##   Expression Omnibus (GEO) and BioConductor. Bioinformatics, 2007, 14,</span></span>
-<span><span class="co">##   1846-1847</span></span>
+<span><span class="co">##   Davis S, Meltzer P (2007). "GEOquery: a bridge between the Gene</span></span>
+<span><span class="co">##   Expression Omnibus (GEO) and BioConductor." _Bioinformatics_, *14*,</span></span>
+<span><span class="co">##   1846-1847. doi:10.1093/bioinformatics/btm254</span></span>
+<span><span class="co">##   &lt;https://doi.org/10.1093/bioinformatics/btm254&gt;.</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## A BibTeX entry for LaTeX users is</span></span>
 <span><span class="co">## </span></span>
@@ -734,6 +728,7 @@ research:</p>
 <span><span class="co">##     year = {2007},</span></span>
 <span><span class="co">##     volume = {14},</span></span>
 <span><span class="co">##     pages = {1846--1847},</span></span>
+<span><span class="co">##     doi = {10.1093/bioinformatics/btm254},</span></span>
 <span><span class="co">##   }</span></span></code></pre>
 </div>
 <div class="section level3">
@@ -754,40 +749,66 @@ file a bug report directly from R (will open a new github issue):</p>
 <p>The following package and versions were used in the production of
 this vignette.</p>
 <pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
-<span><span class="co">## Platform: aarch64-apple-darwin20</span></span>
-<span><span class="co">## Running under: macOS Sonoma 14.2.1</span></span>
+<span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
+<span><span class="co">## Running under: Ubuntu 22.04.4 LTS</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
-<span><span class="co">## BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib </span></span>
-<span><span class="co">## LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0</span></span>
+<span><span class="co">## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
+<span><span class="co">## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so;  LAPACK version 3.10.0</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## locale:</span></span>
-<span><span class="co">## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
+<span><span class="co">##  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       </span></span>
+<span><span class="co">##  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   </span></span>
+<span><span class="co">##  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          </span></span>
+<span><span class="co">## [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   </span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## time zone: America/New_York</span></span>
-<span><span class="co">## tzcode source: internal</span></span>
+<span><span class="co">## time zone: UTC</span></span>
+<span><span class="co">## tzcode source: system (glibc)</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## attached base packages:</span></span>
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] GEOquery_2.72.0     Biobase_2.64.0      BiocGenerics_0.50.0</span></span>
+<span><span class="co">## [1] GEOquery_2.73.2     Biobase_2.64.0      BiocGenerics_0.50.0</span></span>
 <span><span class="co">## [4] knitr_1.48         </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##  [1] limma_3.60.4      jsonlite_1.8.8    dplyr_1.1.4       compiler_4.4.1   </span></span>
-<span><span class="co">##  [5] tidyselect_1.2.1  xml2_1.3.6        tidyr_1.3.1       jquerylib_0.1.4  </span></span>
-<span><span class="co">##  [9] systemfonts_1.1.0 textshaping_0.4.0 statmod_1.5.0     yaml_2.3.9       </span></span>
-<span><span class="co">## [13] fastmap_1.2.0     readr_2.1.5       R6_2.5.1          generics_0.1.3   </span></span>
-<span><span class="co">## [17] curl_5.2.1        htmlwidgets_1.6.4 tibble_3.2.1      desc_1.4.3       </span></span>
-<span><span class="co">## [21] bslib_0.7.0       pillar_1.9.0      tzdb_0.4.0        R.utils_2.12.3   </span></span>
-<span><span class="co">## [25] rlang_1.1.4       utf8_1.2.4        cachem_1.1.0      xfun_0.46        </span></span>
-<span><span class="co">## [29] fs_1.6.4          sass_0.4.9        cli_3.6.3         pkgdown_2.1.0    </span></span>
-<span><span class="co">## [33] magrittr_2.0.3    digest_0.6.36     hms_1.1.3         lifecycle_1.0.4  </span></span>
-<span><span class="co">## [37] R.oo_1.26.0       R.methodsS3_1.8.2 vctrs_0.6.5       evaluate_0.24.0  </span></span>
-<span><span class="co">## [41] glue_1.7.0        data.table_1.15.4 ragg_1.3.2        fansi_1.0.6      </span></span>
-<span><span class="co">## [45] rmarkdown_2.27    purrr_1.0.2       tools_4.4.1       pkgconfig_2.0.3  </span></span>
-<span><span class="co">## [49] htmltools_0.5.8.1</span></span></code></pre>
+<span><span class="co">##  [1] SummarizedExperiment_1.34.0 xfun_0.46                  </span></span>
+<span><span class="co">##  [3] bslib_0.8.0                 lattice_0.22-6             </span></span>
+<span><span class="co">##  [5] tzdb_0.4.0                  vctrs_0.6.5                </span></span>
+<span><span class="co">##  [7] tools_4.4.1                 generics_0.1.3             </span></span>
+<span><span class="co">##  [9] curl_5.2.1                  stats4_4.4.1               </span></span>
+<span><span class="co">## [11] tibble_3.2.1                fansi_1.0.6                </span></span>
+<span><span class="co">## [13] R.oo_1.26.0                 pkgconfig_2.0.3            </span></span>
+<span><span class="co">## [15] Matrix_1.7-0                data.table_1.15.4          </span></span>
+<span><span class="co">## [17] rentrez_1.2.3               desc_1.4.3                 </span></span>
+<span><span class="co">## [19] S4Vectors_0.42.1            lifecycle_1.0.4            </span></span>
+<span><span class="co">## [21] GenomeInfoDbData_1.2.12     compiler_4.4.1             </span></span>
+<span><span class="co">## [23] textshaping_0.4.0           statmod_1.5.0              </span></span>
+<span><span class="co">## [25] GenomeInfoDb_1.40.1         htmltools_0.5.8.1          </span></span>
+<span><span class="co">## [27] sass_0.4.9                  yaml_2.3.10                </span></span>
+<span><span class="co">## [29] pkgdown_2.1.0               pillar_1.9.0               </span></span>
+<span><span class="co">## [31] crayon_1.5.3                jquerylib_0.1.4            </span></span>
+<span><span class="co">## [33] tidyr_1.3.1                 R.utils_2.12.3             </span></span>
+<span><span class="co">## [35] limma_3.60.4                DelayedArray_0.30.1        </span></span>
+<span><span class="co">## [37] cachem_1.1.0                abind_1.4-5                </span></span>
+<span><span class="co">## [39] tidyselect_1.2.1            digest_0.6.36              </span></span>
+<span><span class="co">## [41] dplyr_1.1.4                 purrr_1.0.2                </span></span>
+<span><span class="co">## [43] fastmap_1.2.0               grid_4.4.1                 </span></span>
+<span><span class="co">## [45] cli_3.6.3                   SparseArray_1.4.8          </span></span>
+<span><span class="co">## [47] magrittr_2.0.3              S4Arrays_1.4.1             </span></span>
+<span><span class="co">## [49] XML_3.99-0.17               utf8_1.2.4                 </span></span>
+<span><span class="co">## [51] readr_2.1.5                 UCSC.utils_1.0.0           </span></span>
+<span><span class="co">## [53] rmarkdown_2.27              XVector_0.44.0             </span></span>
+<span><span class="co">## [55] httr_1.4.7                  matrixStats_1.3.0          </span></span>
+<span><span class="co">## [57] R.methodsS3_1.8.2           ragg_1.3.2                 </span></span>
+<span><span class="co">## [59] hms_1.1.3                   evaluate_0.24.0            </span></span>
+<span><span class="co">## [61] GenomicRanges_1.56.1        IRanges_2.38.1             </span></span>
+<span><span class="co">## [63] rlang_1.1.4                 glue_1.7.0                 </span></span>
+<span><span class="co">## [65] xml2_1.3.6                  jsonlite_1.8.8             </span></span>
+<span><span class="co">## [67] R6_2.5.1                    MatrixGenerics_1.16.0      </span></span>
+<span><span class="co">## [69] systemfonts_1.1.0           fs_1.6.4                   </span></span>
+<span><span class="co">## [71] zlibbioc_1.50.0</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
