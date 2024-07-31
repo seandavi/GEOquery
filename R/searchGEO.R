@@ -1,7 +1,7 @@
 #' Search GEO database
 #'
-#' This function searchs [GDS](https://www.ncbi.nlm.nih.gov/gds) database,
-#' and return a data.frame for all the search results.
+#' This function searches the [GDS](https://www.ncbi.nlm.nih.gov/gds)
+#' database, and return a data.frame for all the search results.
 #'
 #' The NCBI allows users to access more records (10 per second) if they register
 #' for and use an API key. [set_entrez_key][rentrez::set_entrez_key] function
@@ -17,14 +17,20 @@
 #' in the “Organism” field. Details see
 #' <https://www.ncbi.nlm.nih.gov/geo/info/qqtutorial.html>. The names and
 #' definitions of these fields can be identified using
-#' [entrez_db_searchable][rentrez::entrez_db_searchable].
+#' [searchFieldsGEO].
+#'
+#' @seealso [searchFieldsGEO]
+#'
 #' @param step the number of records to fetch from the database each time. You
 #' may choose a smaller value if failed.
+#'
 #' @return a data.frame contains the search results
+#'
 #' @examples
 #' \dontrun{
-#' GEOquery::searchGEO("diabetes[ALL] AND Homo sapiens[ORGN] AND GSE[ETYP]")
+#' searchGEO("diabetes[ALL] AND Homo sapiens[ORGN] AND GSE[ETYP]")
 #' }
+#'
 #' @export
 searchGEO <- function(query, step = 500L) {
   records_num <- rentrez::entrez_search(
@@ -53,6 +59,32 @@ searchGEO <- function(query, step = 500L) {
   data.table::setDF(name_value_pairs)
   name_value_pairs
 }
+
+
+#' Provide a list of possible search fields for GEO search
+#'
+#' @import rentrez
+#'
+#' @returns a data.frame with names of possible search fields for GEO search
+#' as well as descriptions, data types, etc. for each field. Fields are
+#' in rows and their properties are in columns.
+#'
+#' @seealso \code{\link{searchGEO}}
+#'
+#' @examples
+#' searchFieldsGEO()
+#'
+#' @export
+searchFieldsGEO <- function() {
+  res <- do.call(
+    rbind,
+    rentrez::entrez_db_searchable("gds")
+  ) |> data.frame()
+  rownames(res) <- NULL
+  res
+}
+
+
 
 # this function just processed GEO searched results returned by `entrez_fetch`
 # into key-values paris

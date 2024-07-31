@@ -33,6 +33,6 @@ lapply(dfl,head)
 \code{\link{getGEO}}
 }
 \author{
-Sean Davis <sdavis2@mail.nih.gov>
+Sean Davis \href{mailto:sdavis2@mail.nih.gov}{sdavis2@mail.nih.gov}
 }
 \keyword{IO}

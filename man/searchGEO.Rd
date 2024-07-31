@@ -9,11 +9,11 @@ searchGEO(query, step = 500L)
 \arguments{
 \item{query}{character, the search term. The NCBI uses a search term syntax
 which can be associated with a specific search field with square brackets.
-So, for instance "Homo sapiens\[ORGN\]" denotes a search for `Homo sapiens`
+So, for instance "Homo sapiens[ORGN]" denotes a search for \verb{Homo sapiens}
 in the “Organism” field. Details see
-<https://www.ncbi.nlm.nih.gov/geo/info/qqtutorial.html>. The names and
+\url{https://www.ncbi.nlm.nih.gov/geo/info/qqtutorial.html}. The names and
 definitions of these fields can be identified using
-[entrez_db_searchable][rentrez::entrez_db_searchable].}
+\link{searchFieldsGEO}.}
 
 \item{step}{the number of records to fetch from the database each time. You
 may choose a smaller value if failed.}
@@ -22,20 +22,24 @@ may choose a smaller value if failed.}
 a data.frame contains the search results
 }
 \description{
-This function searchs [GDS](https://www.ncbi.nlm.nih.gov/gds) database,
-and return a data.frame for all the search results.
+This function searches the \href{https://www.ncbi.nlm.nih.gov/gds}{GDS}
+database, and return a data.frame for all the search results.
 }
 \details{
 The NCBI allows users to access more records (10 per second) if they register
-for and use an API key. [set_entrez_key][rentrez::set_entrez_key] function
+for and use an API key. \link[rentrez:set_entrez_key]{set_entrez_key} function
 allows users to set this key for all calls to rentrez functions during a
-particular R session. You can also set an environment variable `ENTREZ_KEY`
-by [Sys.setenv][base::Sys.setenv].  Once this value is set to your key
+particular R session. You can also set an environment variable \code{ENTREZ_KEY}
+by \link[base:Sys.setenv]{Sys.setenv}.  Once this value is set to your key
 rentrez will use it for all requests to the NCBI. Details see
-<https://docs.ropensci.org/rentrez/articles/rentrez_tutorial.html#rate-limiting-and-api-keys>
+\url{https://docs.ropensci.org/rentrez/articles/rentrez_tutorial.html#rate-limiting-and-api-keys}
 }
 \examples{
 \dontrun{
-GEOquery::searchGEO("diabetes[ALL] AND Homo sapiens[ORGN] AND GSE[ETYP]")
+searchGEO("diabetes[ALL] AND Homo sapiens[ORGN] AND GSE[ETYP]")
 }
+
+}
+\seealso{
+\link{searchFieldsGEO}
 }

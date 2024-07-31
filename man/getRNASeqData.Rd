@@ -34,7 +34,7 @@ The pipeline processes RNA-seq data from SRA using the HISAT2 aligner and
 and then generates gene expression counts using the featureCounts program.
 
 See the
-[GEO documentation](https://ncbi.nlm.nih.gov/geo/info/rnaseqcounts.html)
+\href{https://ncbi.nlm.nih.gov/geo/info/rnaseqcounts.html}{GEO documentation}
 for more details.
 }
 \examples{
