@@ -12,7 +12,7 @@ getGSEDownloadPageURLs <- function(gse) {
   links <- httr2::request(url) |>
     httr2::req_timeout(15) |>
     httr2::req_retry(3) |>
-    httr2::req_url_query(acc = "GSE83322") |>
+    httr2::req_url_query(acc = gse) |>
     httr2::req_perform() |>
     httr2::resp_body_string() |>
     rvest::read_html() |>
