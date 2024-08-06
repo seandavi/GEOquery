@@ -18,6 +18,7 @@
 <url><loc>http://seandavi.github.io/GEOquery/reference/browseGEOAccession.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/browseWebsiteRNASeqSearch.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/coercion.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/extractFilenameFromDownloadURL.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getDirListing.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEO.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.html</loc></url>
@@ -27,6 +28,7 @@
 <url><loc>http://seandavi.github.io/GEOquery/reference/getRNAQuantAnnotationURL.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getRNAQuantRawCountsURL.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getRNASeqData.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/getRNASeqQuantGenomeInfo.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getRNASeqQuantResults.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/hasRNASeqQuantifications.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/index.html</loc></url>
@@ -36,6 +38,7 @@
 <url><loc>http://seandavi.github.io/GEOquery/reference/readRNAQuantRawCounts.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/searchFieldsGEO.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/searchGEO.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/urlExtractRNASeqQuantGenomeInfo.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/urlForAccession.html</loc></url>
 </urlset>
 
