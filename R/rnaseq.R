@@ -61,6 +61,81 @@ getRNAQuantAnnotationURL <- function(links) {
   return(link)
 }
 
+#' Extract filename from a GEO download URL
+#'
+#' This function extracts the filename from a GEO download URL.
+#' The filename is expected to be a query parameter called "file".
+#' If the query parameter is not found, the function returns NULL.
+#'
+#' The idea is to use this function to extract filenames that
+#' contain important metadata from the GEO RNA-seq quantification.
+#'
+#' In particular, the filename is expected to contain the genome build
+#' and species information that we can attach to the SummarizedExperiment.
+#'
+#' @param url A GEO download URL
+#'
+#' @return A character vector with the filename
+#'
+#' @keywords internal
+extractFilenameFromDownloadURL <- function(url) {
+  # get a query parameter called "file" and its value from
+  # the URL
+
+  # example URL: https://www.ncbi.nlm.nih.gov/geo/download/\
+  # ?format=file&type=rnaseq_counts&file=Human.GRCh38.p13.annot.tsv.gz
+  parsed <- httr2::url_parse(url)
+  fname <- NULL
+  if ("query" %in% names(parsed)) {
+    if ("file" %in% names(parsed$query)) {
+      fname <- parsed$query$file
+    }
+  }
+  fname
+}
+
+#' Extract genome build and species from a GEO download URL
+#'
+#' This function extracts the genome build and species information
+#' from a GEO download URL. The genome build and species information
+#' is expected to be in the filename of the download URL.
+#'
+#' @param url A GEO annotation file download URL
+#'
+#' @return A character vector with the genome build and species information
+#'
+#' @keywords internal
+urlExtractRNASeqQuantGenomeInfo <- function(url) {
+  fname <- extractFilenameFromDownloadURL(url)
+  if (is.null(fname)) {
+    return(NULL)
+  }
+  splits <- stringr::str_split(fname, "\\.")[[1]]
+  genome_build <- paste0(splits[2], ".", splits[3])
+  species <- splits[1]
+  return(c(genome_build = genome_build, species = species, fname = fname))
+}
+
+#' Extract genome build and species for GEO RNA-seq quantification
+#'
+#' This function extracts the genome build and species information
+#' for a GEO RNA-seq quantification.
+#'
+#' @param gse GEO accession number
+#'
+#' @return A character vector with the genome build and species information
+#'
+#' @examples
+#' extractGenomeBuildSpecies("GSE164073")
+#'
+#' @export
+getRNASeqQuantGenomeInfo <- function(gse) {
+  links <- getGSEDownloadPageURLs(gse)
+  annotation_link <- getRNAQuantAnnotationURL(links)
+  metadata <- urlExtractRNASeqQuantGenomeInfo(annotation_link)
+  return(metadata)
+}
+
 
 #' Read RNA-seq quantification annotation from GEO
 #'
@@ -223,11 +298,14 @@ getRNASeqData <- function(accession) {
     getGEO(accession)[[1]],
     "SummarizedExperiment"
   )
+  old_metadata <- S4Vectors::metadata(se)
+  old_metadata$genomeInfo <- getRNASeqQuantGenomeInfo(accession)
+  old_metadata$created_at <- Sys.time()
   new_se <- SummarizedExperiment::SummarizedExperiment(
     assays = list(counts = quantifications$quants),
     rowData = quantifications$annotation,
     colData = SummarizedExperiment::colData(se),
-    metadata = S4Vectors::metadata(se)
+    metadata = old_metadata
   )
   new_se
 }

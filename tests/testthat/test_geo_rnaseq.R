@@ -86,3 +86,11 @@ test_that("hasRNASeqQuantifications returns FALSE for GSE2553", {
 
   expect_false(result)
 })
+
+test_that("getRNASeqQuantGenomeInfo returns correct data", {
+  genome_info <- getRNASeqQuantGenomeInfo("GSE83322")
+
+  expect_length(genome_info, 3)
+  expect_true(genome_info["species"] == "Human")
+  expect_true(stringr::str_starts(genome_info["genome_build"], "GR"))
+})
