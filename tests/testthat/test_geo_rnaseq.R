@@ -65,3 +65,24 @@ test_that("getRNASeqData returns SummarizedExperiment", {
   expect_true(nrow(result) > 0)
   expect_true(ncol(result) > 0)
 })
+
+test_that("hasRNASeqQuantifications returns logical", {
+  gse <- "GSE83322"
+  result <- hasRNASeqQuantifications(gse)
+
+  expect_type(result, "logical")
+})
+
+test_that("hasRNASeqQuantifications returns TRUE for GSE83322", {
+  gse <- "GSE83322"
+  result <- hasRNASeqQuantifications(gse)
+
+  expect_true(result)
+})
+
+test_that("hasRNASeqQuantifications returns FALSE for GSE2553", {
+  gse <- "GSE2553"
+  result <- hasRNASeqQuantifications(gse)
+
+  expect_false(result)
+})

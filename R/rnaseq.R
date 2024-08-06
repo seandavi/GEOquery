@@ -152,6 +152,32 @@ browseWebsiteRNASeqSearch <- function() {
   )
 }
 
+
+#' Does a GEO accession have RNA-seq quantifications?
+#'
+#' This function checks if a GEO accession number has RNA-seq quantifications
+#' available. It does this by checking if the GEO accession number has a
+#' "RNA-Seq raw counts" link available on the GEO download page.
+#'
+#' @param accession GEO accession number
+#'
+#' @return TRUE if the GEO accession number has RNA-seq quantifications
+#' available, FALSE otherwise.
+#'
+#' @examples
+#' hasRNASeqQuantifications("GSE164073")
+#'
+#' @export
+hasRNASeqQuantifications <- function(accession) {
+  links <- getGSEDownloadPageURLs(accession)
+  raw_counts_link <- getRNAQuantRawCountsURL(links)
+  if (length(raw_counts_link) > 0) {
+    return(TRUE)
+  } else {
+    return(FALSE)
+  }
+}
+
 #' Get GEO RNA-seq quantifications as a SummarizedExperiment object
 #'
 #' For human and mouse GEO datasets, NCBI GEO attempts to process
