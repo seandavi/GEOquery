@@ -126,7 +126,7 @@ urlExtractRNASeqQuantGenomeInfo <- function(url) {
 #' @return A character vector with the genome build and species information
 #'
 #' @examples
-#' extractGenomeBuildSpecies("GSE164073")
+#' getRNASeqQuantGenomeInfo("GSE164073")
 #'
 #' @export
 getRNASeqQuantGenomeInfo <- function(gse) {

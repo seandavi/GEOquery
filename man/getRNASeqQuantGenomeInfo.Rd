@@ -17,6 +17,6 @@ This function extracts the genome build and species information
 for a GEO RNA-seq quantification.
 }
 \examples{
-extractGenomeBuildSpecies("GSE164073")
+getRNASeqQuantGenomeInfo("GSE164073")
 
 }
