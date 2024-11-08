@@ -1,0 +1,468 @@
+# --------------------------------------------
+# CITATION file created with {cffr} R package
+# See also: https://docs.ropensci.org/cffr/
+# --------------------------------------------
+ 
+cff-version: 1.2.0
+message: 'To cite package "GEOquery" in publications use:'
+type: software
+license: MIT
+title: 'GEOquery: Get data from NCBI Gene Expression Omnibus (GEO)'
+version: 2.73.5
+doi: 10.1093/bioinformatics/btm254
+identifiers:
+- type: url
+  value: http://seandavi.github.io/GEOquery
+- type: url
+  value: http://seandavi.github.io/GEOquery/
+abstract: The NCBI Gene Expression Omnibus (GEO) is a public repository of microarray
+  data. Given the rich and varied nature of this resource, it is only natural to want
+  to apply BioConductor tools to these data. GEOquery is the bridge between GEO and
+  BioConductor.
+authors:
+- family-names: Davis
+  given-names: Sean
+  email: seandavi@gmail.com
+  orcid: https://orcid.org/0000-0002-8991-6458
+preferred-citation:
+  type: article
+  title: 'GEOquery: a bridge between the Gene Expression Omnibus (GEO) and BioConductor'
+  authors:
+  - family-names: Davis
+    given-names: Sean
+    email: seandavi@gmail.com
+    orcid: https://orcid.org/0000-0002-8991-6458
+  - family-names: Meltzer
+    given-names: Paul
+  journal: Bioinformatics
+  year: '2007'
+  volume: '14'
+  doi: 10.1093/bioinformatics/btm254
+  start: '1846'
+  end: '1847'
+repository: https://bioconductor.org/
+repository-code: https://github.com/seandavi/GEOquery/issues/new
+url: https://github.com/seandavi/GEOquery
+date-released: '2024-10-28'
+contact:
+- family-names: Davis
+  given-names: Sean
+  email: seandavi@gmail.com
+  orcid: https://orcid.org/0000-0002-8991-6458
+references:
+- type: software
+  title: methods
+  abstract: 'R: A Language and Environment for Statistical Computing'
+  notes: Depends
+  authors:
+  - name: R Core Team
+  institution:
+    name: R Foundation for Statistical Computing
+    address: Vienna, Austria
+  year: '2024'
+- type: software
+  title: Biobase
+  abstract: 'Biobase: Biobase: Base functions for Bioconductor'
+  notes: Depends
+  url: https://bioconductor.org/packages/Biobase
+  repository: https://bioconductor.org/
+  authors:
+  - family-names: Gentleman
+    given-names: R.
+  - family-names: Carey
+    given-names: V.
+  - family-names: Morgan
+    given-names: M.
+  - family-names: Falcon
+    given-names: S.
+  year: '2024'
+  doi: 10.18129/B9.bioc.Biobase
+- type: software
+  title: readr
+  abstract: 'readr: Read Rectangular Text Data'
+  notes: Imports
+  url: https://readr.tidyverse.org
+  repository: https://CRAN.R-project.org/package=readr
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  - family-names: Hester
+    given-names: Jim
+  - family-names: Bryan
+    given-names: Jennifer
+    email: jenny@posit.co
+    orcid: https://orcid.org/0000-0002-6983-2759
+  year: '2024'
+  doi: 10.32614/CRAN.package.readr
+  version: '>= 1.3.1'
+- type: software
+  title: xml2
+  abstract: 'xml2: Parse XML'
+  notes: Imports
+  url: https://xml2.r-lib.org/
+  repository: https://CRAN.R-project.org/package=xml2
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  - family-names: Hester
+    given-names: Jim
+  - family-names: Ooms
+    given-names: Jeroen
+  year: '2024'
+  doi: 10.32614/CRAN.package.xml2
+- type: software
+  title: dplyr
+  abstract: 'dplyr: A Grammar of Data Manipulation'
+  notes: Imports
+  url: https://dplyr.tidyverse.org
+  repository: https://CRAN.R-project.org/package=dplyr
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+    orcid: https://orcid.org/0000-0003-4757-117X
+  - family-names: François
+    given-names: Romain
+    orcid: https://orcid.org/0000-0002-2444-4226
+  - family-names: Henry
+    given-names: Lionel
+  - family-names: Müller
+    given-names: Kirill
+    orcid: https://orcid.org/0000-0002-1416-3412
+  - family-names: Vaughan
+    given-names: Davis
+    email: davis@posit.co
+    orcid: https://orcid.org/0000-0003-4777-038X
+  year: '2024'
+  doi: 10.32614/CRAN.package.dplyr
+- type: software
+  title: data.table
+  abstract: 'data.table: Extension of `data.frame`'
+  notes: Imports
+  url: https://r-datatable.com
+  repository: https://CRAN.R-project.org/package=data.table
+  authors:
+  - family-names: Barrett
+    given-names: Tyson
+    email: t.barrett88@gmail.com
+  - family-names: Dowle
+    given-names: Matt
+    email: mattjdowle@gmail.com
+  - family-names: Srinivasan
+    given-names: Arun
+    email: asrini@pm.me
+  - family-names: Gorecki
+    given-names: Jan
+  - family-names: Chirico
+    given-names: Michael
+  - family-names: Hocking
+    given-names: Toby
+    orcid: https://orcid.org/0000-0002-3146-0865
+  year: '2024'
+  doi: 10.32614/CRAN.package.data.table
+- type: software
+  title: tidyr
+  abstract: 'tidyr: Tidy Messy Data'
+  notes: Imports
+  url: https://tidyr.tidyverse.org
+  repository: https://CRAN.R-project.org/package=tidyr
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  - family-names: Vaughan
+    given-names: Davis
+    email: davis@posit.co
+  - family-names: Girlich
+    given-names: Maximilian
+  year: '2024'
+  doi: 10.32614/CRAN.package.tidyr
+- type: software
+  title: magrittr
+  abstract: 'magrittr: A Forward-Pipe Operator for R'
+  notes: Imports
+  url: https://magrittr.tidyverse.org
+  repository: https://CRAN.R-project.org/package=magrittr
+  authors:
+  - family-names: Bache
+    given-names: Stefan Milton
+    email: stefan@stefanbache.dk
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@rstudio.com
+  year: '2024'
+  doi: 10.32614/CRAN.package.magrittr
+- type: software
+  title: limma
+  abstract: 'limma: Linear Models for Microarray Data'
+  notes: Imports
+  url: https://bioinf.wehi.edu.au/limma/
+  repository: https://bioconductor.org/
+  authors:
+  - family-names: Smyth
+    given-names: Gordon
+  - family-names: Hu
+    given-names: Yifang
+  - family-names: Ritchie
+    given-names: Matthew
+  - family-names: Silver
+    given-names: Jeremy
+  - family-names: Wettenhall
+    given-names: James
+  - family-names: McCarthy
+    given-names: Davis
+  - family-names: Wu
+    given-names: Di
+  - family-names: Shi
+    given-names: Wei
+  - family-names: Phipson
+    given-names: Belinda
+  - family-names: Lun
+    given-names: Aaron
+  - family-names: Thorne
+    given-names: Natalie
+  - family-names: Oshlack
+    given-names: Alicia
+  - family-names: Graaf
+    given-names: Carolyn
+    name-particle: de
+  - family-names: Chen
+    given-names: Yunshun
+  - family-names: Giner
+    given-names: Goknur
+  - family-names: Langaas
+    given-names: Mette
+  - family-names: Ferkingstad
+    given-names: Egil
+  - family-names: Davy
+    given-names: Marcus
+  - family-names: Pepin
+    given-names: Francois
+  - family-names: Choi
+    given-names: Dongseok
+  - family-names: Law
+    given-names: Charity
+  - family-names: Li
+    given-names: Mengbo
+  year: '2024'
+  doi: 10.18129/B9.bioc.limma
+- type: software
+  title: curl
+  abstract: 'curl: A Modern and Flexible Web Client for R'
+  notes: Imports
+  url: https://jeroen.r-universe.dev/curl
+  repository: https://CRAN.R-project.org/package=curl
+  authors:
+  - family-names: Ooms
+    given-names: Jeroen
+    email: jeroen@berkeley.edu
+    orcid: https://orcid.org/0000-0002-4035-0289
+  year: '2024'
+  doi: 10.32614/CRAN.package.curl
+- type: software
+  title: rentrez
+  abstract: 'rentrez: ''Entrez'' in R'
+  notes: Imports
+  url: https://docs.ropensci.org/rentrez/
+  repository: https://CRAN.R-project.org/package=rentrez
+  authors:
+  - family-names: Winter
+    given-names: David
+    email: david.winter@gmail.com
+    orcid: https://orcid.org/0000-0002-6165-0029
+  year: '2024'
+  doi: 10.32614/CRAN.package.rentrez
+- type: software
+  title: R.utils
+  abstract: 'R.utils: Various Programming Utilities'
+  notes: Imports
+  url: https://henrikbengtsson.github.io/R.utils/
+  repository: https://CRAN.R-project.org/package=R.utils
+  authors:
+  - family-names: Bengtsson
+    given-names: Henrik
+    email: henrikb@braju.com
+  year: '2024'
+  doi: 10.32614/CRAN.package.R.utils
+- type: software
+  title: stringr
+  abstract: 'stringr: Simple, Consistent Wrappers for Common String Operations'
+  notes: Imports
+  url: https://stringr.tidyverse.org
+  repository: https://CRAN.R-project.org/package=stringr
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  year: '2024'
+  doi: 10.32614/CRAN.package.stringr
+- type: software
+  title: SummarizedExperiment
+  abstract: 'SummarizedExperiment: SummarizedExperiment container'
+  notes: Imports
+  url: https://bioconductor.org/packages/SummarizedExperiment
+  repository: https://bioconductor.org/
+  authors:
+  - family-names: Morgan
+    given-names: Martin
+  - family-names: Obenchain
+    given-names: Valerie
+  - family-names: Hester
+    given-names: Jim
+  - family-names: Pagès
+    given-names: Hervé
+    email: hpages.on.github@gmail.com
+  year: '2024'
+  doi: 10.18129/B9.bioc.SummarizedExperiment
+- type: software
+  title: S4Vectors
+  abstract: 'S4Vectors: Foundation of vector-like and list-like containers in Bioconductor'
+  notes: Imports
+  url: https://bioconductor.org/packages/S4Vectors
+  repository: https://bioconductor.org/
+  authors:
+  - family-names: Pagès
+    given-names: Hervé
+    email: hpages.on.github@gmail.com
+  - family-names: Lawrence
+    given-names: Michael
+  - family-names: Aboyoun
+    given-names: Patrick
+  year: '2024'
+  doi: 10.18129/B9.bioc.S4Vectors
+- type: software
+  title: rvest
+  abstract: 'rvest: Easily Harvest (Scrape) Web Pages'
+  notes: Imports
+  url: https://rvest.tidyverse.org/
+  repository: https://CRAN.R-project.org/package=rvest
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  year: '2024'
+  doi: 10.32614/CRAN.package.rvest
+- type: software
+  title: httr2
+  abstract: 'httr2: Perform HTTP Requests and Process the Responses'
+  notes: Imports
+  url: https://httr2.r-lib.org
+  repository: https://CRAN.R-project.org/package=httr2
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  year: '2024'
+  doi: 10.32614/CRAN.package.httr2
+- type: software
+  title: knitr
+  abstract: 'knitr: A General-Purpose Package for Dynamic Report Generation in R'
+  notes: Suggests
+  url: https://yihui.org/knitr/
+  repository: https://CRAN.R-project.org/package=knitr
+  authors:
+  - family-names: Xie
+    given-names: Yihui
+    email: xie@yihui.name
+    orcid: https://orcid.org/0000-0003-0645-5666
+  year: '2024'
+  doi: 10.32614/CRAN.package.knitr
+- type: software
+  title: rmarkdown
+  abstract: 'rmarkdown: Dynamic Documents for R'
+  notes: Suggests
+  url: https://pkgs.rstudio.com/rmarkdown/
+  repository: https://CRAN.R-project.org/package=rmarkdown
+  authors:
+  - family-names: Allaire
+    given-names: JJ
+    email: jj@posit.co
+  - family-names: Xie
+    given-names: Yihui
+    email: xie@yihui.name
+    orcid: https://orcid.org/0000-0003-0645-5666
+  - family-names: Dervieux
+    given-names: Christophe
+    email: cderv@posit.co
+    orcid: https://orcid.org/0000-0003-4474-2498
+  - family-names: McPherson
+    given-names: Jonathan
+    email: jonathan@posit.co
+  - family-names: Luraschi
+    given-names: Javier
+  - family-names: Ushey
+    given-names: Kevin
+    email: kevin@posit.co
+  - family-names: Atkins
+    given-names: Aron
+    email: aron@posit.co
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  - family-names: Cheng
+    given-names: Joe
+    email: joe@posit.co
+  - family-names: Chang
+    given-names: Winston
+    email: winston@posit.co
+  - family-names: Iannone
+    given-names: Richard
+    email: rich@posit.co
+    orcid: https://orcid.org/0000-0003-3925-190X
+  year: '2024'
+  doi: 10.32614/CRAN.package.rmarkdown
+- type: software
+  title: BiocGenerics
+  abstract: 'BiocGenerics: S4 generic functions used in Bioconductor'
+  notes: Suggests
+  url: https://bioconductor.org/packages/BiocGenerics
+  repository: https://bioconductor.org/
+  authors:
+  - family-names: Team
+    given-names: The Bioconductor Dev
+  year: '2024'
+  doi: 10.18129/B9.bioc.BiocGenerics
+- type: software
+  title: testthat
+  abstract: 'testthat: Unit Testing for R'
+  notes: Suggests
+  url: https://testthat.r-lib.org
+  repository: https://CRAN.R-project.org/package=testthat
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  year: '2024'
+  doi: 10.32614/CRAN.package.testthat
+- type: software
+  title: covr
+  abstract: 'covr: Test Coverage for Packages'
+  notes: Suggests
+  url: https://covr.r-lib.org
+  repository: https://CRAN.R-project.org/package=covr
+  authors:
+  - family-names: Hester
+    given-names: Jim
+    email: james.f.hester@gmail.com
+  year: '2024'
+  doi: 10.32614/CRAN.package.covr
+- type: software
+  title: markdown
+  abstract: 'markdown: Render Markdown with ''commonmark'''
+  notes: Suggests
+  url: https://github.com/rstudio/markdown
+  repository: https://CRAN.R-project.org/package=markdown
+  authors:
+  - family-names: Xie
+    given-names: Yihui
+    email: xie@yihui.name
+    orcid: https://orcid.org/0000-0003-0645-5666
+  - family-names: Allaire
+    given-names: JJ
+  - family-names: Horner
+    given-names: Jeffrey
+  year: '2024'
+  doi: 10.32614/CRAN.package.markdown
+

@@ -11,3 +11,4 @@ CODE_OF_CONDUCT.md
 .lintr
 Dockerfile
 ^LICENSE\.md$
+^CITATION\.cff$
