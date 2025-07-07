@@ -298,13 +298,17 @@ getRNASeqData <- function(accession) {
     getGEO(accession)[[1]],
     "SummarizedExperiment"
   )
+  names_matching <- intersect(
+    colnames(quantifications$quants),
+    rownames(SummarizedExperiment::colData(se))
+  )
   old_metadata <- S4Vectors::metadata(se)
   old_metadata$genomeInfo <- getRNASeqQuantGenomeInfo(accession)
   old_metadata$created_at <- Sys.time()
   new_se <- SummarizedExperiment::SummarizedExperiment(
-    assays = list(counts = quantifications$quants),
+    assays = list(counts = quantifications$quants[, names_matching]),
     rowData = quantifications$annotation,
-    colData = SummarizedExperiment::colData(se),
+    colData = SummarizedExperiment::colData(se)[names_matching, ],
     metadata = old_metadata
   )
   new_se
