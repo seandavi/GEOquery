@@ -3,7 +3,7 @@ pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   GEOquery: GEOquery.html
-last_built: 2025-08-16T13:33Z
+last_built: 2025-08-16T13:49Z
 urls:
   reference: http://seandavi.github.io/GEOquery/reference
   article: http://seandavi.github.io/GEOquery/articles
