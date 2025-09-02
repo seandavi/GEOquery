@@ -53,6 +53,10 @@ Again, just a note that the files are simply downloaded.
 a <- getGEOSuppFiles('GSM1137', fetch_files = FALSE)
 a
 
+# with a set of single-cell RNA-seq data
+a <- getGEOSuppFiles('GSE161228', fetch_files = FALSE)
+a
+
 }
 \author{
 Sean Davis \href{mailto:sdavis2@mail.nih.gov}{sdavis2@mail.nih.gov}

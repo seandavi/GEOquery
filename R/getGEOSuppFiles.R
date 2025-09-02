@@ -14,6 +14,39 @@ getDirListing <- function(url) {
     return(fnames)
 }
 
+#' Get GEO supplemental file URL for a given GEO accession
+#'
+#' @param GEO
+#'
+#' @examples
+#' # an example of a GEO supplemental file URL
+#' # with a set of single-cell RNA-seq data
+#' url = getGEOSuppFileURL("GSE161228")
+#' url
+#' 
+#' \dontrun{
+#'   browseURL(url)
+#' }
+#' 
+#' @export
+getGEOSuppFileURL <- function(GEO) {
+    stub = gsub("\\d{1,3}$", "nnn", GEO, perl = TRUE)
+    geotype <- toupper(substr(GEO, 1, 3))
+    if (geotype == "GSM") {
+        url <- sprintf("https://ftp.ncbi.nlm.nih.gov/geo/samples/%s/%s/suppl/", stub,
+            GEO)
+    }
+    if (geotype == "GSE") {
+        url <- sprintf("https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/suppl/", stub,
+            GEO)
+    }
+    if (geotype == "GPL") {
+        url <- sprintf("https://ftp.ncbi.nlm.nih.gov/geo/platform/%s/%s/suppl/", stub,
+            GEO)
+    }
+    return(url)
+}
+
 
 
 #' Get Supplemental Files from GEO
@@ -51,6 +84,10 @@ getDirListing <- function(url) {
 #' a <- getGEOSuppFiles('GSM1137', fetch_files = FALSE)
 #' a
 #' 
+#' # with a set of single-cell RNA-seq data
+#' a <- getGEOSuppFiles('GSE161228', fetch_files = FALSE)
+#' a
+#' 
 #' @export
 getGEOSuppFiles <- function(
     GEO,
@@ -62,19 +99,7 @@ getGEOSuppFiles <- function(
     geotype <- toupper(substr(GEO, 1, 3))
     storedir <- baseDir
     fileinfo <- list()
-    stub = gsub("\\d{1,3}$", "nnn", GEO, perl = TRUE)
-    if (geotype == "GSM") {
-        url <- sprintf("https://ftp.ncbi.nlm.nih.gov/geo/samples/%s/%s/suppl/", stub,
-            GEO)
-    }
-    if (geotype == "GSE") {
-        url <- sprintf("https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/suppl/", stub,
-            GEO)
-    }
-    if (geotype == "GPL") {
-        url <- sprintf("https://ftp.ncbi.nlm.nih.gov/geo/platform/%s/%s/suppl/", stub,
-            GEO)
-    }
+    url <- getGEOSuppFileURL(GEO)
     fnames <- try(getDirListing(url), silent = TRUE)
     if (inherits(fnames, "try-error")) {
         message("No supplemental files found.")
@@ -92,28 +117,22 @@ getGEOSuppFiles <- function(
         for (i in fnames) {
             destfile <- file.path(storedir, i)
 
-            result <- tryCatch({
+            print(url)
+
+ 
                 if (!file.exists(destfile)) {
-                    res <- download.file(paste(file.path(url, i), "tool=geoquery", sep = "?"), destfile = destfile, mode = "wb", method = getOption("download.file.method.GEOquery"))
-                    ## download.file returns a '0' on success
+                    req = httr2::request(base_url=url) |>
+                      httr2::req_url_path_append(i)
+                    print(req)
+                    req |>
+                      httr2::req_url_query(tool="geoquery") |>
+                      httr2::req_perform(path=destfile)
+                    res <- 0
                 } else {
                   message(sprintf("Using locally cached version of supplementary file(s) %s found here:\n%s ",
                     GEO, destfile))
                     res <- 0
                 }
-
-                res == 0
-            }, error = function(e) return(FALSE), warning = function(w) return(FALSE))
-
-            ## if the download failed, remove the corrupted file and report the
-            ## error
-            if (!result) {
-                if (file.exists(destfile)) {
-                  file.remove(destfile)
-                }
-                stop(sprintf("Failed to download %s!", destfile))
-            }
-            ###
             fileinfo[[destfile]] <- file.info(destfile)
         }
         return(do.call(rbind, fileinfo))
