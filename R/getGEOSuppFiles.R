@@ -117,14 +117,11 @@ getGEOSuppFiles <- function(
         for (i in fnames) {
             destfile <- file.path(storedir, i)
 
-            print(url)
 
  
                 if (!file.exists(destfile)) {
-                    req = httr2::request(base_url=url) |>
-                      httr2::req_url_path_append(i)
-                    print(req)
-                    req |>
+                    httr2::request(base_url=url) |>
+                      httr2::req_url_path_append(i) |>
                       httr2::req_url_query(tool="geoquery") |>
                       httr2::req_perform(path=destfile)
                     res <- 0
@@ -135,8 +132,39 @@ getGEOSuppFiles <- function(
                 }
             fileinfo[[destfile]] <- file.info(destfile)
         }
-        return(do.call(rbind, fileinfo))
+        ret <- do.call(rbind, fileinfo)
+        ret$fname <- fnames
+        ret$destdir <- storedir
+        ret$filepath <- file.path(storedir, fnames)
+        ret$GEO <- GEO
+        return(ret)
     } else {
         return(data.frame(fname = fnames, url = file.path(url, fnames)))
     }
+}
+
+#' GSE Supplemental file listing
+#' 
+#' The GEO Series records often have one or more supplemental files.
+#' In most cases, those files are archived as '.tar' files, the contents
+#' of which are only available in a file listing file not present on the
+#' website for download.
+#' 
+#' This function reads that file listing file and returns the results
+#' as a data.frame. 
+#' 
+#' @returns A data.frame with 5 columns. See example. 
+#' 
+#' @param GSE character(1) the GSE accession
+#' 
+#' @examples
+#' getGEOSeriesFileListing('GSE288770')
+#' 
+#' @export
+getGEOSeriesFileListing <- function(GSE) {
+  url = getGEOSuppFileURL(GSE)
+  ret <- readr::read_tsv(file.path(url,'filelist.txt'))
+  ret |> 
+    dplyr::rename_with(tolower) |>
+    dplyr::rename('archive_or_file'='#archive/file')
 }
