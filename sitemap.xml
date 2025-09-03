@@ -5,6 +5,7 @@
 <url><loc>http://seandavi.github.io/GEOquery/LICENSE.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/articles/GEOquery.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/articles/index.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/articles/single-cell.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/authors.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/index.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/news/index.html</loc></url>
@@ -21,6 +22,8 @@
 <url><loc>http://seandavi.github.io/GEOquery/reference/extractFilenameFromDownloadURL.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getDirListing.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEO.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/getGEOSeriesFileListing.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/getGEOSuppFileURL.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEOfile.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGSEDataTables.html</loc></url>

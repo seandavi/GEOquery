@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.77.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.77.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,6 +17,10 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/GEOquery.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/single-cell.html">Handling single-cell RNA-seq data in GEOquery</a></li>
+  </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -30,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Provide a list of possible search fields for GEO search</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/main/R/searchGEO.R" class="external-link"><code>R/searchGEO.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/R/searchGEO.R" class="external-link"><code>R/searchGEO.R</code></a></small>
       <div class="d-none name"><code>searchFieldsGEO.Rd</code></div>
     </div>
 
@@ -58,36 +62,36 @@ in rows and their properties are in columns.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">searchFieldsGEO</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Name     FullName  Description TermCount IsDate IsNumerical SingleToken</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   ALL   All Fields All term....  44306002      N           N           N</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   ALL   All Fields All term....  44499339      N           N           N</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2   UID          UID Unique n....         0      N           Y           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3  FILT       Filter Limits t....        71      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  ORGN     Organism exploded....     74819      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  ACCN GEO Acce.... accessio....  18890676      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  TITL        Title Words in....   9773698      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  DESC  Description Text fro....  10315188      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  ORGN     Organism exploded....     75101      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  ACCN GEO Acce.... accessio....  18986394      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  TITL        Title Words in....   9812237      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  DESC  Description Text fro....  10367815      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8  SFIL Suppleme.... Suppleme....       255      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 9  ETYP   Entry Type Entry ty....         4      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10 STYP  Sample Type  Sample type         9      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 11 VTYP Sample V.... type of ....         7      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 12 PTYP Platform.... Platform....        17      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 13 GTYP DataSet Type type of ....        27      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14 NSAM Number o.... Number o....      2129      N           Y           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15  SRC Sample S.... sample s....    458896      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16 AUTH       Author author o....   1279657      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17 INST Submitte.... institut....     24895      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18 NPRO Number o.... number o....      7248      N           Y           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 NSAM Number o.... Number o....      2124      N           Y           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15  SRC Sample S.... sample s....    459357      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16 AUTH       Author author o....   1284878      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 INST Submitte.... institut....     24985      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18 NPRO Number o.... number o....      7249      N           Y           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 19 SSTP Subset V.... subset v....        24      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 20 SSDE Subset D.... subset d....      7535      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21 GEID Reporter.... name or ....   2840498      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22 PDAT Publicat.... publicat....      8350      Y           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23 UDAT  Update Date         date      7468      Y           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22 PDAT Publicat.... publicat....      8369      Y           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 UDAT  Update Date         date      7486      Y           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 24 TAGL   Tag Length Tag/Sign....         9      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25 RGSE Related .... Related ....     29875      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26 RGPL Related .... Related ....    264683      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27 MESH   MeSH Terms Medical ....     17589      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25 RGSE Related .... Related ....     29932      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26 RGPL Related .... Related ....    266084      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27 MESH   MeSH Terms Medical ....     17605      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 28 PROJ      Project      Project        10      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29 ATNM Attribut.... Attribut....     48809      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30 ATTR    Attribute    Attribute   2732197      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29 ATNM Attribut.... Attribut....     48903      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30 ATTR    Attribute    Attribute   2738758      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 31 PROP   Properties   Properties         3      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Hierarchy IsHidden</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1          N        N</span>
