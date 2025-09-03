@@ -1,13 +1,6 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
-on:
-  push:
-    branches: [main, devel]
-  pull_request:
-    branches: [main, devel]
-  release:
-    types: [published]
-  workflow_dispatch:
+on: [push, pull_request, workflow_dispatch]
 
 name: pkgdown
 
@@ -15,10 +8,7 @@ permissions: read-all
 
 jobs:
   pkgdown:
-    runs-on: ubuntu-latest
-    # Only restrict concurrency for non-PR jobs
-    concurrency:
-      group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
+    runs-on: macos-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     permissions:
