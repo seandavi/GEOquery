@@ -9,7 +9,7 @@ number-sections: true
 theme: cosmo
 vignette: >
   %\VignetteIndexEntry{Using GEOquery (Quarto)}
-  %\VignetteEngine{quarto::quarto}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
   

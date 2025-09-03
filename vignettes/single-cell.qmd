@@ -9,7 +9,7 @@ number-sections: true
 theme: cosmo
 vignette: >
   %\VignetteIndexEntry{Handling single-cell RNA-seq data in GEOquery}
-  %\VignetteEngine{quarto::quarto}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
 
