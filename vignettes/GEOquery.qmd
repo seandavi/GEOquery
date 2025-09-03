@@ -2,11 +2,10 @@
 title: "Using the GEOquery Package"
 author: "Sean Davis"
 date: "2025-08-16"
+last-modified: {{< meta last-modified >}}
 format:
   html:
     toc: true
-number-sections: true
-theme: cosmo
 vignette: >
   %\VignetteIndexEntry{Using GEOquery (Quarto)}
   %\VignetteEngine{quarto::html}

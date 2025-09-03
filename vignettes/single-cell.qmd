@@ -2,11 +2,10 @@
 title: "Handling single-cell RNA-seq data in GEOquery"
 author: "Sean Davis"
 date: "2025-08-29"
+last-modified: {{< meta last-modified >}}
 format:
   html:
     toc: true
-number-sections: true
-theme: cosmo
 execute:
   eval: false
 vignette: >
@@ -15,7 +14,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, eval=TRUE}
 library(GEOquery)
 library(SingleCellExperiment)
 library(DropletUtils)
@@ -48,9 +47,9 @@ s
 ## Single h5ad file
 
 
-# SAMPLES
+## SAMPLES
 
-## mtx file
+### mtx file
 
 ```{r}
 s = getGEOSuppFiles('GSM7908437')
@@ -63,7 +62,7 @@ gsm_sce
 head(colData(gsm_sce))
 ```
 
-## Tar of mtx files from Series record
+### Tar of mtx files from Series record
 
 ```{r}
 s = getGEOSuppFiles('GSE248214')
@@ -80,13 +79,13 @@ gse_sce = DropletUtils::read10xCounts(samples = sample_prefixes, type='prefix')
 gse_sce
 ```
 
-## Mix of types in a single GSE
+### Mix of types in a single GSE
 
 ```{r}
 getGEOSeriesFileListing('GSE288770')
 ```
 
-## 10x h5 file
+### 10x h5 file
 
 ```{r}
 s = getGEOSuppFiles('GSM8775062')
