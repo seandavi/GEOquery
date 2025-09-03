@@ -7,6 +7,8 @@ format:
     toc: true
 number-sections: true
 theme: cosmo
+execute:
+  eval: false
 vignette: >
   %\VignetteIndexEntry{Handling single-cell RNA-seq data in GEOquery}
   %\VignetteEngine{quarto::html}
