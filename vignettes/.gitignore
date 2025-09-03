@@ -1,3 +1,5 @@
 GEOquery_cache
 
 /.quarto/
+*_files
+*html
