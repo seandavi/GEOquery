@@ -40,7 +40,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Provide a list of possible search fields for GEO search</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/R/searchGEO.R" class="external-link"><code>R/searchGEO.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/copilot/fix-getgeo-error/R/searchGEO.R" class="external-link"><code>R/searchGEO.R</code></a></small>
       <div class="d-none name"><code>searchFieldsGEO.Rd</code></div>
     </div>
 
@@ -68,36 +68,36 @@ in rows and their properties are in columns.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">searchFieldsGEO</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Name     FullName  Description TermCount IsDate IsNumerical SingleToken</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   ALL   All Fields All term....  44499339      N           N           N</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   ALL   All Fields All term....  45152635      N           N           N</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2   UID          UID Unique n....         0      N           Y           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3  FILT       Filter Limits t....        71      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  ORGN     Organism exploded....     75101      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  ACCN GEO Acce.... accessio....  18986394      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  TITL        Title Words in....   9812237      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  DESC  Description Text fro....  10367815      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  ORGN     Organism exploded....     75623      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  ACCN GEO Acce.... accessio....  19303976      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  TITL        Title Words in....   9946487      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  DESC  Description Text fro....  10548780      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8  SFIL Suppleme.... Suppleme....       255      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 9  ETYP   Entry Type Entry ty....         4      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10 STYP  Sample Type  Sample type         9      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 11 VTYP Sample V.... type of ....         7      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 12 PTYP Platform.... Platform....        17      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 13 GTYP DataSet Type type of ....        27      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14 NSAM Number o.... Number o....      2124      N           Y           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15  SRC Sample S.... sample s....    459357      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16 AUTH       Author author o....   1284878      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17 INST Submitte.... institut....     24985      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18 NPRO Number o.... number o....      7249      N           Y           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 NSAM Number o.... Number o....      2134      N           Y           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15  SRC Sample S.... sample s....    461250      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16 AUTH       Author author o....   1300542      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 INST Submitte.... institut....     25314      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18 NPRO Number o.... number o....      7258      N           Y           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 19 SSTP Subset V.... subset v....        24      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 20 SSDE Subset D.... subset d....      7535      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21 GEID Reporter.... name or ....   2840498      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22 PDAT Publicat.... publicat....      8369      Y           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23 UDAT  Update Date         date      7486      Y           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22 PDAT Publicat.... publicat....      8453      Y           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 UDAT  Update Date         date      7570      Y           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 24 TAGL   Tag Length Tag/Sign....         9      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25 RGSE Related .... Related ....     29932      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26 RGPL Related .... Related ....    266084      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27 MESH   MeSH Terms Medical ....     17605      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25 RGSE Related .... Related ....     30135      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26 RGPL Related .... Related ....    271071      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27 MESH   MeSH Terms Medical ....     17643      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 28 PROJ      Project      Project        10      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29 ATNM Attribut.... Attribut....     48903      N           N           Y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30 ATTR    Attribute    Attribute   2738758      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29 ATNM Attribut.... Attribut....     49222      N           N           Y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30 ATTR    Attribute    Attribute   2763893      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 31 PROP   Properties   Properties         3      N           N           Y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Hierarchy IsHidden</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1          N        N</span>
@@ -143,7 +143,7 @@ in rows and their properties are in columns.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
