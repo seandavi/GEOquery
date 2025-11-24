@@ -1,3 +1,9 @@
+# GEOquery 2.99.1 (unreleased)
+
+## Bug Fixes
+
+- Fixed error when parsing GSE matrix files with malformed sample metadata lines (e.g., GSE425). Added `fill=TRUE` parameter to `fread()` calls to handle lines with varying field counts.
+
 # GEOquery 2.99.0 (2024-10-01)
 
 ## New Features
