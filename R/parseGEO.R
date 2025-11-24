@@ -480,22 +480,18 @@ parseGSEMatrix <- function(fname, AnnotGPL = FALSE, destdir = tempdir(), getGPL 
     # column, so subset to get just text.
     dat <- data.table::fread(fname, sep = "")[[1]]
 
-    ## get the number of !Series and !Sample lines
+    ## get the number of !Series lines for header reading
     series_header_row_count <- sum(grepl("^!Series_", dat))
-    # In the case of ^M in the metadata (GSE781, for example), the line counts
-    # for 'skip' and read.table are different.  This next line gets the 'skip'
-    # line count for use below in the tmpdat reading 'skip'
-    sample_header_start <- grep("^!Sample_", dat)[1]
-    samples_header_row_count <- sum(grepl("^!Sample_", dat))
     series_table_begin_line = grep("^!series_matrix_table_begin", dat)
     series_table_end_line = grep("^!series_matrix_table_end", dat)
     if (length(series_table_begin_line) != 1) {
         stop("parsing failed--expected only one '!series_data_table_begin'")
     }
-    # con <- fileOpen(fname) Read the !Series_ and !Sample_ lines
+    # Read the !Series_ and !Sample_ lines
     header <- data.table::fread(fname, header = FALSE, nrows = series_header_row_count)
-    tmpdat <- data.table::fread(fname, header = FALSE, nrows = samples_header_row_count,
-        skip = sample_header_start - 1)
+    # Extract only the actual !Sample_ lines to avoid issues with malformed/empty lines
+    sample_lines <- dat[grepl("^!Sample_", dat)]
+    tmpdat <- data.table::fread(text = sample_lines, header = FALSE, sep = "\t")
 
     headertmp <- t(header)
     headerdata <- rbind(data.frame(), headertmp[-1, ])

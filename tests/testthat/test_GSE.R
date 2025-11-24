@@ -110,3 +110,11 @@ test_that("Test regression against issue 144", {
   expect_equivalent(nrow(gse), 442)
   expect_equivalent(ncol(gse), 272)
 })
+
+test_that("GSE425 parsing with malformed sample lines", {
+  gse = getGEO("GSE425")
+  expect_is(gse, 'list')
+  expect_is(gse[[1]], 'ExpressionSet')
+  expect_true(ncol(gse[[1]]) > 0)
+  expect_true(nrow(pData(gse[[1]])) > 0)
+})
