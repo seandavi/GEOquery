@@ -2,7 +2,7 @@
 
 ## Bug Fixes
 
-- Fixed error when parsing GSE matrix files with malformed sample metadata lines (e.g., GSE425). Added `fill=TRUE` parameter to `fread()` calls to handle lines with varying field counts.
+- Fixed error when parsing GSE matrix files with malformed or empty lines between sample metadata (e.g., GSE425). Sample lines are now extracted directly using pattern matching to avoid issues with irregular file formatting.
 
 # GEOquery 2.99.0 (2024-10-01)
 
