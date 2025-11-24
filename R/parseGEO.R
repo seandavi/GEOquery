@@ -493,9 +493,10 @@ parseGSEMatrix <- function(fname, AnnotGPL = FALSE, destdir = tempdir(), getGPL 
         stop("parsing failed--expected only one '!series_data_table_begin'")
     }
     # con <- fileOpen(fname) Read the !Series_ and !Sample_ lines
-    header <- data.table::fread(fname, header = FALSE, nrows = series_header_row_count)
+    header <- data.table::fread(fname, header = FALSE, nrows = series_header_row_count, 
+        fill = TRUE)
     tmpdat <- data.table::fread(fname, header = FALSE, nrows = samples_header_row_count,
-        skip = sample_header_start - 1)
+        skip = sample_header_start - 1, fill = TRUE)
 
     headertmp <- t(header)
     headerdata <- rbind(data.frame(), headertmp[-1, ])
