@@ -285,13 +285,13 @@ head(supp_files)
     4  GSE63137_ChIP-seq_H3K27ac_excitatory_neurons_SICER_peaks.bed.gz
     5 GSE63137_ChIP-seq_H3K27me3_excitatory_neurons_SICER_peaks.bed.gz
     6  GSE63137_ChIP-seq_H3K4me1_excitatory_neurons_SICER_peaks.bed.gz
-                                                                                                                                    url
-    1                  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl//GSE63137_ATAC-seq_PV_neurons_HOMER_peaks.bed.gz
-    2                 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl//GSE63137_ATAC-seq_VIP_neurons_HOMER_peaks.bed.gz
-    3          https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl//GSE63137_ATAC-seq_excitatory_neurons_HOMER_peaks.bed.gz
-    4  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl//GSE63137_ChIP-seq_H3K27ac_excitatory_neurons_SICER_peaks.bed.gz
-    5 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl//GSE63137_ChIP-seq_H3K27me3_excitatory_neurons_SICER_peaks.bed.gz
-    6  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl//GSE63137_ChIP-seq_H3K4me1_excitatory_neurons_SICER_peaks.bed.gz
+                                                                                                                                   url
+    1                  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_PV_neurons_HOMER_peaks.bed.gz
+    2                 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_VIP_neurons_HOMER_peaks.bed.gz
+    3          https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_excitatory_neurons_HOMER_peaks.bed.gz
+    4  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K27ac_excitatory_neurons_SICER_peaks.bed.gz
+    5 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K27me3_excitatory_neurons_SICER_peaks.bed.gz
+    6  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K4me1_excitatory_neurons_SICER_peaks.bed.gz
 
 You can filter files by pattern to find specific file types:
 
@@ -308,11 +308,11 @@ head(txt_files)
     2         GSE63137_MethylC-seq_PV_neurons_UMRs_LMRs.txt.gz
     3        GSE63137_MethylC-seq_VIP_neurons_UMRs_LMRs.txt.gz
     4 GSE63137_MethylC-seq_excitatory_neurons_UMRs_LMRs.txt.gz
-                                                                                                                            url
-    1                https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl//GSE63137_MethylC-seq_DMRs_methylpy.txt.gz
-    2         https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl//GSE63137_MethylC-seq_PV_neurons_UMRs_LMRs.txt.gz
-    3        https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl//GSE63137_MethylC-seq_VIP_neurons_UMRs_LMRs.txt.gz
-    4 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl//GSE63137_MethylC-seq_excitatory_neurons_UMRs_LMRs.txt.gz
+                                                                                                                           url
+    1                https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_DMRs_methylpy.txt.gz
+    2         https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_PV_neurons_UMRs_LMRs.txt.gz
+    3        https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_VIP_neurons_UMRs_LMRs.txt.gz
+    4 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_excitatory_neurons_UMRs_LMRs.txt.gz
 
 And download specific files or all supplementary files:
 
