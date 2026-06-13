@@ -68,7 +68,7 @@
       <p class="author">Sean Davis</p>
       <p class="date">2025-08-16</p>
 
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/fix/url-join/vignettes/GEOquery.qmd" class="external-link"><code>vignettes/GEOquery.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/ci/vignette-eval-false/vignettes/GEOquery.qmd" class="external-link"><code>vignettes/GEOquery.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -122,45 +122,14 @@
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Download GSE2553</span></span>
-<span><span class="va">gse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GSE2553"</span><span class="op">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Found 1 file(s)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code><span><span class="va">GSE2553_series_matrix.txt.gz</span></span></code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "list"</code></pre>
-</div>
+<span><span class="va">gse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GSE2553"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span></span></code></pre></div>
 </div>
 <p>Notice that <code>getGEO</code> returns a list. This is because a single GSE can contain experiments from multiple platforms. Each element of the list is an <code>ExpressionSet</code> containing data from one platform:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gse</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>ExpressionSet (storageMode: lockedEnvironment)
-assayData: 12600 features, 181 samples
-  element names: exprs
-protocolData: none
-phenoData
-  sampleNames: GSM48681 GSM48682 ... GSM48861 (181 total)
-  varLabels: title geo_accession ... data_row_count (30 total)
-  varMetadata: labelDescription
-featureData
-  featureNames: 1 2 ... 12600 (12600 total)
-  fvarLabels: ID PenAt ... Chimeric_Cluster_IDs (13 total)
-  fvarMetadata: Column Description labelDescription
-experimentData: use 'experimentData(object)'
-  pubMedIds: 16230383
-Annotation: GPL1977 </code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span></span>
+<span><span class="va">gse</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 </div>
 </section><section class="level2"><h3 id="historical-context-soft-format-vs-gsematrix-files">Historical Context: SOFT Format vs GSEMatrix Files<a class="anchor" aria-label="anchor" href="#historical-context-soft-format-vs-gsematrix-files"></a>
 </h3>
@@ -169,391 +138,23 @@ Annotation: GPL1977 </code></pre>
 </section></section><section class="section level2"><h2 id="searching-geo-programmatically">Searching GEO Programmatically<a class="anchor" aria-label="anchor" href="#searching-geo-programmatically"></a>
 </h2>
 <p>While GEO’s web interface is powerful, programmatic searches enable automated data discovery and retrieval. GEOquery provides direct access to GEO’s search capabilities:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># What fields can we search?</span></span>
-<span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchFieldsGEO.html">searchFieldsGEO</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu">kable</span><span class="op">(</span><span class="va">fields</span><span class="op">)</span></span></code></pre></div>
 <div id="tbl-search-fields" class="cell quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-tbl"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-search-fields-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Table 1: Available GEO search fields.
 </figcaption><div aria-describedby="tbl-search-fields-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output-display">
-<table class="table cell caption-top" style="width:100%;">
-<colgroup>
-<col style="width: 5%">
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 10%">
-<col style="width: 7%">
-<col style="width: 13%">
-<col style="width: 13%">
-<col style="width: 10%">
-<col style="width: 9%">
-</colgroup>
-<thead><tr class="header">
-<th style="text-align: left;">Name</th>
-<th style="text-align: left;">FullName</th>
-<th style="text-align: left;">Description</th>
-<th style="text-align: left;">TermCount</th>
-<th style="text-align: left;">IsDate</th>
-<th style="text-align: left;">IsNumerical</th>
-<th style="text-align: left;">SingleToken</th>
-<th style="text-align: left;">Hierarchy</th>
-<th style="text-align: left;">IsHidden</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">ALL</td>
-<td style="text-align: left;">All Fields</td>
-<td style="text-align: left;">All term….</td>
-<td style="text-align: left;">47752964</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">UID</td>
-<td style="text-align: left;">UID</td>
-<td style="text-align: left;">Unique n….</td>
-<td style="text-align: left;">0</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">FILT</td>
-<td style="text-align: left;">Filter</td>
-<td style="text-align: left;">Limits t….</td>
-<td style="text-align: left;">71</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">ORGN</td>
-<td style="text-align: left;">Organism</td>
-<td style="text-align: left;">exploded….</td>
-<td style="text-align: left;">78088</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">ACCN</td>
-<td style="text-align: left;">GEO Acce….</td>
-<td style="text-align: left;">accessio….</td>
-<td style="text-align: left;">20509876</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">TITL</td>
-<td style="text-align: left;">Title</td>
-<td style="text-align: left;">Words in….</td>
-<td style="text-align: left;">10504485</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">DESC</td>
-<td style="text-align: left;">Description</td>
-<td style="text-align: left;">Text fro….</td>
-<td style="text-align: left;">11349216</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SFIL</td>
-<td style="text-align: left;">Suppleme….</td>
-<td style="text-align: left;">Suppleme….</td>
-<td style="text-align: left;">255</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">ETYP</td>
-<td style="text-align: left;">Entry Type</td>
-<td style="text-align: left;">Entry ty….</td>
-<td style="text-align: left;">4</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">STYP</td>
-<td style="text-align: left;">Sample Type</td>
-<td style="text-align: left;">Sample type</td>
-<td style="text-align: left;">9</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">VTYP</td>
-<td style="text-align: left;">Sample V….</td>
-<td style="text-align: left;">type of ….</td>
-<td style="text-align: left;">7</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">PTYP</td>
-<td style="text-align: left;">Platform….</td>
-<td style="text-align: left;">Platform….</td>
-<td style="text-align: left;">17</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">GTYP</td>
-<td style="text-align: left;">DataSet Type</td>
-<td style="text-align: left;">type of ….</td>
-<td style="text-align: left;">27</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">NSAM</td>
-<td style="text-align: left;">Number o….</td>
-<td style="text-align: left;">Number o….</td>
-<td style="text-align: left;">2166</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">SRC</td>
-<td style="text-align: left;">Sample S….</td>
-<td style="text-align: left;">sample s….</td>
-<td style="text-align: left;">468068</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">AUTH</td>
-<td style="text-align: left;">Author</td>
-<td style="text-align: left;">author o….</td>
-<td style="text-align: left;">1364298</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">INST</td>
-<td style="text-align: left;">Submitte….</td>
-<td style="text-align: left;">institut….</td>
-<td style="text-align: left;">26541</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">NPRO</td>
-<td style="text-align: left;">Number o….</td>
-<td style="text-align: left;">number o….</td>
-<td style="text-align: left;">7278</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">SSTP</td>
-<td style="text-align: left;">Subset V….</td>
-<td style="text-align: left;">subset v….</td>
-<td style="text-align: left;">24</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SSDE</td>
-<td style="text-align: left;">Subset D….</td>
-<td style="text-align: left;">subset d….</td>
-<td style="text-align: left;">7535</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">GEID</td>
-<td style="text-align: left;">Reporter….</td>
-<td style="text-align: left;">name or ….</td>
-<td style="text-align: left;">2840498</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">PDAT</td>
-<td style="text-align: left;">Publicat….</td>
-<td style="text-align: left;">publicat….</td>
-<td style="text-align: left;">8662</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">UDAT</td>
-<td style="text-align: left;">Update Date</td>
-<td style="text-align: left;">date</td>
-<td style="text-align: left;">7779</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">TAGL</td>
-<td style="text-align: left;">Tag Length</td>
-<td style="text-align: left;">Tag/Sign….</td>
-<td style="text-align: left;">9</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">RGSE</td>
-<td style="text-align: left;">Related ….</td>
-<td style="text-align: left;">Related ….</td>
-<td style="text-align: left;">30866</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">RGPL</td>
-<td style="text-align: left;">Related ….</td>
-<td style="text-align: left;">Related ….</td>
-<td style="text-align: left;">290784</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">MESH</td>
-<td style="text-align: left;">MeSH Terms</td>
-<td style="text-align: left;">Medical ….</td>
-<td style="text-align: left;">17809</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">PROJ</td>
-<td style="text-align: left;">Project</td>
-<td style="text-align: left;">Project</td>
-<td style="text-align: left;">10</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">ATNM</td>
-<td style="text-align: left;">Attribut….</td>
-<td style="text-align: left;">Attribut….</td>
-<td style="text-align: left;">50348</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">ATTR</td>
-<td style="text-align: left;">Attribute</td>
-<td style="text-align: left;">Attribute</td>
-<td style="text-align: left;">2866804</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">PROP</td>
-<td style="text-align: left;">Properties</td>
-<td style="text-align: left;">Properties</td>
-<td style="text-align: left;">3</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">Y</td>
-<td style="text-align: left;">N</td>
-<td style="text-align: left;">N</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># What fields can we search?</span></span>
+<span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchFieldsGEO.html">searchFieldsGEO</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">kable</span><span class="op">(</span><span class="va">fields</span><span class="op">)</span></span></code></pre></div>
 </div>
 </figure>
 </div>
-</div>
 <p>GEO uses a specific search syntax with field identifiers in square brackets:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
+<div id="tbl-example-search" class="cell quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-example-search-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 2: Top search results for studies related to COVID-19 in humans with GEO-calculated RNA-seq counts available.
+</figcaption><div aria-describedby="tbl-example-search-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Find RNA-seq studies related to COVID-19 in humans</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchGEO.html">searchGEO</a></span><span class="op">(</span><span class="st">'covid-19[All Fields] AND "rnaseq counts"[Filter] AND Homo sapiens[ORGN]'</span><span class="op">)</span></span>
 <span><span class="va">results</span> <span class="op">|&gt;</span></span>
@@ -561,115 +162,8 @@ Table 1: Available GEO search fields.
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/strtrim.html" class="external-link">strtrim</a></span><span class="op">(</span><span class="va">Title</span>, <span class="fl">120</span><span class="op">)</span>, <span class="st">'...'</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">kable</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div id="tbl-example-search" class="cell quarto-float quarto-figure quarto-figure-center">
-<figure class="quarto-float quarto-float-tbl"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-example-search-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 2: Top search results for studies related to COVID-19 in humans with GEO-calculated RNA-seq counts available.
-</figcaption><div aria-describedby="tbl-example-search-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output-display">
-<table class="table cell caption-top" style="width:100%;">
-<colgroup>
-<col style="width: 27%">
-<col style="width: 27%">
-<col style="width: 2%">
-<col style="width: 11%">
-<col style="width: 2%">
-<col style="width: 2%">
-<col style="width: 16%">
-<col style="width: 3%">
-<col style="width: 2%">
-<col style="width: 3%">
-</colgroup>
-<thead><tr class="header">
-<th style="text-align: left;">Title</th>
-<th style="text-align: left;">Summary</th>
-<th style="text-align: left;">Organism</th>
-<th style="text-align: left;">Type</th>
-<th style="text-align: left;">Platforms</th>
-<th style="text-align: left;">Contains</th>
-<th style="text-align: left;">FTP download</th>
-<th style="text-align: left;">Series Accession</th>
-<th style="text-align: right;">ID</th>
-<th style="text-align: left;">SRA Run Selector</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Comparative Analysis of Host Responses Between Sepsis and COVID-19: A Prospective Observational Study of Whole Blood Tra …</td>
-<td style="text-align: left;">This prospective observational study conducted at Osaka University Graduate School of Medicine aimed to compare host res …</td>
-<td style="text-align: left;">Homo sapiens</td>
-<td style="text-align: left;">Expression profiling by high throughput sequencing</td>
-<td style="text-align: left;">GPL30209</td>
-<td style="text-align: left;">72 Samples</td>
-<td style="text-align: left;">GEO (TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE243nnn/GSE243217/</td>
-<td style="text-align: left;">GSE243217</td>
-<td style="text-align: right;">200243217</td>
-<td style="text-align: left;">NA</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">An aberrant immune-epithelial progenitor niche drives post-viral lung sequelae [human] …</td>
-<td style="text-align: left;">Respiratory viral infections are being increasingly recognized not just for their acute impact but also as potential tri …</td>
-<td style="text-align: left;">Homo sapiens</td>
-<td style="text-align: left;">Other</td>
-<td style="text-align: left;">GPL24676</td>
-<td style="text-align: left;">5 Samples</td>
-<td style="text-align: left;">GEO (H5, PNG) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE267nnn/GSE267226/</td>
-<td style="text-align: left;">GSE267226</td>
-<td style="text-align: right;">200267226</td>
-<td style="text-align: left;">NA</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Longitudinal transcriptomic analysis reveals persistent enrichment of iron homeostasis and erythrocyte function pathways …</td>
-<td style="text-align: left;">The acute respiratory distress syndrome (ARDS) is a common complications of severe COVID-19 and contributes to patient m …</td>
-<td style="text-align: left;">Homo sapiens</td>
-<td style="text-align: left;">Expression profiling by high throughput sequencing</td>
-<td style="text-align: left;">GPL34284</td>
-<td style="text-align: left;">49 Samples</td>
-<td style="text-align: left;">GEO (TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE273nnn/GSE273149/</td>
-<td style="text-align: left;">GSE273149</td>
-<td style="text-align: right;">200273149</td>
-<td style="text-align: left;">NA</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Features of chronic urticaria after COVID-19 mRNA vaccine, a real-life cohort study …</td>
-<td style="text-align: left;">New onsets of chronic urticaria (CU) have been reported after repeated immunizations, mainly with the Moderna mRNA-1273 …</td>
-<td style="text-align: left;">Homo sapiens</td>
-<td style="text-align: left;">Expression profiling by high throughput sequencing</td>
-<td style="text-align: left;">GPL20301</td>
-<td style="text-align: left;">32 Samples</td>
-<td style="text-align: left;">GEO (TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE272nnn/GSE272645/</td>
-<td style="text-align: left;">GSE272645</td>
-<td style="text-align: right;">200272645</td>
-<td style="text-align: left;">NA</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Transcriptomic Profiling of Neutrophils and Low-Density Granulocytes in COVID-19 Patients …</td>
-<td style="text-align: left;">The severity of COVID-19 is linked to excessive inflammation. Neutrophils represent a critical arm of the innate immune …</td>
-<td style="text-align: left;">Homo sapiens</td>
-<td style="text-align: left;">Expression profiling by high throughput sequencing</td>
-<td style="text-align: left;">GPL24676</td>
-<td style="text-align: left;">36 Samples</td>
-<td style="text-align: left;">GEO (TSV, TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE272nnn/GSE272381/</td>
-<td style="text-align: left;">GSE272381</td>
-<td style="text-align: right;">200272381</td>
-<td style="text-align: left;">NA</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Effects of envelope- or membrane-protein segments of SARS-CoV-2 on gene expression of HUVEC cells …</td>
-<td style="text-align: left;">Exterior segments of E-proteins bound onto and modulated gene expression in human vascular endothelial cells in vitro Th …</td>
-<td style="text-align: left;">Homo sapiens</td>
-<td style="text-align: left;">Expression profiling by high throughput sequencing</td>
-<td style="text-align: left;">GPL28038</td>
-<td style="text-align: left;">9 Samples</td>
-<td style="text-align: left;">GEO (TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268369/</td>
-<td style="text-align: left;">GSE268369</td>
-<td style="text-align: right;">200268369</td>
-<td style="text-align: left;">NA</td>
-</tr>
-</tbody>
-</table>
-</div>
 </div>
 </figure>
-</div>
 </div>
 <p>The search capabilities mirror GEO’s web interface but allow for integration with R workflows.</p>
 </section><section class="section level2"><h2 id="rna-seq-quantifications-ncbis-solution-to-reanalysis-challenges">RNA-seq Quantifications: NCBI’s Solution to Reanalysis Challenges<a class="anchor" aria-label="anchor" href="#rna-seq-quantifications-ncbis-solution-to-reanalysis-challenges"></a>
@@ -688,22 +182,19 @@ Table 2: Top search results for studies related to COVID-19 in humans with GEO-
 </ol>
 <p>GEOquery provides direct access to these precomputed counts:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check if RNA-seq quantifications are available</span></span>
 <span><span class="va">has_quant</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hasRNASeqQuantifications.html">hasRNASeqQuantifications</a></span><span class="op">(</span><span class="st">"GSE164073"</span><span class="op">)</span></span>
 <span><span class="va">has_quant</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
-</div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get genome build and species information</span></span>
 <span><span class="va">genome_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getRNASeqQuantGenomeInfo.html">getRNASeqQuantGenomeInfo</a></span><span class="op">(</span><span class="st">"GSE164073"</span><span class="op">)</span></span>
 <span><span class="va">genome_info</span></span></code></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Download and construct a SummarizedExperiment</span></span>
 <span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getRNASeqData.html">getRNASeqData</a></span><span class="op">(</span><span class="st">"GSE164073"</span><span class="op">)</span></span>
 <span><span class="va">se</span></span></code></pre></div>
@@ -719,50 +210,22 @@ Table 2: Top search results for studies related to COVID-19 in humans with GEO-
 </ol>
 <p>GEOquery makes accessing these files straightforward:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># List available supplementary files without downloading</span></span>
 <span><span class="va">supp_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">'GSE63137'</span>, fetch_files <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">supp_files</span><span class="op">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                                                             fname
-1                  GSE63137_ATAC-seq_PV_neurons_HOMER_peaks.bed.gz
-2                 GSE63137_ATAC-seq_VIP_neurons_HOMER_peaks.bed.gz
-3          GSE63137_ATAC-seq_excitatory_neurons_HOMER_peaks.bed.gz
-4  GSE63137_ChIP-seq_H3K27ac_excitatory_neurons_SICER_peaks.bed.gz
-5 GSE63137_ChIP-seq_H3K27me3_excitatory_neurons_SICER_peaks.bed.gz
-6  GSE63137_ChIP-seq_H3K4me1_excitatory_neurons_SICER_peaks.bed.gz
-                                                                                                                               url
-1                  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_PV_neurons_HOMER_peaks.bed.gz
-2                 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_VIP_neurons_HOMER_peaks.bed.gz
-3          https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_excitatory_neurons_HOMER_peaks.bed.gz
-4  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K27ac_excitatory_neurons_SICER_peaks.bed.gz
-5 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K27me3_excitatory_neurons_SICER_peaks.bed.gz
-6  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K4me1_excitatory_neurons_SICER_peaks.bed.gz</code></pre>
-</div>
 </div>
 <p>You can filter files by pattern to find specific file types:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Find all text files</span></span>
 <span><span class="va">txt_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">'GSE63137'</span>, fetch_files <span class="op">=</span> <span class="cn">FALSE</span>, </span>
 <span>                             filter_regex <span class="op">=</span> <span class="st">'txt'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">txt_files</span><span class="op">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                                                     fname
-1                GSE63137_MethylC-seq_DMRs_methylpy.txt.gz
-2         GSE63137_MethylC-seq_PV_neurons_UMRs_LMRs.txt.gz
-3        GSE63137_MethylC-seq_VIP_neurons_UMRs_LMRs.txt.gz
-4 GSE63137_MethylC-seq_excitatory_neurons_UMRs_LMRs.txt.gz
-                                                                                                                       url
-1                https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_DMRs_methylpy.txt.gz
-2         https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_PV_neurons_UMRs_LMRs.txt.gz
-3        https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_VIP_neurons_UMRs_LMRs.txt.gz
-4 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_excitatory_neurons_UMRs_LMRs.txt.gz</code></pre>
-</div>
 </div>
 <p>And download specific files or all supplementary files:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Download all supplementary files for a sample</span></span>
 <span><span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">'GSM15789'</span><span class="op">)</span> <span class="co"># Files saved to a new directory</span></span></code></pre></div>
 </div>
@@ -770,7 +233,7 @@ Table 2: Top search results for studies related to COVID-19 in humans with GEO-
 </h2>
 <p>Sometimes you may want to examine a GEO record in its web interface. GEOquery provides convenience functions for this:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get the URL for a GEO accession</span></span>
 <span><span class="va">url</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/urlForAccession.html">urlForAccession</a></span><span class="op">(</span><span class="st">"GSE262484"</span><span class="op">)</span></span>
 <span><span class="va">url</span></span>
@@ -780,7 +243,7 @@ Table 2: Top search results for studies related to COVID-19 in humans with GEO-
 </div>
 <p>For RNA-seq datasets specifically, there’s a convenience function to search for RNA-seq counts on the GEO website:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/browseWebsiteRNASeqSearch.html">browseWebsiteRNASeqSearch</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <p>These functions bridge the programmatic and web interfaces to GEO, allowing seamless transitions between analytical and exploratory modes.</p>
@@ -788,163 +251,23 @@ Table 2: Top search results for studies related to COVID-19 in humans with GEO-
 </h2>
 <p>GEO DataSets (GDS) are curated collections of samples, processed and normalized to be directly comparable. While less common in modern workflows, they remain available and GEOquery supports them:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Download a GDS dataset</span></span>
 <span><span class="va">gds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GDS507"</span><span class="op">)</span></span>
 <span><span class="va">gds</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>An object of class "GDS"
-channel_count
-[1] "1"
-dataset_id
- [1] "GDS507" "GDS507" "GDS507" "GDS507" "GDS507" "GDS507" "GDS507" "GDS507"
- [9] "GDS507" "GDS507" "GDS507" "GDS507"
-description
- [1] "Investigation into mechanisms of renal clear cell carcinogenesis (RCC). Comparison of renal clear cell tumor tissue and adjacent normal tissue isolated from the same surgical samples."
- [2] "RCC"
- [3] "normal"
- [4] "035"
- [5] "023"
- [6] "001"
- [7] "005"
- [8] "011"
- [9] "032"
-[10] "1"
-[11] "2"
-[12] "3"
-[13] "4"
-email
-[1] "geo@ncbi.nlm.nih.gov"
-feature_count
-[1] "22645"
-institute
-[1] "NCBI NLM NIH"
-name
-[1] "Gene Expression Omnibus (GEO)"
-order
-[1] "none"
-platform
-[1] "GPL97"
-platform_organism
-[1] "Homo sapiens"
-platform_technology_type
-[1] "in situ oligonucleotide"
-pubmed_id
-[1] "14641932"
-ref
-[1] "Nucleic Acids Res. 2005 Jan 1;33 Database Issue:D562-6"
-reference_series
-[1] "GSE781"
-sample_count
-[1] "17"
-sample_id
- [1] "GSM11815,GSM11832,GSM12069,GSM12083,GSM12101,GSM12106,GSM12274,GSM12299,GSM12412"
- [2] "GSM11810,GSM11827,GSM12078,GSM12099,GSM12269,GSM12287,GSM12301,GSM12448"
- [3] "GSM11810,GSM11815"
- [4] "GSM11827,GSM11832"
- [5] "GSM12069,GSM12078"
- [6] "GSM12083,GSM12099"
- [7] "GSM12101"
- [8] "GSM12106"
- [9] "GSM12269"
-[10] "GSM12274,GSM12287"
-[11] "GSM12299,GSM12301"
-[12] "GSM12412,GSM12448"
-sample_organism
-[1] "Homo sapiens"
-sample_type
-[1] "RNA"
-title
-[1] "Renal clear cell carcinoma (HG-U133B)"
-type
- [1] "Expression profiling by array" "disease state"
- [3] "disease state"                 "individual"
- [5] "individual"                    "individual"
- [7] "individual"                    "individual"
- [9] "individual"                    "individual"
-[11] "individual"                    "individual"
-[13] "individual"
-update_date
-[1] "Mar 04 2004"
-value_type
-[1] "count"
-web_link
-[1] "http://www.ncbi.nlm.nih.gov/geo"
-An object of class "GEODataTable"
-****** Column Descriptions ******
-     sample disease.state individual
-1  GSM11815           RCC        035
-2  GSM11832           RCC        023
-3  GSM12069           RCC        001
-4  GSM12083           RCC        005
-5  GSM12101           RCC        011
-6  GSM12106           RCC        032
-7  GSM12274           RCC          2
-8  GSM12299           RCC          3
-9  GSM12412           RCC          4
-10 GSM11810        normal        035
-11 GSM11827        normal        023
-12 GSM12078        normal        001
-13 GSM12099        normal        005
-14 GSM12269        normal          1
-15 GSM12287        normal          2
-16 GSM12301        normal          3
-17 GSM12448        normal          4
-                                                                                                                                       description
-1             Value for GSM11815: C035 Renal Clear Cell Carcinoma U133B; src: Trizol isolation of total RNA from Renal Clear Cell Carcinoma tissue
-2             Value for GSM11832: C023 Renal Clear Cell Carcinoma U133B; src: Trizol isolation of total RNA from Renal Clear Cell Carcinoma tissue
-3             Value for GSM12069: C001 Renal Clear Cell Carcinoma U133B; src: Trizol isolation of total RNA from Renal Clear Cell Carcinoma tissue
-4             Value for GSM12083: C005 Renal Clear Cell Carcinoma U133B; src: Trizol isolation of total RNA from Renal Clear Cell Carcinoma tissue
-5             Value for GSM12101: C011 Renal Clear Cell Carcinoma U133B; src: Trizol isolation of total RNA from Renal Clear Cell Carcinoma tissue
-6             Value for GSM12106: C032 Renal Clear Cell Carcinoma U133B; src: Trizol isolation of total RNA from Renal Clear Cell Carcinoma tissue
-7               Value for GSM12274: C2 Renal Clear Cell Carcinoma U133B; src: Trizol isolation of total RNA from Renal Clear Cell Carcinoma tissue
-8               Value for GSM12299: C3 Renal Clear Cell Carcinoma U133B; src: Trizol isolation of total RNA from Renal Clear Cell Carcinoma tissue
-9               Value for GSM12412: C4 Renal Clear Cell Carcinoma U133B; src: Trizol isolation of total RNA from Renal Clear Cell Carcinoma tissue
-10      Value for GSM11810: N035 Normal Human Kidney U133B; src: Trizol isolation of total RNA from normal tissue adjacent to Renal Cell Carcinoma
-11      Value for GSM11827: N023 Normal Human Kidney U133B; src: Trizol isolation of total RNA from normal tissue adjacent to Renal Cell Carcinoma
-12      Value for GSM12078: N001 Normal Human Kidney U133B; src: Trizol isolation of total RNA from normal tissue adjacent to Renal Cell Carcinoma
-13      Value for GSM12099: N005 Normal Human Kidney U133B; src: Trizol isolation of total RNA from normal tissue adjacent to Renal Cell Carcinoma
-14        Value for GSM12269: N1 Normal Human Kidney U133B; src: Trizol isolation of total RNA from normal tissue adjacent to Renal Cell Carcinoma
-15 Value for GSM12287: N2 Renal Clear Cell Carcinoma U133B; src: Trizol isolation of total RNA from normal tissue adjacent to Renal Cell Carcinoma
-16 Value for GSM12301: N3 Renal Clear Cell Carcinoma U133B; src: Trizol isolation of total RNA from normal tissue adjacent to Renal Cell Carcinoma
-17 Value for GSM12448: N4 Renal Clear Cell Carcinoma U133B; src: Trizol isolation of total RNA from normal tissue adjacent to Renal Cell Carcinoma
-****** Data Table ******</code></pre>
-</div>
 </div>
 <p>GDS objects can be converted to Bioconductor data structures:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Convert to ExpressionSet (with log2 transformation)</span></span>
 <span><span class="va">eset</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coercion.html">GDS2eSet</a></span><span class="op">(</span><span class="va">gds</span>, do.log2<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">eset</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>ExpressionSet (storageMode: lockedEnvironment)
-assayData: 22645 features, 17 samples
-  element names: exprs
-protocolData: none
-phenoData
-  sampleNames: GSM11815 GSM11832 ... GSM12448 (17 total)
-  varLabels: sample disease.state individual description
-  varMetadata: labelDescription
-featureData
-  featureNames: 200000_s_at 200001_at ... AFFX-TrpnX-M_at (22645 total)
-  fvarLabels: ID Gene title ... GO:Component ID (21 total)
-  fvarMetadata: Column labelDescription
-experimentData: use 'experimentData(object)'
-  pubMedIds: 14641932
-Annotation:  </code></pre>
-</div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Or to a limma MAList</span></span>
 <span><span class="va">malist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coercion.html">GDS2MA</a></span><span class="op">(</span><span class="va">gds</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">malist</span><span class="op">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "MAList"
-attr(,"package")
-[1] "limma"</code></pre>
-</div>
 </div>
 <p>These conversions are particularly useful for integrating older GEO datasets into modern analytical workflows.</p>
 </section><section class="section level2"><h2 id="advanced-features">Advanced Features<a class="anchor" aria-label="anchor" href="#advanced-features"></a>
@@ -953,73 +276,24 @@ attr(,"package")
 </h3>
 <p>Some GSE records contain data tables with important metadata not captured in the standard GSE structure:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get data tables from GSE3494</span></span>
-<span><span class="va">dt_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGSEDataTables.html">getGSEDataTables</a></span><span class="op">(</span><span class="st">"GSE3494"</span><span class="op">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 251 Columns: 12
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: "\t"
-chr (6): X1, X2, X5, X6, X7, X10
-dbl (6): X3, X4, X8, X9, X11, X12
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-Rows: 502 Columns: 3
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: "\t"
-chr (3): X1, X2, X3
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dt_list</span><span class="op">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code><span><span class="cn">NULL</span></span></code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dt_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 12
-  `INDEX (ID)` p53 seq mut status (p53+=mutant; p53-=wt…¹ p53 DLDA classifier …²
-  &lt;chr&gt;        &lt;chr&gt;                                                       &lt;dbl&gt;
-1 X101B88      p53+                                                            1
-2 X102B06      p53+                                                            1
-3 X104B91      p53+                                                            0
-4 X110B34      p53+                                                            1
-5 X111B51      p53+                                                            1
-6 X127B00      p53+                                                            1
-# ℹ abbreviated names: ¹​`p53 seq mut status (p53+=mutant; p53-=wt)`,
-#   ²​`p53 DLDA classifier result (0=wt-like, 1=mt-like)`
-# ℹ 9 more variables: `DLDA error (1=yes, 0=no)` &lt;dbl&gt;,
-#   `Elston histologic grade` &lt;chr&gt;, `ER status` &lt;chr&gt;, `PgR status` &lt;chr&gt;,
-#   `age at diagnosis` &lt;dbl&gt;, `tumor size (mm)` &lt;dbl&gt;,
-#   `Lymph node status` &lt;chr&gt;,
-#   `DSS TIME (Disease-Specific Survival Time in years)` &lt;dbl&gt;, …</code></pre>
-</div>
+<span><span class="va">dt_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGSEDataTables.html">getGSEDataTables</a></span><span class="op">(</span><span class="st">"GSE3494"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dt_list</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dt_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 </div>
 </section><section class="level2"><h3 id="working-with-gpl-platforms">Working with GPL Platforms<a class="anchor" aria-label="anchor" href="#working-with-gpl-platforms"></a>
 </h3>
 <p>Platform records (GPL) contain important probe annotations:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get a platform record</span></span>
 <span><span class="va">gpl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GPL96"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/GEOData-accessors.html">Table</a></span><span class="op">(</span><span class="va">gpl</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>         ID GB_ACC SPOT_ID Species Scientific Name Annotation Date
-1 1007_s_at U48705                    Homo sapiens     Oct 6, 2014
-2   1053_at M87338                    Homo sapiens     Oct 6, 2014
-3    117_at X51757                    Homo sapiens     Oct 6, 2014
-4    121_at X69699                    Homo sapiens     Oct 6, 2014
-5 1255_g_at L36861                    Homo sapiens     Oct 6, 2014
-6   1294_at L13852                    Homo sapiens     Oct 6, 2014</code></pre>
-</div>
 </div>
 <p>When retrieving GSE records, GEOquery can automatically include GPL annotation:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get GSE with GPL annotation</span></span>
 <span><span class="va">gse_with_gpl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GSE2553"</span>, AnnotGPL<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html" class="external-link">fData</a></span><span class="op">(</span><span class="va">gse_with_gpl</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -1037,92 +311,14 @@ chr (3): X1, X2, X3
 </h2>
 <p>If you use GEOquery in your research, please cite:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"GEOquery"</span><span class="op">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Please cite the following if utilizing the GEOquery software:
-
-  Davis S, Meltzer P (2007). "GEOquery: a bridge between the Gene
-  Expression Omnibus (GEO) and BioConductor." _Bioinformatics_, *14*,
-  1846-1847. doi:10.1093/bioinformatics/btm254
-  &lt;https://doi.org/10.1093/bioinformatics/btm254&gt;.
-
-A BibTeX entry for LaTeX users is
-
-  @Article{,
-    author = {Sean Davis and Paul Meltzer},
-    title = {GEOquery: a bridge between the Gene Expression Omnibus (GEO) and BioConductor},
-    journal = {Bioinformatics},
-    year = {2007},
-    volume = {14},
-    pages = {1846--1847},
-    doi = {10.1093/bioinformatics/btm254},
-  }</code></pre>
-</div>
 </div>
 </section><section class="section level2"><h2 id="session-information">Session Information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>R version 4.6.0 (2026-04-24)
-Platform: aarch64-apple-darwin23
-Running under: macOS Sequoia 15.7.7
-
-Matrix products: default
-BLAS:   /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib
-LAPACK: /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
-
-locale:
-[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-
-time zone: UTC
-tzcode source: internal
-
-attached base packages:
-[1] stats     graphics  grDevices utils     datasets  methods   base
-
-other attached packages:
-[1] knitr_1.51          GEOquery_2.77.6     Biobase_2.72.0
-[4] BiocGenerics_0.58.1 generics_0.1.4
-
-loaded via a namespace (and not attached):
- [1] SummarizedExperiment_1.42.0 xfun_0.58
- [3] httr2_1.2.2                 lattice_0.22-9
- [5] tzdb_0.5.0                  vctrs_0.7.3
- [7] tools_4.6.0                 parallel_4.6.0
- [9] stats4_4.6.0                curl_7.1.0
-[11] tibble_3.3.1                pkgconfig_2.0.3
-[13] R.oo_1.27.1                 Matrix_1.7-5
-[15] data.table_1.18.4           rentrez_1.2.4
-[17] S4Vectors_0.50.1            lifecycle_1.0.5
-[19] compiler_4.6.0              stringr_1.6.0
-[21] statmod_1.5.2               Seqinfo_1.2.0
-[23] htmltools_0.5.9             yaml_2.3.12
-[25] pillar_1.11.1               crayon_1.5.3
-[27] tidyr_1.3.2                 R.utils_2.13.0
-[29] DelayedArray_0.38.2         limma_3.68.4
-[31] abind_1.4-8                 tidyselect_1.2.1
-[33] rvest_1.0.5                 digest_0.6.39
-[35] stringi_1.8.7               dplyr_1.2.1
-[37] purrr_1.2.2                 fastmap_1.2.0
-[39] grid_4.6.0                  cli_3.6.6
-[41] SparseArray_1.12.2          magrittr_2.0.5
-[43] S4Arrays_1.12.0             utf8_1.2.6
-[45] XML_3.99-0.23               withr_3.0.2
-[47] readr_2.2.0                 rappdirs_0.3.4
-[49] bit64_4.8.2                 rmarkdown_2.31
-[51] XVector_0.52.0              httr_1.4.8
-[53] matrixStats_1.5.0           bit_4.6.0
-[55] otel_0.2.0                  R.methodsS3_1.8.2
-[57] hms_1.1.4                   evaluate_1.0.5
-[59] GenomicRanges_1.64.0        IRanges_2.46.0
-[61] rlang_1.2.0                 glue_1.8.1
-[63] selectr_0.5-1               xml2_1.5.2
-[65] vroom_1.7.1                 jsonlite_2.0.0
-[67] R6_2.6.1                    MatrixGenerics_1.24.0      </code></pre>
-</div>
 </div>
 </section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {

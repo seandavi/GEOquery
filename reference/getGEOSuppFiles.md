@@ -71,8 +71,8 @@ a <- getGEOSuppFiles('GSM1137', fetch_files = FALSE)
 a
 #>            fname
 #> 1 GSM1137.CEL.gz
-#>                                                                             url
-#> 1 https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1nnn/GSM1137/suppl/GSM1137.CEL.gz
+#>                                                                              url
+#> 1 https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1nnn/GSM1137/suppl//GSM1137.CEL.gz
 
 # with a set of single-cell RNA-seq data
 a <- getGEOSuppFiles('GSE161228', fetch_files = FALSE)
@@ -81,8 +81,8 @@ a
 #> 1                      GSE161228_24h_PN_all.h5ad.gz
 #> 2 GSE161228_adata_all_panPN_annotated_final.h5ad.gz
 #> 3              GSE161228_knot_24h_48h_adult.h5ad.gz
-#>                                                                                                                   url
-#> 1                      https://ftp.ncbi.nlm.nih.gov/geo/series/GSE161nnn/GSE161228/suppl/GSE161228_24h_PN_all.h5ad.gz
-#> 2 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE161nnn/GSE161228/suppl/GSE161228_adata_all_panPN_annotated_final.h5ad.gz
-#> 3              https://ftp.ncbi.nlm.nih.gov/geo/series/GSE161nnn/GSE161228/suppl/GSE161228_knot_24h_48h_adult.h5ad.gz
+#>                                                                                                                    url
+#> 1                      https://ftp.ncbi.nlm.nih.gov/geo/series/GSE161nnn/GSE161228/suppl//GSE161228_24h_PN_all.h5ad.gz
+#> 2 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE161nnn/GSE161228/suppl//GSE161228_adata_all_panPN_annotated_final.h5ad.gz
+#> 3              https://ftp.ncbi.nlm.nih.gov/geo/series/GSE161nnn/GSE161228/suppl//GSE161228_knot_24h_48h_adult.h5ad.gz
 ```

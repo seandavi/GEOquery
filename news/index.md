@@ -4,13 +4,6 @@
 
 ### Bug Fixes
 
-- Supplemental-file URLs are now built with a small `url_join()` helper
-  instead of [`file.path()`](https://rdrr.io/r/base/file.path.html),
-  which mangled `https://` into `https:/` and produced double slashes.
-  Affects `getGEOSuppFiles(fetch_files = FALSE)` and
-  [`getGEOSeriesFileListing()`](http://seandavi.github.io/GEOquery/reference/getGEOSeriesFileListing.md)
-  ([\#131](https://github.com/seandavi/GEOquery/issues/131),
-  [\#178](https://github.com/seandavi/GEOquery/issues/178)).
 - [`GDS2eSet()`](http://seandavi.github.io/GEOquery/reference/coercion.md)
   no longer fails when a GDS has an `NA` (or empty) value in its
   `ID_REF` column (e.g. GDS3666). Such values are replaced with a usable
