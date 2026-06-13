@@ -14,3 +14,4 @@ Dockerfile
 ^CITATION\.cff$
 ^adr$
 ^CLAUDE\.md$
+^ROADMAP\.md$
