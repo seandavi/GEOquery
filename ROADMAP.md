@@ -206,32 +206,31 @@ single-file, has a concrete reproducer, and unblocks user-facing pain.
 > on that premise. Target output classes: `SingleCellExperiment`, and
 > `SpatialExperiment` for spatial.
 
-### Decide first: dependency architecture (blocks the rest)
+### Dependency architecture — DECIDED ([ADR-0004](http://seandavi.github.io/GEOquery/adr/0004-single-cell-architecture.md))
 
-SC support pulls heavy deps (`DropletUtils`, `zellkonverter`,
-`SingleCellExperiment`, `SpatialExperiment`, `HDF5Array`, optionally
-`Seurat`, `LoomExperiment`). Two paths: - **In-package, `Suggests` +
-[`requireNamespace()`](https://rdrr.io/r/base/ns-load.html) guards** —
-keeps core install light; errors helpfully (“install zellkonverter for
-h5ad”). Lower friction for users. - **Companion package
-`GEOquerySingleCell`** — keeps core lean, simplifies BiocCheck, lets SC
-churn faster than core.
-
-**Recommendation:** in-package with `Suggests` guards for the manifest +
-10x + h5ad core (highest demand, modest dep weight); defer
-Seurat/loom/spatial to guards or a companion if dep weight trips
-BiocCheck. **This is an ADR-worthy decision** — draft
-`adr/0004-single-cell-architecture.md` before coding.
+Readers: **TENxIO** for 10x Matrix-Market (`.mtx`) and CellRanger HDF5
+(`.h5`), **anndataR** for AnnData (`.h5ad`) — both Bioconductor, used
+for their `SingleCellExperiment` assemblers. **In-package**, in
+`Suggests`, behind
+[`requireNamespace()`](https://rdrr.io/r/base/ns-load.html) guards.
+`DropletUtils` (for `emptyDrops`/advanced CellRanger) and `BPCells`
+(on-disk/lazy, SC5) stay optional. Rejected as defaults: `DropletUtils`
+(heavy compiled chain — it broke Windows CI, \#166), `zellkonverter`
+(bundles Python via basilisk), `Seurat` (weight/ecosystem), and
+hand-rolled
+[`Matrix::readMM`](https://rdrr.io/pkg/Matrix/man/externalFormats.html)
+(prefer Bioc assemblers). Prefer Bioconductor readers wherever one
+exists.
 
 ### Roadmap
 
 | \# | Title | Pri | Eff | Issues | Problem → Approach |
 |----|----|----|----|----|----|
 | SC1 | **SC manifest / inventory primitive** *(foundational)* | P1 | M | \#158 | No way to see what an SC GSE contains before a multi-GB download. → `geoSingleCellManifest(GSE)`: list supp files via [`getGEOSeriesFileListing()`](http://seandavi.github.io/GEOquery/reference/getGEOSeriesFileListing.md) (no download), detect format + role per file, **group 10x MEX triplets by GSM prefix**, peek inside `_RAW.tar` listings; return a tibble `{gsm, format, role, url, size_bytes}`. Every item below consumes this. |
-| SC2 | **10x MEX triplet assembly** | P1 | M | \#158 | The real pain isn’t reading — it’s that GEO ships `GSMxxx_matrix.mtx.gz`/`_barcodes.tsv.gz`/`_features.tsv.gz` flat or tarred, while [`DropletUtils::read10xCounts()`](https://rdrr.io/pkg/DropletUtils/man/read10xCounts.html) wants a *directory per sample with canonical names*. → Auto-group + symlink/rename into the expected layout, then read. ~80% of “handle 10x”. |
-| SC3 | **Multi-format reader dispatch** | P1 | L | \#158 | Beyond 10x mtx/h5: **h5ad/AnnData** (`zellkonverter::readH5AD`), **loom** (`LoomExperiment`), **CellRanger `.h5`** (`read10xCounts`), **Seurat `.rds`** (`Seurat::as.SingleCellExperiment`, guarded). → Dispatch table keyed on detected format → `SingleCellExperiment`. h5ad and Seurat `.rds` are very common on recent GEO and currently force hand-rolling. |
+| SC2 | **10x MEX triplet assembly** | P1 | M | \#158 | The real pain isn’t reading — it’s that GEO ships `GSMxxx_matrix.mtx.gz`/`_barcodes.tsv.gz`/`_features.tsv.gz` flat or tarred, while a reader wants a *directory per sample with canonical names*. → Auto-group + symlink/rename into the expected layout, then import via **TENxIO** ([ADR-0004](http://seandavi.github.io/GEOquery/adr/0004-single-cell-architecture.md)) → `SingleCellExperiment`. ~80% of “handle 10x”. |
+| SC3 | **Multi-format reader dispatch** | P1 | L | \#158 | Dispatch keyed on detected format → `SingleCellExperiment`, all [`requireNamespace()`](https://rdrr.io/r/base/ns-load.html)-guarded ([ADR-0004](http://seandavi.github.io/GEOquery/adr/0004-single-cell-architecture.md)): `.mtx` + CellRanger `.h5` → **TENxIO**; `.h5ad`/AnnData → **anndataR** (native R, no Python). `DropletUtils` optional for `emptyDrops`/advanced CellRanger. h5ad is very common on recent GEO and currently forces hand-rolling. |
 | SC4 | **Combined SCE + sample→cell metadata broadcast** | P1 | M | \#158 | Per-GSM SCEs need merging, and cell barcodes don’t map to GSM directly. → Merge per-sample SCEs into one with a `gsm`/`sample` colData column, **broadcasting GSM characteristics to every cell** (GEOquery already parses GSM metadata — unique advantage); handle feature-set union/intersection mismatch across runs. |
-| SC5 | **On-disk / lazy assays for scale** | P1 | M | — | SC matrices blow past memory. → `delayed=TRUE` → HDF5Array/DelayedArray-backed assays (`read10xCounts(type="HDF5")` or [`HDF5Array::writeHDF5Array`](https://rdrr.io/pkg/HDF5Array/man/writeHDF5Array.html)). Pairs hard with the **BiocFileCache** item (huge downloads must persist across sessions). Without this, large GSEs OOM. |
+| SC5 | **On-disk / lazy assays for scale** | P1 | M | — | SC matrices blow past memory. → `delayed=TRUE` → HDF5Array/DelayedArray-backed assays, or **BPCells** (`open_matrix_10x_hdf5`, on-disk bit-packed, ~70× less memory) as an opt-in backend. Pairs hard with the **BiocFileCache** item (huge downloads must persist across sessions). Without this, large GSEs OOM. |
 | SC6 | **Cell-level metadata join** | P2 | M | \#80 | Many GSEs ship a separate `*_metadata.txt.gz` / barcode→cluster annotation (the \#80 `!series_table` is one form). → Detect and join to `colData` **by barcode**. Turns raw counts into an analysis-ready annotated object. Overlaps the SOFT `series_table` parser in New Features. |
 | SC7 | **Auto-detect + nudge in [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)** | P2 | S | \#158 | SC [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md) silently returns an empty object → user confusion. → Heuristic (mtx/h5ad/loom supp files present, or `scRNA`/library-strategy in metadata) emits `message("looks single-cell; use getGEOSingleCell()")`. Cheap, high UX payoff. |
 | SC8 | **Pre-download size guard / selective fetch** | P2 | S | \#158 | SC supp files reach tens of GB. → Surface total size from the SC1 manifest; let users filter to specific GSMs before download. Trivial once SC1 exists. |
