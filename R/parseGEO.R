@@ -233,9 +233,7 @@ findFirstEntity <- function(con) {
         # (which previously surfaced as a cryptic downstream error; see #58).
         if (any(grepl("<!DOCTYPE|<html|not currently public|could not be found",
             line, ignore.case = TRUE))) {
-            stop("The downloaded content looks like an HTML page, not GEO data. ",
-                "The accession may be private, embargoed, not yet public, or may ",
-                "not exist.")
+            .abort_private_accession()
         }
         entity.line <- grep("^\\^(DATASET|SAMPLE|SERIES|PLATFORM|ANNOTATION)", line,
             ignore.case = TRUE, value = TRUE, perl = TRUE)
