@@ -12,3 +12,5 @@ CODE_OF_CONDUCT.md
 Dockerfile
 ^LICENSE\.md$
 ^CITATION\.cff$
+^adr$
+^CLAUDE\.md$
