@@ -40,14 +40,16 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/fix/parsecharacteristics-forwarding/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.99.1" id="geoquery-2991-unreleased">GEOquery 2.99.1 (unreleased)<a class="anchor" aria-label="anchor" href="#geoquery-2991-unreleased"></a></h2>
 <div class="section level3">
 <h3 id="bug-fixes-2-99-1">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-99-1"></a></h3>
-<ul><li>Fixed error when parsing GSE matrix files with malformed or empty lines between sample metadata (e.g., GSE425). Sample lines are now extracted directly using pattern matching to avoid issues with irregular file formatting.</li>
+<ul><li>
+<code>getGEO(parseCharacteristics = FALSE)</code> now actually skips characteristics parsing. The flag was accepted at the top level but dropped before reaching <code><a href="../reference/parseGSEMatrix.html">parseGSEMatrix()</a></code>; it is now threaded through <code>getAndParseGSEMatrices()</code> and <code><a href="../reference/parseGEO.html">parseGEO()</a></code> (<a href="https://github.com/seandavi/GEOquery/issues/60" class="external-link">#60</a>, <a href="https://github.com/seandavi/GEOquery/issues/175" class="external-link">#175</a>).</li>
+<li>Fixed error when parsing GSE matrix files with malformed or empty lines between sample metadata (e.g., GSE425). Sample lines are now extracted directly using pattern matching to avoid issues with irregular file formatting.</li>
 </ul></div>
 </div>
     <div class="section level2">

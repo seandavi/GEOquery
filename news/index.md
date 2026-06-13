@@ -4,6 +4,14 @@
 
 ### Bug Fixes
 
+- `getGEO(parseCharacteristics = FALSE)` now actually skips
+  characteristics parsing. The flag was accepted at the top level but
+  dropped before reaching
+  [`parseGSEMatrix()`](http://seandavi.github.io/GEOquery/reference/parseGSEMatrix.md);
+  it is now threaded through `getAndParseGSEMatrices()` and
+  [`parseGEO()`](http://seandavi.github.io/GEOquery/reference/parseGEO.md)
+  ([\#60](https://github.com/seandavi/GEOquery/issues/60),
+  [\#175](https://github.com/seandavi/GEOquery/issues/175)).
 - Fixed error when parsing GSE matrix files with malformed or empty
   lines between sample metadata (e.g., GSE425). Sample lines are now
   extracted directly using pattern matching to avoid issues with

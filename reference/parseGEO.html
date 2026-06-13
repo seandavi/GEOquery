@@ -40,7 +40,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Parse GEO text</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/R/parseGEO.R" class="external-link"><code>R/parseGEO.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/fix/parsecharacteristics-forwarding/R/parseGEO.R" class="external-link"><code>R/parseGEO.R</code></a></small>
       <div class="d-none name"><code>parseGEO.Rd</code></div>
     </div>
 
@@ -55,7 +55,8 @@
 <span>  <span class="va">GSElimits</span>,</span>
 <span>  destdir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  AnnotGPL <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  getGPL <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  getGPL <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  parseCharacteristics <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -85,6 +86,12 @@ be used for caching)</p></dd>
 <dt id="arg-getgpl">getGPL<a class="anchor" aria-label="anchor" href="#arg-getgpl"></a></dt>
 <dd><p>Fetch the GPL associated with a GSEMatrix entity (should
 remain TRUE for all normal use cases)</p></dd>
+
+
+<dt id="arg-parsecharacteristics">parseCharacteristics<a class="anchor" aria-label="anchor" href="#arg-parsecharacteristics"></a></dt>
+<dd><p>Whether or not to parse the characteristics
+information (if available) for a GSE Matrix file. Set to FALSE if you
+experience trouble parsing the characteristics.</p></dd>
 
 </dl></div>
     <div class="section level2">
