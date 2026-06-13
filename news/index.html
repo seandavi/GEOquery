@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,13 +40,17 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/fix/description-biocviews/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.77.7" id="geoquery-2777-development-version">GEOquery 2.77.7 (development version)<a class="anchor" aria-label="anchor" href="#geoquery-2777-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="development version" id="geoquery-development-version">GEOquery (development version)<a class="anchor" aria-label="anchor" href="#geoquery-development-version"></a></h2>
 <div class="section level3">
-<h3 id="bug-fixes-2-77-7">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-77-7"></a></h3>
+<h3 id="documentation-development-version">Documentation<a class="anchor" aria-label="anchor" href="#documentation-development-version"></a></h3>
+<ul><li>The package <code>DESCRIPTION</code> and <code>biocViews</code> now describe GEOquery’s actual scope (microarray, RNA-seq, and single-cell; GEO Series Matrix files parsed to <code>ExpressionSet</code> by default) instead of microarray-only (<a href="https://github.com/seandavi/GEOquery/issues/71" class="external-link">#71</a>, <a href="https://github.com/seandavi/GEOquery/issues/181" class="external-link">#181</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
 <ul><li>Supplemental-file URLs are now built with a small <code>url_join()</code> helper instead of <code><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path()</a></code>, which mangled <code>https://</code> into <code>https:/</code> and produced double slashes. Affects <code>getGEOSuppFiles(fetch_files = FALSE)</code> and <code><a href="../reference/getGEOSeriesFileListing.html">getGEOSeriesFileListing()</a></code> (<a href="https://github.com/seandavi/GEOquery/issues/131" class="external-link">#131</a>, <a href="https://github.com/seandavi/GEOquery/issues/178" class="external-link">#178</a>).</li>
 <li>
 <code><a href="../reference/coercion.html">GDS2eSet()</a></code> no longer fails when a GDS has an <code>NA</code> (or empty) value in its <code>ID_REF</code> column (e.g. GDS3666). Such values are replaced with a usable feature name instead of producing “row names contain missing values” (<a href="https://github.com/seandavi/GEOquery/issues/21" class="external-link">#21</a>, <a href="https://github.com/seandavi/GEOquery/issues/177" class="external-link">#177</a>).</li>

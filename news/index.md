@@ -1,6 +1,14 @@
 # Changelog
 
-## GEOquery 2.77.7 (development version)
+## GEOquery (development version)
+
+### Documentation
+
+- The package `DESCRIPTION` and `biocViews` now describe GEOquery’s
+  actual scope (microarray, RNA-seq, and single-cell; GEO Series Matrix
+  files parsed to `ExpressionSet` by default) instead of microarray-only
+  ([\#71](https://github.com/seandavi/GEOquery/issues/71),
+  [\#181](https://github.com/seandavi/GEOquery/issues/181)).
 
 ### Bug Fixes
 
