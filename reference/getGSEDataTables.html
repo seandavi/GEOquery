@@ -89,67 +89,10 @@ GSE record and parses out the data tables into R data.frames.</p>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A list of data.frames.</p>
     </div>
-    <div class="section level2">
-    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="getGEO.html">getGEO</a></code></p></div>
-    </div>
-    <div class="section level2">
-    <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
-    <p>Sean Davis <a href="mailto:sdavis2@mail.nih.gov">sdavis2@mail.nih.gov</a></p>
-    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">dfl</span> <span class="op">=</span> <span class="fu">getGSEDataTables</span><span class="op">(</span><span class="st">'GSE3494'</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">251</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">12</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Delimiter:</span> "\t"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">chr</span> (6): X1, X2, X5, X6, X7, X10</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">dbl</span> (6): X3, X4, X8, X9, X11, X12</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">502</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Delimiter:</span> "\t"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">chr</span> (3): X1, X2, X3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">dfl</span>,<span class="va">head</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 12</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   `INDEX (ID)` p53 seq mut status (p53+=mutant; p53-=wt…¹ p53 DLDA classifier …²</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> X101B88      p53+                                                            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> X102B06      p53+                                                            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> X104B91      p53+                                                            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> X110B34      p53+                                                            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> X111B51      p53+                                                            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> X127B00      p53+                                                            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ abbreviated names: ¹​`p53 seq mut status (p53+=mutant; p53-=wt)`,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ²​`p53 DLDA classifier result (0=wt-like, 1=mt-like)`</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 9 more variables: `DLDA error (1=yes, 0=no)` &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `Elston histologic grade` &lt;chr&gt;, `ER status` &lt;chr&gt;, `PgR status` &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `age at diagnosis` &lt;dbl&gt;, `tumor size (mm)` &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `Lymph node status` &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `DSS TIME (Disease-Specific Survival Time in years)` &lt;dbl&gt;, …</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   `GEO Sample Accession #` `Patient ID` `Affy platform`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> GSM79114                 X100B08      HG-U133A       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> GSM79115                 X101B88      HG-U133A       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> GSM79116                 X102B06      HG-U133A       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> GSM79117                 X103B41      HG-U133A       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> GSM79118                 X104B91      HG-U133A       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> GSM79119                 X105B13      HG-U133A       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
-</code></pre></div>
+
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

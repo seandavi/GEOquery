@@ -85,35 +85,10 @@ as a data.frame.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">getGEOSeriesFileListing</span><span class="op">(</span><span class="st">'GSE288770'</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">17</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">5</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Column specification</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Delimiter:</span> "\t"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">chr</span> (4): #Archive/File, Name, Time, Type</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">dbl</span> (1): Size</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Use `spec()` to retrieve the full column specification for this data.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Specify the column types or set `show_col_types = FALSE` to quiet this message.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 17 × 5</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    archive_or_file name                                       time    size type </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Archive         GSE288770_RAW.tar                          08/0… 1.20<span style="color: #949494;">e</span>8 TAR  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> File            GSM8775062_vitro_contol_filtered_feature_… 02/0… 3.01<span style="color: #949494;">e</span>7 H5   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> File            GSM8775063_vitro_vasc_filtered_feature_bc… 02/0… 1.54<span style="color: #949494;">e</span>7 H5   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> File            GSM8775064_vitro_neuro_filtered_feature_b… 02/0… 2.72<span style="color: #949494;">e</span>7 H5   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> File            GSM8775065_vitro_odont_filtered_feature_b… 02/0… 2.22<span style="color: #949494;">e</span>7 H5   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> File            GSM8775066_vivo_day7_1_barcodes.tsv.gz     02/0… 3.36<span style="color: #949494;">e</span>3 TSV  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> File            GSM8775066_vivo_day7_1_features.tsv.gz     02/0… 3.34<span style="color: #949494;">e</span>5 TSV  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> File            GSM8775066_vivo_day7_1_matrix.mtx.gz       02/0… 2.98<span style="color: #949494;">e</span>6 MTX  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> File            GSM8775067_vivo_day7_2_barcodes.tsv.gz     02/0… 7.95<span style="color: #949494;">e</span>3 TSV  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> File            GSM8775067_vivo_day7_2_features.tsv.gz     02/0… 3.34<span style="color: #949494;">e</span>5 TSV  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> File            GSM8775067_vivo_day7_2_matrix.mtx.gz       02/0… 1.28<span style="color: #949494;">e</span>7 MTX  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> File            GSM8775068_vivo_day21_1_barcodes.tsv.gz    02/0… 9.71<span style="color: #949494;">e</span>3 TSV  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> File            GSM8775068_vivo_day21_1_features.tsv.gz    02/0… 3.34<span style="color: #949494;">e</span>5 TSV  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> File            GSM8775068_vivo_day21_1_matrix.mtx.gz      02/0… 5.72<span style="color: #949494;">e</span>6 MTX  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> File            GSM8775069_vivo_day21_2_barcodes.tsv.gz    02/0… 2.1 <span style="color: #949494;">e</span>3 TSV  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span> File            GSM8775069_vivo_day21_2_features.tsv.gz    02/0… 3.34<span style="color: #949494;">e</span>5 TSV  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">17</span> File            GSM8775069_vivo_day21_2_matrix.mtx.gz      02/0… 2.41<span style="color: #949494;">e</span>6 MTX  </span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu">getGEOSeriesFileListing</span><span class="op">(</span><span class="st">'GSE288770'</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
