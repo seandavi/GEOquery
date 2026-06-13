@@ -13,7 +13,8 @@ parseGEO(
   GSElimits,
   destdir = tempdir(),
   AnnotGPL = FALSE,
-  getGPL = TRUE
+  getGPL = TRUE,
+  parseCharacteristics = TRUE
 )
 }
 \arguments{
@@ -30,6 +31,10 @@ be used for caching)}
 
 \item{getGPL}{Fetch the GPL associated with a GSEMatrix entity (should
 remain TRUE for all normal use cases)}
+
+\item{parseCharacteristics}{Whether or not to parse the characteristics
+information (if available) for a GSE Matrix file. Set to FALSE if you
+experience trouble parsing the characteristics.}
 }
 \value{
 parseGEO returns an object of the associated type.  For example, if

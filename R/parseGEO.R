@@ -25,6 +25,9 @@
 #' @param AnnotGPL Fetch the annotation GPL if available
 #' @param getGPL Fetch the GPL associated with a GSEMatrix entity (should
 #' remain TRUE for all normal use cases)
+#' @param parseCharacteristics Whether or not to parse the characteristics
+#' information (if available) for a GSE Matrix file. Set to FALSE if you
+#' experience trouble parsing the characteristics.
 #' @return parseGEO returns an object of the associated type.  For example, if
 #' it is passed the text from a GDS entry, a GDS object is returned.
 #' @author Sean Davis
@@ -32,7 +35,8 @@
 #' @keywords IO
 #' 
 #' @export
-parseGEO <- function(fname, GSElimits, destdir = tempdir(), AnnotGPL = FALSE, getGPL = TRUE) {
+parseGEO <- function(fname, GSElimits, destdir = tempdir(), AnnotGPL = FALSE, getGPL = TRUE,
+    parseCharacteristics = TRUE) {
     con <- fileOpen(fname)
     first.entity <- findFirstEntity(con)
     close(con)
@@ -43,7 +47,8 @@ parseGEO <- function(fname, GSElimits, destdir = tempdir(), AnnotGPL = FALSE, ge
     }, platform = {
         parseGPL(fname)
     }, `0` = {
-        parseGSEMatrix(fname, destdir = destdir, AnnotGPL = AnnotGPL, getGPL = getGPL)$eset
+        parseGSEMatrix(fname, destdir = destdir, AnnotGPL = AnnotGPL, getGPL = getGPL,
+            parseCharacteristics = parseCharacteristics)$eset
     }, )
     return(ret)
 }
@@ -450,7 +455,7 @@ getAndParseGSEMatrices <- function(GEO, destdir, AnnotGPL, getGPL = TRUE, parseC
             downloadFile(url, destfile = destfile, mode = "wb")
         }
         ret[[b[i]]] <- parseGSEMatrix(destfile, destdir = destdir, AnnotGPL = AnnotGPL,
-            getGPL = getGPL)$eset
+            getGPL = getGPL, parseCharacteristics = parseCharacteristics)$eset
     }
     return(ret)
 }
