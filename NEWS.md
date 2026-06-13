@@ -1,4 +1,4 @@
-# GEOquery 2.99.1 (unreleased)
+# GEOquery 2.77.7 (development version)
 
 ## Bug Fixes
 
@@ -8,17 +8,13 @@
 - `getGEO(parseCharacteristics = FALSE)` now actually skips characteristics parsing. The flag was accepted at the top level but dropped before reaching `parseGSEMatrix()`; it is now threaded through `getAndParseGSEMatrices()` and `parseGEO()` (#60, #175).
 - Fixed error when parsing GSE matrix files with malformed or empty lines between sample metadata (e.g., GSE425). Sample lines are now extracted directly using pattern matching to avoid issues with irregular file formatting.
 
-# GEOquery 2.99.0 (2024-10-01)
+# GEOquery 2.75.0 (2024-10-01)
 
 ## New Features
 
 - RNAseq data support for GEOquery. Now you can use RNASeq quantification data prepared by NCBI.
 - Basic search in GEO database. Now you can search for datasets in GEO database using GEOquery.
 - browseGEO() function to open a web browser with a GEO accession.
-
-## Breaking changes
-
-- `getGEO()` now returns a list of SummarizedExperiment objects. This is a breaking change from previous versions of GEOquery. If you are using GEOquery in a script, you will need to update your code to reflect this change.
 
 ## Bug Fixes or Improvements
 
