@@ -36,6 +36,7 @@ Sean Davis <sdavis2@mail.nih.gov>
 ## Examples
 
 ``` r
+
 dfl = getGSEDataTables('GSE3494')
 #> Rows: 251 Columns: 12
 #> ── Column specification ────────────────────────────────────────────────────────

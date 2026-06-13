@@ -70,5 +70,6 @@ Sean Davis
 ## Examples
 
 ``` r
+
 # myfile <- getGEOfile('GDS10')
 ```

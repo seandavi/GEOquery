@@ -163,6 +163,7 @@ Sean Davis
 ## Examples
 
 ``` r
+
 gds <- getGEO('GDS10')
 gds
 #> An object of class "GDS"

@@ -65,6 +65,7 @@ Sean Davis
 
 ``` r
 
+
 if (FALSE) gds505 <- getGEO('GDS505') # \dontrun{}
 if (FALSE) MA <- GDS2MA(gds505) # \dontrun{}
 if (FALSE) eset <- GDS2eSet(gds505) # \dontrun{}

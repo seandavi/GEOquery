@@ -52,6 +52,7 @@ not repeated often) operation. To install GEOquery, ensure that you have
 Then, to install GEOquery:
 
 ``` r
+
 BiocManager::install('GEOquery')
 ```
 
@@ -59,6 +60,7 @@ Before using GEOquery, we need to load the GEOquery library. Loading the
 GEOquery library must be done *each time you start a new R session*.
 
 ``` r
+
 library(GEOquery)
 ```
 
@@ -68,6 +70,7 @@ The most common use case is downloading a GEO Series (GSE), which
 typically represents a complete study:
 
 ``` r
+
 # Download GSE2553
 gse <- getGEO("GSE2553")
 ```
@@ -77,6 +80,7 @@ gse <- getGEO("GSE2553")
     GSE2553_series_matrix.txt.gz
 
 ``` r
+
 class(gse)
 ```
 
@@ -87,12 +91,14 @@ contain experiments from multiple platforms. Each element of the list is
 an `ExpressionSet` containing data from one platform:
 
 ``` r
+
 length(gse)
 ```
 
     [1] 1
 
 ``` r
+
 gse[[1]]
 ```
 
@@ -131,44 +137,45 @@ automated data discovery and retrieval. GEOquery provides direct access
 to GEO’s search capabilities:
 
 ``` r
+
 # What fields can we search?
 fields <- searchFieldsGEO()
 kable(fields)
 ```
 
-| Name | FullName     | Description | TermCount | IsDate | IsNumerical | SingleToken | Hierarchy | IsHidden |
-|:-----|:-------------|:------------|:----------|:-------|:------------|:------------|:----------|:---------|
-| ALL  | All Fields   | All term….  | 45152635  | N      | N           | N           | N         | N        |
-| UID  | UID          | Unique n….  | 0         | N      | Y           | Y           | N         | Y        |
-| FILT | Filter       | Limits t….  | 71        | N      | N           | Y           | N         | N        |
-| ORGN | Organism     | exploded….  | 75623     | N      | N           | Y           | Y         | N        |
-| ACCN | GEO Acce….   | accessio….  | 19303976  | N      | N           | Y           | N         | N        |
-| TITL | Title        | Words in….  | 9946487   | N      | N           | Y           | N         | N        |
-| DESC | Description  | Text fro….  | 10548780  | N      | N           | Y           | N         | N        |
-| SFIL | Suppleme….   | Suppleme….  | 255       | N      | N           | Y           | N         | N        |
-| ETYP | Entry Type   | Entry ty….  | 4         | N      | N           | Y           | N         | N        |
-| STYP | Sample Type  | Sample type | 9         | N      | N           | Y           | N         | N        |
-| VTYP | Sample V….   | type of ….  | 7         | N      | N           | Y           | N         | N        |
-| PTYP | Platform….   | Platform….  | 17        | N      | N           | Y           | N         | N        |
-| GTYP | DataSet Type | type of ….  | 27        | N      | N           | Y           | N         | N        |
-| NSAM | Number o….   | Number o….  | 2134      | N      | Y           | Y           | N         | N        |
-| SRC  | Sample S….   | sample s….  | 461250    | N      | N           | Y           | N         | N        |
-| AUTH | Author       | author o….  | 1300542   | N      | N           | Y           | N         | N        |
-| INST | Submitte….   | institut….  | 25314     | N      | N           | Y           | N         | N        |
-| NPRO | Number o….   | number o….  | 7258      | N      | Y           | Y           | N         | N        |
-| SSTP | Subset V….   | subset v….  | 24        | N      | N           | Y           | N         | N        |
-| SSDE | Subset D….   | subset d….  | 7535      | N      | N           | Y           | N         | N        |
-| GEID | Reporter….   | name or ….  | 2840498   | N      | N           | Y           | N         | N        |
-| PDAT | Publicat….   | publicat….  | 8453      | Y      | N           | Y           | N         | N        |
-| UDAT | Update Date  | date        | 7570      | Y      | N           | Y           | N         | N        |
-| TAGL | Tag Length   | Tag/Sign….  | 9         | N      | N           | Y           | N         | N        |
-| RGSE | Related ….   | Related ….  | 30135     | N      | N           | Y           | N         | N        |
-| RGPL | Related ….   | Related ….  | 271071    | N      | N           | Y           | N         | N        |
-| MESH | MeSH Terms   | Medical ….  | 17643     | N      | N           | Y           | Y         | N        |
-| PROJ | Project      | Project     | 10        | N      | N           | Y           | N         | N        |
-| ATNM | Attribut….   | Attribut….  | 49222     | N      | N           | Y           | N         | N        |
-| ATTR | Attribute    | Attribute   | 2763893   | N      | N           | Y           | N         | N        |
-| PROP | Properties   | Properties  | 3         | N      | N           | Y           | N         | N        |
+| Name | FullName | Description | TermCount | IsDate | IsNumerical | SingleToken | Hierarchy | IsHidden |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|
+| ALL | All Fields | All term…. | 47752964 | N | N | N | N | N |
+| UID | UID | Unique n…. | 0 | N | Y | Y | N | Y |
+| FILT | Filter | Limits t…. | 71 | N | N | Y | N | N |
+| ORGN | Organism | exploded…. | 78088 | N | N | Y | Y | N |
+| ACCN | GEO Acce…. | accessio…. | 20509876 | N | N | Y | N | N |
+| TITL | Title | Words in…. | 10504485 | N | N | Y | N | N |
+| DESC | Description | Text fro…. | 11349216 | N | N | Y | N | N |
+| SFIL | Suppleme…. | Suppleme…. | 255 | N | N | Y | N | N |
+| ETYP | Entry Type | Entry ty…. | 4 | N | N | Y | N | N |
+| STYP | Sample Type | Sample type | 9 | N | N | Y | N | N |
+| VTYP | Sample V…. | type of …. | 7 | N | N | Y | N | N |
+| PTYP | Platform…. | Platform…. | 17 | N | N | Y | N | N |
+| GTYP | DataSet Type | type of …. | 27 | N | N | Y | N | N |
+| NSAM | Number o…. | Number o…. | 2166 | N | Y | Y | N | N |
+| SRC | Sample S…. | sample s…. | 468068 | N | N | Y | N | N |
+| AUTH | Author | author o…. | 1364298 | N | N | Y | N | N |
+| INST | Submitte…. | institut…. | 26541 | N | N | Y | N | N |
+| NPRO | Number o…. | number o…. | 7278 | N | Y | Y | N | N |
+| SSTP | Subset V…. | subset v…. | 24 | N | N | Y | N | N |
+| SSDE | Subset D…. | subset d…. | 7535 | N | N | Y | N | N |
+| GEID | Reporter…. | name or …. | 2840498 | N | N | Y | N | N |
+| PDAT | Publicat…. | publicat…. | 8662 | Y | N | Y | N | N |
+| UDAT | Update Date | date | 7779 | Y | N | Y | N | N |
+| TAGL | Tag Length | Tag/Sign…. | 9 | N | N | Y | N | N |
+| RGSE | Related …. | Related …. | 30866 | N | N | Y | N | N |
+| RGPL | Related …. | Related …. | 290784 | N | N | Y | N | N |
+| MESH | MeSH Terms | Medical …. | 17809 | N | N | Y | Y | N |
+| PROJ | Project | Project | 10 | N | N | Y | N | N |
+| ATNM | Attribut…. | Attribut…. | 50348 | N | N | Y | N | N |
+| ATTR | Attribute | Attribute | 2866804 | N | N | Y | N | N |
+| PROP | Properties | Properties | 3 | N | N | Y | N | N |
 
 Table 1: Available GEO search fields.
 
@@ -176,6 +183,7 @@ GEO uses a specific search syntax with field identifiers in square
 brackets:
 
 ``` r
+
 # Find RNA-seq studies related to COVID-19 in humans
 results <- searchGEO('covid-19[All Fields] AND "rnaseq counts"[Filter] AND Homo sapiens[ORGN]')
 results |>
@@ -185,14 +193,14 @@ results |>
   kable()
 ```
 
-| Title                                                                                                                      | Summary                                                                                                                    | Organism     | Type                                               | Platforms | Contains   | FTP download                                                              | Series Accession |        ID | SRA Run Selector |
-|:---------------------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------|:-------------|:---------------------------------------------------|:----------|:-----------|:--------------------------------------------------------------------------|:-----------------|----------:|:-----------------|
-| Comparative Analysis of Host Responses Between Sepsis and COVID-19: A Prospective Observational Study of Whole Blood Tra … | This prospective observational study conducted at Osaka University Graduate School of Medicine aimed to compare host res … | Homo sapiens | Expression profiling by high throughput sequencing | GPL30209  | 72 Samples | GEO (TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE243nnn/GSE243217/      | GSE243217        | 200243217 | NA               |
-| An aberrant immune-epithelial progenitor niche drives post-viral lung sequelae \[human\] …                                 | Respiratory viral infections are being increasingly recognized not just for their acute impact but also as potential tri … | Homo sapiens | Other                                              | GPL24676  | 5 Samples  | GEO (H5, PNG) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE267nnn/GSE267226/  | GSE267226        | 200267226 | NA               |
-| Longitudinal transcriptomic analysis reveals persistent enrichment of iron homeostasis and erythrocyte function pathways … | The acute respiratory distress syndrome (ARDS) is a common complications of severe COVID-19 and contributes to patient m … | Homo sapiens | Expression profiling by high throughput sequencing | GPL34284  | 49 Samples | GEO (TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE273nnn/GSE273149/      | GSE273149        | 200273149 | NA               |
-| Features of chronic urticaria after COVID-19 mRNA vaccine, a real-life cohort study …                                      | New onsets of chronic urticaria (CU) have been reported after repeated immunizations, mainly with the Moderna mRNA-1273 …  | Homo sapiens | Expression profiling by high throughput sequencing | GPL20301  | 32 Samples | GEO (TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE272nnn/GSE272645/      | GSE272645        | 200272645 | NA               |
-| Transcriptomic Profiling of Neutrophils and Low-Density Granulocytes in COVID-19 Patients …                                | The severity of COVID-19 is linked to excessive inflammation. Neutrophils represent a critical arm of the innate immune …  | Homo sapiens | Expression profiling by high throughput sequencing | GPL24676  | 36 Samples | GEO (TSV, TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE272nnn/GSE272381/ | GSE272381        | 200272381 | NA               |
-| Effects of envelope- or membrane-protein segments of SARS-CoV-2 on gene expression of HUVEC cells …                        | Exterior segments of E-proteins bound onto and modulated gene expression in human vascular endothelial cells in vitro Th … | Homo sapiens | Expression profiling by high throughput sequencing | GPL28038  | 9 Samples  | GEO (TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268369/      | GSE268369        | 200268369 | NA               |
+| Title | Summary | Organism | Type | Platforms | Contains | FTP download | Series Accession | ID | SRA Run Selector |
+|:---|:---|:---|:---|:---|:---|:---|:---|---:|:---|
+| Comparative Analysis of Host Responses Between Sepsis and COVID-19: A Prospective Observational Study of Whole Blood Tra … | This prospective observational study conducted at Osaka University Graduate School of Medicine aimed to compare host res … | Homo sapiens | Expression profiling by high throughput sequencing | GPL30209 | 72 Samples | GEO (TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE243nnn/GSE243217/ | GSE243217 | 200243217 | NA |
+| An aberrant immune-epithelial progenitor niche drives post-viral lung sequelae \[human\] … | Respiratory viral infections are being increasingly recognized not just for their acute impact but also as potential tri … | Homo sapiens | Other | GPL24676 | 5 Samples | GEO (H5, PNG) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE267nnn/GSE267226/ | GSE267226 | 200267226 | NA |
+| Longitudinal transcriptomic analysis reveals persistent enrichment of iron homeostasis and erythrocyte function pathways … | The acute respiratory distress syndrome (ARDS) is a common complications of severe COVID-19 and contributes to patient m … | Homo sapiens | Expression profiling by high throughput sequencing | GPL34284 | 49 Samples | GEO (TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE273nnn/GSE273149/ | GSE273149 | 200273149 | NA |
+| Features of chronic urticaria after COVID-19 mRNA vaccine, a real-life cohort study … | New onsets of chronic urticaria (CU) have been reported after repeated immunizations, mainly with the Moderna mRNA-1273 … | Homo sapiens | Expression profiling by high throughput sequencing | GPL20301 | 32 Samples | GEO (TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE272nnn/GSE272645/ | GSE272645 | 200272645 | NA |
+| Transcriptomic Profiling of Neutrophils and Low-Density Granulocytes in COVID-19 Patients … | The severity of COVID-19 is linked to excessive inflammation. Neutrophils represent a critical arm of the innate immune … | Homo sapiens | Expression profiling by high throughput sequencing | GPL24676 | 36 Samples | GEO (TSV, TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE272nnn/GSE272381/ | GSE272381 | 200272381 | NA |
+| Effects of envelope- or membrane-protein segments of SARS-CoV-2 on gene expression of HUVEC cells … | Exterior segments of E-proteins bound onto and modulated gene expression in human vascular endothelial cells in vitro Th … | Homo sapiens | Expression profiling by high throughput sequencing | GPL28038 | 9 Samples | GEO (TXT) ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268369/ | GSE268369 | 200268369 | NA |
 
 Table 2: Top search results for studies related to COVID-19 in humans
 with GEO-calculated RNA-seq counts available.
@@ -226,6 +234,7 @@ this pipeline:
 GEOquery provides direct access to these precomputed counts:
 
 ``` r
+
 # Check if RNA-seq quantifications are available
 has_quant <- hasRNASeqQuantifications("GSE164073")
 has_quant
@@ -234,12 +243,14 @@ has_quant
     [1] TRUE
 
 ``` r
+
 # Get genome build and species information
 genome_info <- getRNASeqQuantGenomeInfo("GSE164073")
 genome_info
 ```
 
 ``` r
+
 # Download and construct a SummarizedExperiment
 se <- getRNASeqData("GSE164073")
 se
@@ -261,6 +272,7 @@ GEO formats. These files are invaluable for:
 GEOquery makes accessing these files straightforward:
 
 ``` r
+
 # List available supplementary files without downloading
 supp_files <- getGEOSuppFiles('GSE63137', fetch_files = FALSE)
 head(supp_files)
@@ -284,6 +296,7 @@ head(supp_files)
 You can filter files by pattern to find specific file types:
 
 ``` r
+
 # Find all text files
 txt_files <- getGEOSuppFiles('GSE63137', fetch_files = FALSE, 
                              filter_regex = 'txt')
@@ -304,6 +317,7 @@ head(txt_files)
 And download specific files or all supplementary files:
 
 ``` r
+
 # Download all supplementary files for a sample
 getGEOSuppFiles('GSM15789') # Files saved to a new directory
 ```
@@ -314,6 +328,7 @@ Sometimes you may want to examine a GEO record in its web interface.
 GEOquery provides convenience functions for this:
 
 ``` r
+
 # Get the URL for a GEO accession
 url <- urlForAccession("GSE262484")
 url
@@ -326,6 +341,7 @@ For RNA-seq datasets specifically, there’s a convenience function to
 search for RNA-seq counts on the GEO website:
 
 ``` r
+
 browseWebsiteRNASeqSearch()
 ```
 
@@ -339,6 +355,7 @@ normalized to be directly comparable. While less common in modern
 workflows, they remain available and GEOquery supports them:
 
 ``` r
+
 # Download a GDS dataset
 gds <- getGEO("GDS507")
 gds
@@ -464,6 +481,7 @@ gds
 GDS objects can be converted to Bioconductor data structures:
 
 ``` r
+
 # Convert to ExpressionSet (with log2 transformation)
 eset <- GDS2eSet(gds, do.log2=TRUE)
 eset
@@ -486,6 +504,7 @@ eset
     Annotation:  
 
 ``` r
+
 # Or to a limma MAList
 malist <- GDS2MA(gds)
 class(malist)
@@ -506,6 +525,7 @@ Some GSE records contain data tables with important metadata not
 captured in the standard GSE structure:
 
 ``` r
+
 # Get data tables from GSE3494
 dt_list <- getGSEDataTables("GSE3494")
 ```
@@ -527,12 +547,14 @@ dt_list <- getGSEDataTables("GSE3494")
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
+
 names(dt_list)
 ```
 
     NULL
 
 ``` r
+
 head(dt_list[[1]])
 ```
 
@@ -558,6 +580,7 @@ head(dt_list[[1]])
 Platform records (GPL) contain important probe annotations:
 
 ``` r
+
 # Get a platform record
 gpl <- getGEO("GPL96")
 head(Table(gpl)[, 1:5])
@@ -575,6 +598,7 @@ When retrieving GSE records, GEOquery can automatically include GPL
 annotation:
 
 ``` r
+
 # Get GSE with GPL annotation
 gse_with_gpl <- getGEO("GSE2553", AnnotGPL=TRUE)
 head(fData(gse_with_gpl[[1]]))
@@ -595,6 +619,7 @@ data types. If you encounter issues:
 If you use GEOquery in your research, please cite:
 
 ``` r
+
 citation("GEOquery")
 ```
 
@@ -620,16 +645,17 @@ citation("GEOquery")
 ## Session Information
 
 ``` r
+
 sessionInfo()
 ```
 
-    R version 4.5.2 (2025-10-31)
-    Platform: aarch64-apple-darwin20
-    Running under: macOS Sequoia 15.7.1
+    R version 4.6.0 (2026-04-24)
+    Platform: aarch64-apple-darwin23
+    Running under: macOS Sequoia 15.7.7
 
     Matrix products: default
-    BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib
-    LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+    BLAS:   /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib
+    LAPACK: /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
 
     locale:
     [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -641,41 +667,41 @@ sessionInfo()
     [1] stats     graphics  grDevices utils     datasets  methods   base
 
     other attached packages:
-    [1] knitr_1.50          GEOquery_2.77.6     Biobase_2.70.0
-    [4] BiocGenerics_0.56.0 generics_0.1.4
+    [1] knitr_1.51          GEOquery_2.77.6     Biobase_2.72.0
+    [4] BiocGenerics_0.58.1 generics_0.1.4
 
     loaded via a namespace (and not attached):
-     [1] SummarizedExperiment_1.40.0 xfun_0.54
-     [3] httr2_1.2.1                 lattice_0.22-7
-     [5] tzdb_0.5.0                  vctrs_0.6.5
-     [7] tools_4.5.2                 parallel_4.5.2
-     [9] stats4_4.5.2                curl_7.0.0
-    [11] tibble_3.3.0                pkgconfig_2.0.3
-    [13] R.oo_1.27.1                 Matrix_1.7-4
-    [15] data.table_1.17.8           rentrez_1.2.4
-    [17] S4Vectors_0.48.0            lifecycle_1.0.4
-    [19] compiler_4.5.2              stringr_1.6.0
-    [21] statmod_1.5.1               Seqinfo_1.0.0
-    [23] htmltools_0.5.8.1           yaml_2.3.10
+     [1] SummarizedExperiment_1.42.0 xfun_0.58
+     [3] httr2_1.2.2                 lattice_0.22-9
+     [5] tzdb_0.5.0                  vctrs_0.7.3
+     [7] tools_4.6.0                 parallel_4.6.0
+     [9] stats4_4.6.0                curl_7.1.0
+    [11] tibble_3.3.1                pkgconfig_2.0.3
+    [13] R.oo_1.27.1                 Matrix_1.7-5
+    [15] data.table_1.18.4           rentrez_1.2.4
+    [17] S4Vectors_0.50.1            lifecycle_1.0.5
+    [19] compiler_4.6.0              stringr_1.6.0
+    [21] statmod_1.5.2               Seqinfo_1.2.0
+    [23] htmltools_0.5.9             yaml_2.3.12
     [25] pillar_1.11.1               crayon_1.5.3
-    [27] tidyr_1.3.1                 R.utils_2.13.0
-    [29] DelayedArray_0.36.0         limma_3.66.0
+    [27] tidyr_1.3.2                 R.utils_2.13.0
+    [29] DelayedArray_0.38.2         limma_3.68.4
     [31] abind_1.4-8                 tidyselect_1.2.1
     [33] rvest_1.0.5                 digest_0.6.39
-    [35] stringi_1.8.7               dplyr_1.1.4
-    [37] purrr_1.2.0                 fastmap_1.2.0
-    [39] grid_4.5.2                  cli_3.6.5
-    [41] SparseArray_1.10.2          magrittr_2.0.4
-    [43] S4Arrays_1.10.0             utf8_1.2.6
-    [45] XML_3.99-0.20               readr_2.1.6
-    [47] withr_3.0.2                 rappdirs_0.3.3
-    [49] bit64_4.6.0-1               rmarkdown_2.30
-    [51] XVector_0.50.0              httr_1.4.7
+    [35] stringi_1.8.7               dplyr_1.2.1
+    [37] purrr_1.2.2                 fastmap_1.2.0
+    [39] grid_4.6.0                  cli_3.6.6
+    [41] SparseArray_1.12.2          magrittr_2.0.5
+    [43] S4Arrays_1.12.0             utf8_1.2.6
+    [45] XML_3.99-0.23               withr_3.0.2
+    [47] readr_2.2.0                 rappdirs_0.3.4
+    [49] bit64_4.8.2                 rmarkdown_2.31
+    [51] XVector_0.52.0              httr_1.4.8
     [53] matrixStats_1.5.0           bit_4.6.0
-    [55] R.methodsS3_1.8.2           hms_1.1.4
-    [57] evaluate_1.0.5              GenomicRanges_1.62.0
-    [59] IRanges_2.44.0              rlang_1.1.6
-    [61] glue_1.8.0                  selectr_0.5-0
-    [63] xml2_1.5.0                  vroom_1.6.6
-    [65] jsonlite_2.0.0              R6_2.6.1
-    [67] MatrixGenerics_1.22.0      
+    [55] otel_0.2.0                  R.methodsS3_1.8.2
+    [57] hms_1.1.4                   evaluate_1.0.5
+    [59] GenomicRanges_1.64.0        IRanges_2.46.0
+    [61] rlang_1.2.0                 glue_1.8.1
+    [63] selectr_0.5-1               xml2_1.5.2
+    [65] vroom_1.7.1                 jsonlite_2.0.0
+    [67] R6_2.6.1                    MatrixGenerics_1.24.0      

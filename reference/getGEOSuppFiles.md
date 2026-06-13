@@ -66,6 +66,7 @@ Sean Davis <sdavis2@mail.nih.gov>
 ## Examples
 
 ``` r
+
 a <- getGEOSuppFiles('GSM1137', fetch_files = FALSE)
 a
 #>            fname

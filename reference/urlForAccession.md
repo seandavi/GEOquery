@@ -27,6 +27,7 @@ A character vector with the URL for the GEO accession
 ## Examples
 
 ``` r
+
 urlForAccession("GSE262484")
 #> [1] "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE262484"
 ```

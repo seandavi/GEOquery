@@ -1,6 +1,7 @@
 # Handling single-cell RNA-seq data in GEOquery
 
 ``` r
+
 library(GEOquery)
 library(SingleCellExperiment)
 library(DropletUtils)
@@ -9,6 +10,7 @@ library(DropletUtils)
 ## Single cell searching
 
 ``` r
+
 res = searchGEO("single cell mtx matrix")
 head(res)
 ```
@@ -16,6 +18,7 @@ head(res)
 ## Mtx files
 
 ``` r
+
 poss= getGEOSuppFiles('GSE248214', fetch_files = FALSE)
 poss
 ```
@@ -23,6 +26,7 @@ poss
 ## Multiple h5ad files
 
 ``` r
+
 library(GEOquery)
 s = getGEOSuppFiles('GSE161228', fetch_files = FALSE)
 s
@@ -35,11 +39,13 @@ s
 ### mtx file
 
 ``` r
+
 s = getGEOSuppFiles('GSM7908437')
 s
 ```
 
 ``` r
+
 sample_prefix = sub('barcodes.tsv.gz','', grep('barcodes.tsv.gz', s$filepath, value = TRUE))
 gsm_sce <- DropletUtils::read10xCounts(samples = sample_prefix, type = 'prefix')
 gsm_sce
@@ -49,6 +55,7 @@ head(colData(gsm_sce))
 ### Tar of mtx files from Series record
 
 ``` r
+
 s = getGEOSuppFiles('GSE248214')
 s
 ```
@@ -56,6 +63,7 @@ s
 From here, untar and then wrap to get prefixes
 
 ``` r
+
 tar_filename = rownames(s)[1]
 exdir = tempdir()
 untar(tar_filename, exdir=exdir)
@@ -67,12 +75,14 @@ gse_sce
 ### Mix of types in a single GSE
 
 ``` r
+
 getGEOSeriesFileListing('GSE288770')
 ```
 
 ### 10x h5 file
 
 ``` r
+
 s = getGEOSuppFiles('GSM8775062')
 sce = DropletUtils::read10xCounts(s$filepath)
 sce
@@ -81,6 +91,7 @@ sce
 ### 10x matrix mtx files
 
 ``` r
+
 s = getGEOSuppFiles('GSM8775066')
 sce2 = DropletUtils::read10xCounts(samples = '/Users/davsean/Documents/git/GEOquery/vignettes/GSM8775066/GSM8775066_vivo_day7_1_', type='prefix')
 sce2

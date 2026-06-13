@@ -1,8 +1,10 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>http://seandavi.github.io/GEOquery/404.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/CLAUDE.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/CODE_OF_CONDUCT.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/LICENSE-text.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/LICENSE.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/ROADMAP.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/articles/GEOquery.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/articles/index.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/articles/single-cell.html</loc></url>
