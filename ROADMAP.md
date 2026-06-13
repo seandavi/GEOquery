@@ -15,11 +15,15 @@ on.
 
 ## Release plan: GEOquery 3.0 & paper
 
-This roadmap doubles as the release plan. Version is currently `2.99.x`;
-in Bioconductor’s scheme `2.99.z` is the last devel series before
-`3.0.0`, so the number rolls to 3.0 at the next release boundary
-regardless. The goal here is to make 3.0 a **milestone**, not just a
-tick — branded on *shipped* code, with a coherent theme.
+This roadmap doubles as the release plan. The package is on the `2.77.x`
+Bioconductor devel line (the authoritative `DESCRIPTION` version), so
+the next release is `2.78.0` by default. **“GEOquery 3.0” is a
+project/paper codename, not the current version number.** To release as
+`3.0.0`, the devel version is set to `2.99.z` (Bioconductor’s pre-3.0
+convention) **deliberately, near the actual release**, once the headline
+features have shipped — not before. The goal is to make 3.0 a
+**milestone branded on *shipped* code**, not an aspirational version
+bump.
 
 **3.0 theme — modern object model + modern data types.**
 SummarizedExperiment/SingleCellExperiment return types and single-cell
@@ -33,7 +37,7 @@ post-3.0.
 
 | Area | Items | Why in 3.0 |
 |----|----|----|
-| **Object model** | SE return-type migration ([ADR-0002](http://seandavi.github.io/GEOquery/adr/0002-return-type-migration.md)); return-type consistency (#71); `getGEO` extension policy ([ADR-0003](http://seandavi.github.io/GEOquery/adr/0003-getgeo-extension-policy.md)) | The headline. Also reconciles the false NEWS 2.99.0 SE claim. |
+| **Object model** | SE return-type migration ([ADR-0002](http://seandavi.github.io/GEOquery/adr/0002-return-type-migration.md)); return-type consistency (#71); `getGEO` extension policy ([ADR-0003](http://seandavi.github.io/GEOquery/adr/0003-getgeo-extension-policy.md)) | The headline. (The premature NEWS SummarizedExperiment claim has been removed; `getGEO` still returns `ExpressionSet` until this lands.) |
 | **Single-cell core** | SC architecture ADR (0004); SC1 manifest → SC2 10x → SC3 formats → SC4 combine | The other headline; the most-requested modern data class. |
 | **Correctness floor** | \#58/#154 `findFirstEntity` hardening; accession validation; \#60 parseCharacteristics; \#21 GDS NA ids; \#131 URL join; \#147 timeout floor | A 3.0 with known crash-on-input bugs is not paper-ready. |
 | **Foundations** | offline test fixtures (XL); structured `rlang` conditions; BiocFileCache caching | Prerequisite for stable CI, coverage, and the paper’s reproducibility story. |
@@ -251,7 +255,7 @@ BiocFileCache caching item.
 | **Structured condition classes ([`rlang::abort`](https://rlang.r-lib.org/reference/abort.html))** | P1 | L | \#133, \#58 | Every error is a bare [`stop()`](https://rdrr.io/r/base/stop.html); `downloadFile` does `message(e)` then a generic `stop("Failed to download…")` (getGEOfile.R:153–167), discarding the httr2 status/curl condition (#133). → Add `rlang` to Imports; define `geoquery_error` parent + `geoquery_download_error` (carry status/url), `geoquery_parse_error` (fname), `geoquery_bad_accession`, `geoquery_private_accession`. Preserve the chain via `parent=e`. Document classes for downstream `tryCatch`. Foundational for items 2, \#148, \#133. |
 | **Consistent `quiet`/verbose control** | P1 | M | \#68 | Bare [`message()`](https://rdrr.io/r/base/message.html) everywhere; `downloadFile`’s `quiet` not threaded up; `getAndParseGSEMatrices` unconditionally messages (parseGEO.R:439–443). → Single `quiet = getOption("GEOquery.quiet", FALSE)` on all download/parse fns + internal `inform(quiet, …)` wrapper; register the option in `R/zzz.R`. Supersedes the standalone `getGEOSuppFiles` quiet quick win. |
 | **Predictable, documented return type** | P1 | L | \#71 | `getGEO` returns a named list for GSE+matrix but bare S4 otherwise; callers must defensively [`is.list()`](https://rdrr.io/r/base/list.html) + `[[1]]`. → **Always** return a list for GSE; add `simplify=FALSE` for single-element convenience; rewrite `@return` and DESCRIPTION to lead with the GSEMatrix default; add a migration `@section`. |
-| **Deliver the SummarizedExperiment promise** | P1 | L | \#71 | `tech-debt`. NEWS 2.99.0 advertises “list of SummarizedExperiment” but `parseGSEMatrix` still `new("ExpressionSet")` (parseGEO.R:620). → Build SE directly (or `eset_to_se()`), gate behind `getGEO(..., as=c("ExpressionSet","SummarizedExperiment"))` defaulting to ExpressionSet for one release with a deprecation warning, then flip. Export `as_SummarizedExperiment()`. Correct NEWS until the switch lands. |
+| **Deliver the SummarizedExperiment migration** | P1 | L | \#71, \#168 | `tech-debt`. The series-matrix path still returns `ExpressionSet` (`parseGSEMatrix`, parseGEO.R:620); the premature NEWS SE claim was removed in the version reconciliation. → Build SE directly (or `eset_to_se()`), gate behind `getGEO(..., returnType = c("ExpressionSet","SummarizedExperiment"))` defaulting to ExpressionSet for one release with a deprecation warning, then flip. Export `as_SummarizedExperiment()`. |
 | **Validate `destdir`/`baseDir`/flag inputs** | P2 | M | \#58, \#68 | Paths/flags used directly in `file.path`/`dir.create`; `suppressWarnings(dir.create())` (getGEOSuppFiles.R:111) hides un-creatable dirs. → `R/validate.R::check_args()` with `geoquery_bad_input`: assert length-1 char paths (create + check return), logical scalars for flags, and a length-2 increasing positive-integer `GSElimits`. |
 
 ------------------------------------------------------------------------
@@ -263,7 +267,7 @@ BiocFileCache caching item.
 | Fill empty class roxygen (6 classes) | P1 | M | \#103 | Every class block in R/GEOquery-package.R is one-line boilerplate with misleading `new(...)` advice. → Document each slot (from R/classes.R), replace `new(...)` text with “returned by [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md) when `GSEMatrix=FALSE`”, add `@examples` ([`Meta()`](http://seandavi.github.io/GEOquery/reference/GEOData-accessors.md)/[`Table()`](http://seandavi.github.io/GEOquery/reference/GEOData-accessors.md)), cross-link accessors. |
 | Document GEOData accessor generics | P1 | M | \#103 | Accessor block (lines 3–12) only points elsewhere; no `@param`/`@return`/`@examples` for `Meta`/`Table`/`Columns`/etc. → Add per-generic descriptions, params, returns, and a runnable example; regenerate `man/`. |
 | Rewrite DESCRIPTION + biocViews | P1 | S | \#71 | Description (line 35) still says microarray-only “bridge”; biocViews omit RNASeq/SingleCell. → Multi-sentence description covering Series Matrix→ExpressionSet, SOFT→S4, RNA-seq counts, search, supp/single-cell; add `GeneExpression, Transcriptomics, RNASeq, Sequencing, SingleCell, ThirdPartyClient`. |
-| Correct `getGEO` return docs + NEWS mismatch | P1 | S | \#71, \#156 | Roxygen leads with SOFT as primary though `GSEMatrix=TRUE` is default; NEWS 2.99.0 claims SummarizedExperiment but code returns ExpressionSet. → Lead <Details/@return> with default behavior; correct the NEWS entry to ExpressionSet (until the SE switch lands). Keep in lockstep with the SE-promise UX item. |
+| Correct `getGEO` return docs | P1 | S | \#71, \#156 | Roxygen leads with SOFT as primary though `GSEMatrix=TRUE` is default. → Lead <Details/@return> with the default behavior (list of `ExpressionSet`). (The NEWS version/SE mismatch was already fixed in the version reconciliation.) |
 | Restructure main vignette `GEOquery.qmd` | P1 | L | \#156 | History-heavy, no quick-start, never shows `exprs`/`pData`/`fData`. → Add a “Quick start” then task sections (download+access, GPL annotation, supp files, RNA-seq counts, search, GDS conversion, SOFT parsing); move history to a collapsible appendix. |
 | Complete single-cell vignette | P1 | M | \#158, \#80, \#156 | `single-cell.qmd` is a skeleton with an empty h5ad section and a hardcoded `/Users/davsean/...` path (line 100). → Add intro on GEO single-cell conventions, fill the h5ad section, replace the absolute path with `s$filepath`-derived value, add prose + expected output. Note manual workflow pending \#158. |
 | “Migrating from ExpressionSet” note | P2 | S | \#156, \#71 | Three object models with no map between them. → Add a concise table mapping task → ExpressionSet (`exprs`/`pData`/`fData`) vs SOFT (`Table`/`Meta`/`Columns`) vs SE (`assay`/`colData`/`rowData`). |

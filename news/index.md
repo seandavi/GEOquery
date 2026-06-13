@@ -1,6 +1,6 @@
 # Changelog
 
-## GEOquery 2.99.1 (unreleased)
+## GEOquery 2.77.7 (development version)
 
 ### Bug Fixes
 
@@ -38,7 +38,7 @@
   extracted directly using pattern matching to avoid issues with
   irregular file formatting.
 
-## GEOquery 2.99.0 (2024-10-01)
+## GEOquery 2.75.0 (2024-10-01)
 
 ### New Features
 
@@ -47,13 +47,6 @@
 - Basic search in GEO database. Now you can search for datasets in GEO
   database using GEOquery.
 - browseGEO() function to open a web browser with a GEO accession.
-
-### Breaking changes
-
-- [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
-  now returns a list of SummarizedExperiment objects. This is a breaking
-  change from previous versions of GEOquery. If you are using GEOquery
-  in a script, you will need to update your code to reflect this change.
 
 ### Bug Fixes or Improvements
 

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>GEOquery Improvement Roadmap</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/ROADMAP.md" class="external-link"><code>ROADMAP.md</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/chore/version-reconciliation/ROADMAP.md" class="external-link"><code>ROADMAP.md</code></a></small>
     </div>
 
 <div id="geoquery-improvement-roadmap" class="section level1">
@@ -48,7 +48,7 @@
 <p>This roadmap synthesizes six parallel audits (bugs, features, UX, docs, CI/CD, triage automation) into a single, prioritized plan for the GEOquery package. It leads with the highest-leverage quick wins, groups the remaining work by domain, gives special depth to the issue-triage/PR-automation design (the maintainer’s focus area), and ends with a phased sequencing plan. The throughline: a handful of small forwarding/validation fixes unblock multiple open issues, while two structural investments — <strong>offline test fixtures</strong> and a <strong>layered triage/automation system</strong> — are the foundations everything else depends on.</p>
 <hr><div class="section level2">
 <h2 id="release-plan-geoquery-30--paper">Release plan: GEOquery 3.0 &amp; paper<a class="anchor" aria-label="anchor" href="#release-plan-geoquery-30--paper"></a></h2>
-<p>This roadmap doubles as the release plan. Version is currently <code>2.99.x</code>; in Bioconductor’s scheme <code>2.99.z</code> is the last devel series before <code>3.0.0</code>, so the number rolls to 3.0 at the next release boundary regardless. The goal here is to make 3.0 a <strong>milestone</strong>, not just a tick — branded on <em>shipped</em> code, with a coherent theme.</p>
+<p>This roadmap doubles as the release plan. The package is on the <code>2.77.x</code> Bioconductor devel line (the authoritative <code>DESCRIPTION</code> version), so the next release is <code>2.78.0</code> by default. <strong>“GEOquery 3.0” is a project/paper codename, not the current version number.</strong> To release as <code>3.0.0</code>, the devel version is set to <code>2.99.z</code> (Bioconductor’s pre-3.0 convention) <strong>deliberately, near the actual release</strong>, once the headline features have shipped — not before. The goal is to make 3.0 a <strong>milestone branded on <em>shipped</em> code</strong>, not an aspirational version bump.</p>
 <p><strong>3.0 theme — modern object model + modern data types.</strong> SummarizedExperiment/SingleCellExperiment return types and single-cell support are the headline; bug fixes, CI, and triage automation are supporting cast.</p>
 <div class="section level3">
 <h3 id="id_30-batch-must-ship-before-cutting-30">3.0 batch (must ship before cutting 3.0)<a class="anchor" aria-label="anchor" href="#id_30-batch-must-ship-before-cutting-30"></a></h3>
@@ -58,7 +58,7 @@
 <th>Why in 3.0</th>
 </tr></thead><tbody><tr><td><strong>Object model</strong></td>
 <td>SE return-type migration (<a href="adr/0002-return-type-migration.html">ADR-0002</a>); return-type consistency (#71); <code>getGEO</code> extension policy (<a href="adr/0003-getgeo-extension-policy.html">ADR-0003</a>)</td>
-<td>The headline. Also reconciles the false NEWS 2.99.0 SE claim.</td>
+<td>The headline. (The premature NEWS SummarizedExperiment claim has been removed; <code>getGEO</code> still returns <code>ExpressionSet</code> until this lands.)</td>
 </tr><tr><td><strong>Single-cell core</strong></td>
 <td>SC architecture ADR (0004); SC1 manifest → SC2 10x → SC3 formats → SC4 combine</td>
 <td>The other headline; the most-requested modern data class.</td>
@@ -466,12 +466,12 @@
 <td>#71</td>
 <td>
 <code>getGEO</code> returns a named list for GSE+matrix but bare S4 otherwise; callers must defensively <code><a href="https://rdrr.io/r/base/list.html" class="external-link">is.list()</a></code> + <code>[[1]]</code>. → <strong>Always</strong> return a list for GSE; add <code>simplify=FALSE</code> for single-element convenience; rewrite <code>@return</code> and DESCRIPTION to lead with the GSEMatrix default; add a migration <code>@section</code>.</td>
-</tr><tr><td><strong>Deliver the SummarizedExperiment promise</strong></td>
+</tr><tr><td><strong>Deliver the SummarizedExperiment migration</strong></td>
 <td>P1</td>
 <td>L</td>
-<td>#71</td>
+<td>#71, #168</td>
 <td>
-<code>tech-debt</code>. NEWS 2.99.0 advertises “list of SummarizedExperiment” but <code>parseGSEMatrix</code> still <code>new("ExpressionSet")</code> (parseGEO.R:620). → Build SE directly (or <code>eset_to_se()</code>), gate behind <code>getGEO(..., as=c("ExpressionSet","SummarizedExperiment"))</code> defaulting to ExpressionSet for one release with a deprecation warning, then flip. Export <code>as_SummarizedExperiment()</code>. Correct NEWS until the switch lands.</td>
+<code>tech-debt</code>. The series-matrix path still returns <code>ExpressionSet</code> (<code>parseGSEMatrix</code>, parseGEO.R:620); the premature NEWS SE claim was removed in the version reconciliation. → Build SE directly (or <code>eset_to_se()</code>), gate behind <code>getGEO(..., returnType = c("ExpressionSet","SummarizedExperiment"))</code> defaulting to ExpressionSet for one release with a deprecation warning, then flip. Export <code>as_SummarizedExperiment()</code>.</td>
 </tr><tr><td><strong>Validate <code>destdir</code>/<code>baseDir</code>/flag inputs</strong></td>
 <td>P2</td>
 <td>M</td>
@@ -500,11 +500,11 @@
 <td>S</td>
 <td>#71</td>
 <td>Description (line 35) still says microarray-only “bridge”; biocViews omit RNASeq/SingleCell. → Multi-sentence description covering Series Matrix→ExpressionSet, SOFT→S4, RNA-seq counts, search, supp/single-cell; add <code>GeneExpression, Transcriptomics, RNASeq, Sequencing, SingleCell, ThirdPartyClient</code>.</td>
-</tr><tr><td>Correct <code>getGEO</code> return docs + NEWS mismatch</td>
+</tr><tr><td>Correct <code>getGEO</code> return docs</td>
 <td>P1</td>
 <td>S</td>
 <td>#71, #156</td>
-<td>Roxygen leads with SOFT as primary though <code>GSEMatrix=TRUE</code> is default; NEWS 2.99.0 claims SummarizedExperiment but code returns ExpressionSet. → Lead <a href="mailto:Details/@return" class="email">Details/@return</a> with default behavior; correct the NEWS entry to ExpressionSet (until the SE switch lands). Keep in lockstep with the SE-promise UX item.</td>
+<td>Roxygen leads with SOFT as primary though <code>GSEMatrix=TRUE</code> is default. → Lead <a href="mailto:Details/@return" class="email">Details/@return</a> with the default behavior (list of <code>ExpressionSet</code>). (The NEWS version/SE mismatch was already fixed in the version reconciliation.)</td>
 </tr><tr><td>Restructure main vignette <code>GEOquery.qmd</code>
 </td>
 <td>P1</td>
