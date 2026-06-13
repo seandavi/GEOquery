@@ -4,6 +4,17 @@
 
 ### New features
 
+- Optional persistent download cache backed by **BiocFileCache**. Set
+  `options(GEOquery.cache = TRUE)` to have downloads keyed on their URL
+  and reused across sessions (location defaults to
+  `tools::R_user_dir("GEOquery", "cache")`, overridable via
+  `options(GEOquery.cache.path = ...)`). New
+  [`geoCache()`](http://seandavi.github.io/GEOquery/reference/geoCache.md)
+  and
+  [`clearGEOCache()`](http://seandavi.github.io/GEOquery/reference/clearGEOCache.md)
+  expose and clear it. Off by default for now, preserving the historical
+  `destdir` behavior
+  ([\#171](https://github.com/seandavi/GEOquery/issues/171)).
 - New
   [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
   and

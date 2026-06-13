@@ -82,10 +82,14 @@ possible.
   : Open the GEO page for a given accession
 - [`browseWebsiteRNASeqSearch()`](http://seandavi.github.io/GEOquery/reference/browseWebsiteRNASeqSearch.md)
   : Browse GEO search website for RNA-seq datasets
+- [`clearGEOCache()`](http://seandavi.github.io/GEOquery/reference/clearGEOCache.md)
+  : Clear the GEOquery download cache
 - [`coercion`](http://seandavi.github.io/GEOquery/reference/coercion.md)
   [`GDS2MA`](http://seandavi.github.io/GEOquery/reference/coercion.md)
   [`GDS2eSet`](http://seandavi.github.io/GEOquery/reference/coercion.md)
   : Convert a GDS data structure to a BioConductor data structure
+- [`geoCache()`](http://seandavi.github.io/GEOquery/reference/geoCache.md)
+  : GEOquery download cache
 - [`geoSingleCellManifest()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md)
   : Inventory the single-cell supplementary files of a GEO Series
 - [`geoSingleCellUnits()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellUnits.md)

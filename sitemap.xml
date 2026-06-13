@@ -26,8 +26,10 @@
 <url><loc>http://seandavi.github.io/GEOquery/reference/as_SummarizedExperiment.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/browseGEOAccession.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/browseWebsiteRNASeqSearch.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/clearGEOCache.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/coercion.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/extractFilenameFromDownloadURL.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/geoCache.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/geoSingleCellUnits.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getDirListing.html</loc></url>

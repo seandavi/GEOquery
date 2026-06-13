@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.19</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.20</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>GEOquery Improvement Roadmap</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/ROADMAP.md" class="external-link"><code>ROADMAP.md</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/feat/biocfilecache/ROADMAP.md" class="external-link"><code>ROADMAP.md</code></a></small>
     </div>
 
 <div id="geoquery-improvement-roadmap" class="section level1">
@@ -318,7 +318,7 @@
 <td>L</td>
 <td>—</td>
 <td>
-<code>tech-debt</code>. Caching is <code><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists()</a></code> against <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> (getGEOfile.R:118–124, getGEOSuppFiles.R:122–132): files vanish across sessions, no staleness/integrity check, partial downloads treated as cached, parallel sessions race. → Add <code>R/cache.R</code> with <code>geoCache()</code> returning a persistent <code>BiocFileCache</code> (default <code>tools::R_user_dir("GEOquery","cache")</code>); route <code>downloadFile</code>/<code>getGEOSuppFiles</code> through <code>bfcrpath</code>/<code>bfcadd</code> keyed on URL; add <code>clearGEOCache()</code>; gate behind an option for one cycle for back-compat. Add BiocFileCache to Imports.</td>
+<code>tech-debt</code>. Caching is <code><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists()</a></code> against <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> (getGEOfile.R:118–124, getGEOSuppFiles.R:122–132): files vanish across sessions, no staleness/integrity check, partial downloads treated as cached, parallel sessions race. → Add <code>R/cache.R</code> with <code><a href="reference/geoCache.html">geoCache()</a></code> returning a persistent <code>BiocFileCache</code> (default <code>tools::R_user_dir("GEOquery","cache")</code>); route <code>downloadFile</code>/<code>getGEOSuppFiles</code> through <code>bfcrpath</code>/<code>bfcadd</code> keyed on URL; add <code><a href="reference/clearGEOCache.html">clearGEOCache()</a></code>; gate behind an option for one cycle for back-compat. Add BiocFileCache to Imports.</td>
 </tr><tr><td><strong>Retry/resume + configurable timeout download path</strong></td>
 <td>P1</td>
 <td>M</td>
