@@ -46,6 +46,18 @@ test_that("parseGSEMatrix parses a synthetic series matrix offline (getGPL = FAL
     expect_equal(unname(Biobase::exprs(eset)[1, 1]), 1.5)
 })
 
+test_that("getGPL = FALSE skips GPL annotation for a local series matrix (#18)", {
+    # Regression guard for #18: with getGPL = FALSE the parser must not fetch a
+    # GPL, so featureData has zero columns. parseGEO is the path getGEO() uses
+    # for a local filename. Runs offline (no GPL is requested).
+    f <- make_fake_series_matrix(n_features = 3)
+    eset <- GEOquery:::parseGEO(f, GSElimits = NULL, getGPL = FALSE)
+
+    expect_s4_class(eset, "ExpressionSet")
+    expect_equal(ncol(Biobase::fData(eset)), 0L)
+    expect_equal(nrow(Biobase::fData(eset)), 3L)
+})
+
 test_that("parseCharacteristics = TRUE unpacks characteristics_ch1 into pData columns", {
     f <- make_fake_series_matrix()
     eset <- GEOquery:::parseGSEMatrix(f, getGPL = FALSE, parseCharacteristics = TRUE)$eset
