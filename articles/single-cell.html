@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Handling single-cell RNA-seq data in GEOquery • GEOquery</title>
+<title>Single-cell data from GEO • GEOquery</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="single-cell_files/libs/quarto-html/popper.min.js"></script><script src="single-cell_files/libs/quarto-html/tippy.umd.min.js"></script><link href="single-cell_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="single-cell_files/libs/quarto-html/light-border.css" rel="stylesheet">
-<!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Handling single-cell RNA-seq data in GEOquery">
+<!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Single-cell data from GEO">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.18</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,10 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/single-cell.html">Handling single-cell RNA-seq data in GEOquery</a></li>
+<li><a class="dropdown-item" href="../articles/downstream-analysis.html">From GEO to downstream analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/geo-data-formats.html">Understanding GEO data formats</a></li>
+    <li><a class="dropdown-item" href="../articles/rnaseq.html">RNA-seq quantifications from GEO</a></li>
+    <li><a class="dropdown-item" href="../articles/single-cell.html">Single-cell data from GEO</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -63,12 +66,12 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Handling single-cell RNA-seq data in GEOquery</h1>
+      <h1>Single-cell data from GEO</h1>
 
       <p class="author">Sean Davis</p>
-      <p class="date">2025-08-29</p>
 
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/vignettes/single-cell.qmd" class="external-link"><code>vignettes/single-cell.qmd</code></a></small>
+
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/docs/pkgdown-articles/vignettes/articles/single-cell.qmd" class="external-link"><code>vignettes/articles/single-cell.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -77,92 +80,87 @@
 
 
 
-    <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
+    <p>Single-cell studies are now a large fraction of GEO submissions, but they do not fit the classic GEO mental model. This article explains <em>why</em> single-cell data is awkward to retrieve, the file formats you will meet, and how GEOquery’s single-cell functions turn them into <code>SingleCellExperiment</code> objects ready for the Bioconductor single-cell ecosystem.</p>
+<section class="level2"><h2 id="why-single-cell-data-is-different">Why single-cell data is different<a class="anchor" aria-label="anchor" href="#why-single-cell-data-is-different"></a>
+</h2>
+<p>For a microarray or bulk RNA-seq study, the processed matrix lives in the GEO <strong>Series Matrix</strong> file, and <code>getGEO("GSE...")</code> hands you an <code>ExpressionSet</code> directly. <strong>Single-cell data almost never works this way.</strong> The Series Matrix for a single-cell <code>GSE</code> is usually empty or contains only sample-level metadata, because a per-cell matrix with tens of thousands of columns does not belong in GEO’s sample-by-feature table.</p>
+<p>Instead, the actual data lives in <strong>supplementary files</strong> (see <a href="geo-data-formats.html">Understanding GEO data formats</a>). So a single-cell workflow is fundamentally <em>supplementary-files-first</em>: you must <strong>look at what is attached, decide what is loadable, and then load it</strong> — which is exactly the shape of the GEOquery single-cell API.</p>
+</section><section class="level2"><h2 id="the-file-formats-you-will-meet">The file formats you will meet<a class="anchor" aria-label="anchor" href="#the-file-formats-you-will-meet"></a>
+</h2>
+<p>GEO single-cell submissions are heterogeneous. The common formats:</p>
+<ul>
+<li>
+<strong>10x Matrix Market triplet</strong> — three files per sample: a sparse <code>matrix.mtx[.gz]</code>, <code>barcodes.tsv[.gz]</code> (cell IDs), and <code>features.tsv[.gz]</code>/<code>genes.tsv[.gz]</code> (gene IDs). The three must be read <em>together</em>; a missing file makes the sample unreadable.</li>
+<li>
+<strong>10x HDF5</strong> (<code>.h5</code>) — the CellRanger filtered/raw feature-barcode matrix in a single HDF5 file.</li>
+<li>
+<strong>AnnData</strong> (<code>.h5ad</code>) — the scverse/Python standard; increasingly common on recent GEO submissions.</li>
+<li>
+<strong>loom</strong>, <strong>Seurat <code>.rds</code></strong> — less common, and intentionally <em>not</em> handled by GEOquery (read them with <code>LoomExperiment</code> / <code>Seurat</code> directly).</li>
+</ul>
+<p>A further wrinkle: files are frequently bundled inside a single <code>GSE_RAW.tar</code> archive, and naming conventions vary wildly between submitters. This is why the first step is always inspection, not download.</p>
+</section><section class="level2"><h2 id="step-1-inspect-the-manifest">Step 1 — inspect: the manifest<a class="anchor" aria-label="anchor" href="#step-1-inspect-the-manifest"></a>
+</h2>
+<p><code><a href="../reference/geoSingleCellManifest.html">geoSingleCellManifest()</a></code> lists the supplementary files and classifies each by format and role, extracting the GSM sample id — <strong>without downloading</strong> anything. It lets you see, often many gigabytes ahead of time, what a study actually contains.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/seandavi/GEOquery" class="external-link">GEOquery</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SingleCellExperiment</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">DropletUtils</span><span class="op">)</span></span></code></pre></div>
-</div>
-<section class="level2"><h2 id="single-cell-searching">Single cell searching<a class="anchor" aria-label="anchor" href="#single-cell-searching"></a>
+<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/geoSingleCellManifest.html">geoSingleCellManifest</a></span><span class="op">(</span><span class="st">"GSE161228"</span><span class="op">)</span></span>
+<span><span class="va">m</span></span>
+<span><span class="co">#&gt; fname                    sample   format    role       url</span></span>
+<span><span class="co">#&gt; GSM..._matrix.mtx.gz     GSM...   10x_mtx   matrix     ...</span></span>
+<span><span class="co">#&gt; GSM..._barcodes.tsv.gz   GSM...   10x_mtx   barcodes   ...</span></span>
+<span><span class="co">#&gt; GSM..._features.tsv.gz   GSM...   10x_mtx   features   ...</span></span></code></pre></div>
+</section><section class="level2"><h2 id="step-2-decide-loadable-units">Step 2 — decide: loadable units<a class="anchor" aria-label="anchor" href="#step-2-decide-loadable-units"></a>
 </h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="../reference/searchGEO.html">searchGEO</a></span><span class="op">(</span><span class="st">"single cell mtx matrix"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></code></pre></div>
-</div>
-</section><section class="level2"><h2 id="mtx-files">Mtx files<a class="anchor" aria-label="anchor" href="#mtx-files"></a>
+<p><code><a href="../reference/geoSingleCellUnits.html">geoSingleCellUnits()</a></code> collapses that file list into <strong>loadable units</strong> — one per sample and format — and tells you whether each is complete. A 10x triplet is only loadable if all three files are present:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">u</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/geoSingleCellUnits.html">geoSingleCellUnits</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span></span>
+<span><span class="va">u</span></span>
+<span><span class="co">#&gt; sample  format   n_files  status                          loadable</span></span>
+<span><span class="co">#&gt; GSM1    10x_mtx  3        complete                        TRUE</span></span>
+<span><span class="co">#&gt; GSM2    10x_mtx  2        incomplete (missing features)   FALSE</span></span>
+<span><span class="co">#&gt; GSM3    h5ad     1        complete                        TRUE</span></span></code></pre></div>
+<p>This is where you make decisions: which samples, which format if a study offers more than one, and which incomplete units to skip.</p>
+</section><section class="level2"><h2 id="step-3-load">Step 3 — load<a class="anchor" aria-label="anchor" href="#step-3-load"></a>
 </h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">poss</span><span class="op">=</span> <span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">'GSE248214'</span>, fetch_files <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">poss</span></span></code></pre></div>
-</div>
-</section><section class="level2"><h2 id="multiple-h5ad-files">Multiple h5ad files<a class="anchor" aria-label="anchor" href="#multiple-h5ad-files"></a>
+<p>For the common, well-structured cases, <code><a href="../reference/getGEOSingleCell.html">getGEOSingleCell()</a></code> does the whole thing — manifest → units → download → read — and returns a <strong>named list of <code>SingleCellExperiment</code>, one per sample</strong>. It tells you what it loads and what it skips, so nothing disappears silently:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sces</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEOSingleCell.html">getGEOSingleCell</a></span><span class="op">(</span><span class="st">"GSE161228"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading GSM1 (10x_mtx)...</span></span>
+<span><span class="co">#&gt; Loading GSM3 (h5ad)...</span></span>
+<span><span class="co">#&gt; Skipping 1 unit(s): GSM2 [incomplete (missing features)]</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">sces</span><span class="op">)</span>      <span class="co"># one SingleCellExperiment per sample</span></span>
+<span><span class="va">sces</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
+<p>It returns a list rather than a single combined object on purpose: per-sample matrices often use different references or feature sets, and silently reconciling them would be misleading. Combine deliberately when you know the features match.</p>
+<section class="level3"><h3 id="full-control">Full control<a class="anchor" aria-label="anchor" href="#full-control"></a>
+</h3>
+<p><code><a href="../reference/getGEOSingleCell.html">getGEOSingleCell()</a></code> deliberately handles only common layouts. For anything unusual — bespoke naming, a single combined matrix for many samples, files inside a <code>_RAW.tar</code> — use the manifest to find what you want, download with <code><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles()</a></code>, and read one unit at a time with <code><a href="../reference/readGEOSingleCell.html">readGEOSingleCell()</a></code>:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/readGEOSingleCell.html">readGEOSingleCell</a></span><span class="op">(</span><span class="va">path_to_dir_or_file</span><span class="op">)</span>            <span class="co"># format auto-detected</span></span>
+<span><span class="fu"><a href="../reference/readGEOSingleCell.html">readGEOSingleCell</a></span><span class="op">(</span><span class="va">triplet_files</span>, format <span class="op">=</span> <span class="st">"10x_mtx"</span><span class="op">)</span></span></code></pre></div>
+</section></section><section class="level2"><h2 id="the-reader-dependencies">The reader dependencies<a class="anchor" aria-label="anchor" href="#the-reader-dependencies"></a>
 </h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/seandavi/GEOquery" class="external-link">GEOquery</a></span><span class="op">)</span></span>
-<span><span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">'GSE161228'</span>, fetch_files <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">s</span></span></code></pre></div>
-</div>
-</section><section class="level2"><h2 id="single-h5ad-file">Single h5ad file<a class="anchor" aria-label="anchor" href="#single-h5ad-file"></a>
+<p>Reading uses focused Bioconductor importers, kept as optional dependencies so a basic GEOquery install stays light:</p>
+<ul>
+<li>
+<strong>10x mtx / 10x h5</strong> → <a href="https://bioconductor.org/packages/TENxIO" class="external-link">TENxIO</a>
+</li>
+<li>
+<strong>h5ad</strong> → <a href="https://bioconductor.org/packages/anndataR" class="external-link">anndataR</a>, which reads AnnData natively in R with no Python dependency.</li>
+</ul>
+<p>GEOquery will prompt you to install the relevant one if it is missing.</p>
+</section><section class="level2"><h2 id="downstream-the-single-cell-ecosystem">Downstream: the single-cell ecosystem<a class="anchor" aria-label="anchor" href="#downstream-the-single-cell-ecosystem"></a>
 </h2>
-</section><section class="level2"><h2 id="samples">SAMPLES<a class="anchor" aria-label="anchor" href="#samples"></a>
+<p>Once you have a <code>SingleCellExperiment</code>, you are in the heart of Bioconductor’s single-cell stack. Natural next steps:</p>
+<ul>
+<li>Quality control, normalization, and feature selection with <a href="https://bioconductor.org/packages/scater" class="external-link">scater</a> and <a href="https://bioconductor.org/packages/scran" class="external-link">scran</a>.</li>
+<li>Dimensionality reduction, clustering, and annotation following the <a href="https://bioconductor.org/books/release/OSCA/" class="external-link">Orchestrating Single-Cell Analysis with Bioconductor</a> (OSCA) book.</li>
+<li>On-disk / out-of-memory handling of large matrices with <a href="https://bioconductor.org/packages/HDF5Array" class="external-link">HDF5Array</a> and <a href="https://bioconductor.org/packages/DelayedArray" class="external-link">DelayedArray</a>.</li>
+</ul></section><section class="level2"><h2 id="what-is-intentionally-out-of-scope">What is intentionally out of scope<a class="anchor" aria-label="anchor" href="#what-is-intentionally-out-of-scope"></a>
 </h2>
-<section class="level3"><h3 id="mtx-file">mtx file<a class="anchor" aria-label="anchor" href="#mtx-file"></a>
-</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">'GSM7908437'</span><span class="op">)</span></span>
-<span><span class="va">s</span></span></code></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sample_prefix</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">'barcodes.tsv.gz'</span>,<span class="st">''</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">'barcodes.tsv.gz'</span>, <span class="va">s</span><span class="op">$</span><span class="va">filepath</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">gsm_sce</span> <span class="op">&lt;-</span> <span class="fu">DropletUtils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DropletUtils/man/read10xCounts.html" class="external-link">read10xCounts</a></span><span class="op">(</span>samples <span class="op">=</span> <span class="va">sample_prefix</span>, type <span class="op">=</span> <span class="st">'prefix'</span><span class="op">)</span></span>
-<span><span class="va">gsm_sce</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">gsm_sce</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-</div>
-</section><section class="level3"><h3 id="tar-of-mtx-files-from-series-record">Tar of mtx files from Series record<a class="anchor" aria-label="anchor" href="#tar-of-mtx-files-from-series-record"></a>
-</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">'GSE248214'</span><span class="op">)</span></span>
-<span><span class="va">s</span></span></code></pre></div>
-</div>
-<p>From here, untar and then wrap to get prefixes</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tar_filename</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
-<span><span class="va">exdir</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/untar.html" class="external-link">untar</a></span><span class="op">(</span><span class="va">tar_filename</span>, exdir<span class="op">=</span><span class="va">exdir</span><span class="op">)</span></span>
-<span><span class="va">sample_prefixes</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">'matrix.mtx.gz'</span>,<span class="st">''</span>,<span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="va">exdir</span>,pattern<span class="op">=</span><span class="st">'*matrix.mtx.gz'</span>,full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">gse_sce</span> <span class="op">=</span> <span class="fu">DropletUtils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DropletUtils/man/read10xCounts.html" class="external-link">read10xCounts</a></span><span class="op">(</span>samples <span class="op">=</span> <span class="va">sample_prefixes</span>, type<span class="op">=</span><span class="st">'prefix'</span><span class="op">)</span></span>
-<span><span class="va">gse_sce</span></span></code></pre></div>
-</div>
-</section><section class="level3"><h3 id="mix-of-types-in-a-single-gse">Mix of types in a single GSE<a class="anchor" aria-label="anchor" href="#mix-of-types-in-a-single-gse"></a>
-</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/getGEOSeriesFileListing.html">getGEOSeriesFileListing</a></span><span class="op">(</span><span class="st">'GSE288770'</span><span class="op">)</span></span></code></pre></div>
-</div>
-</section><section class="level3"><h3 id="x-h5-file">10x h5 file<a class="anchor" aria-label="anchor" href="#x-h5-file"></a>
-</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">'GSM8775062'</span><span class="op">)</span></span>
-<span><span class="va">sce</span> <span class="op">=</span> <span class="fu">DropletUtils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DropletUtils/man/read10xCounts.html" class="external-link">read10xCounts</a></span><span class="op">(</span><span class="va">s</span><span class="op">$</span><span class="va">filepath</span><span class="op">)</span></span>
-<span><span class="va">sce</span></span></code></pre></div>
-</div>
-</section><section class="level3"><h3 id="x-matrix-mtx-files">10x matrix mtx files<a class="anchor" aria-label="anchor" href="#x-matrix-mtx-files"></a>
-</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">'GSM8775066'</span><span class="op">)</span></span>
-<span><span class="va">sce2</span> <span class="op">=</span> <span class="fu">DropletUtils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DropletUtils/man/read10xCounts.html" class="external-link">read10xCounts</a></span><span class="op">(</span>samples <span class="op">=</span> <span class="st">'/Users/davsean/Documents/git/GEOquery/vignettes/GSM8775066/GSM8775066_vivo_day7_1_'</span>, type<span class="op">=</span><span class="st">'prefix'</span><span class="op">)</span></span>
-<span><span class="va">sce2</span></span></code></pre></div>
-</div>
-</section></section><script id="quarto-html-after-body" type="application/javascript">
+<p>GEOquery’s single-cell support targets the discovery-and-load problem, not everything. It does <strong>not</strong> handle loom or Seurat <code>.rds</code> files, files packaged inside <code>_RAW.tar</code>, or idiosyncratic combined-matrix layouts. The manifest plus <code><a href="../reference/readGEOSingleCell.html">readGEOSingleCell()</a></code> is the escape hatch for those, and the design notes are in the project’s <code>adr/0004-single-cell-architecture.md</code>.</p>
+</section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);

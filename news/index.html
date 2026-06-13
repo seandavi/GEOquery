@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.18</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,7 +19,10 @@
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/single-cell.html">Handling single-cell RNA-seq data in GEOquery</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/downstream-analysis.html">From GEO to downstream analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/geo-data-formats.html">Understanding GEO data formats</a></li>
+    <li><a class="dropdown-item" href="../articles/rnaseq.html">RNA-seq quantifications from GEO</a></li>
+    <li><a class="dropdown-item" href="../articles/single-cell.html">Single-cell data from GEO</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -40,7 +43,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/docs/pkgdown-articles/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
@@ -55,12 +58,11 @@
 <li>GEOquery now raises typed error conditions — <code>geoquery_error</code> and subclasses (<code>geoquery_private_accession</code>, <code>geoquery_download_error</code>, <code>geoquery_parse_error</code>, <code>geoquery_bad_accession</code>) — so failures can be handled programmatically with <code><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch()</a></code> (<a href="https://github.com/seandavi/GEOquery/issues/170" class="external-link">#170</a>, <a href="https://github.com/seandavi/GEOquery/issues/184" class="external-link">#184</a>, <a href="https://github.com/seandavi/GEOquery/issues/186" class="external-link">#186</a>).</li>
 <li>
 <code><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles()</a></code> gains a <code>quiet</code> argument (defaulting to the <code>GEOquery.quiet</code> option, or <code>FALSE</code>) to suppress informational messages such as “No supplemental files found” and “Using locally cached version” (<a href="https://github.com/seandavi/GEOquery/issues/68" class="external-link">#68</a>, <a href="https://github.com/seandavi/GEOquery/issues/182" class="external-link">#182</a>).</li>
-<li>
-<code><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles()</a></code> gains a <code>quiet</code> argument (defaulting to the <code>GEOquery.quiet</code> option, or <code>FALSE</code>) to suppress informational messages such as “No supplemental files found” and “Using locally cached version” (<a href="https://github.com/seandavi/GEOquery/issues/68" class="external-link">#68</a>, <a href="https://github.com/seandavi/GEOquery/issues/182" class="external-link">#182</a>).</li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-development-version">Documentation<a class="anchor" aria-label="anchor" href="#documentation-development-version"></a></h3>
-<ul><li>The package <code>DESCRIPTION</code> and <code>biocViews</code> now describe GEOquery’s actual scope (microarray, RNA-seq, and single-cell; GEO Series Matrix files parsed to <code>ExpressionSet</code> by default) instead of microarray-only (<a href="https://github.com/seandavi/GEOquery/issues/71" class="external-link">#71</a>, <a href="https://github.com/seandavi/GEOquery/issues/181" class="external-link">#181</a>).</li>
+<ul><li><p>Documentation is reorganized into narrative pkgdown <strong>articles</strong> — <em>Understanding GEO data formats</em>, <em>RNA-seq quantifications</em>, <em>Single-cell data from GEO</em>, and <em>From GEO to downstream analysis</em> — that cover the <em>why</em> (entity types, file formats) and downstream workflows with links to other Bioconductor packages. The package vignette is now a concise quick-start that indexes them; the articles render on the pkgdown site and are excluded from <code>R CMD check</code> (<a href="https://github.com/seandavi/GEOquery/issues/156" class="external-link">#156</a>, <a href="https://github.com/seandavi/GEOquery/issues/191" class="external-link">#191</a>).</p></li>
+<li><p>The package <code>DESCRIPTION</code> and <code>biocViews</code> now describe GEOquery’s actual scope (microarray, RNA-seq, and single-cell; GEO Series Matrix files parsed to <code>ExpressionSet</code> by default) instead of microarray-only (<a href="https://github.com/seandavi/GEOquery/issues/71" class="external-link">#71</a>, <a href="https://github.com/seandavi/GEOquery/issues/181" class="external-link">#181</a>).</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>

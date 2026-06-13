@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Using the GEOquery Package • GEOquery</title>
+<title>Getting started with GEOquery • GEOquery</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="GEOquery_files/libs/quarto-html/popper.min.js"></script><script src="GEOquery_files/libs/quarto-html/tippy.umd.min.js"></script><link href="GEOquery_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="GEOquery_files/libs/quarto-html/light-border.css" rel="stylesheet">
-<!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Using the GEOquery Package">
+<!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Getting started with GEOquery">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.18</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,10 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/single-cell.html">Handling single-cell RNA-seq data in GEOquery</a></li>
+<li><a class="dropdown-item" href="../articles/downstream-analysis.html">From GEO to downstream analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/geo-data-formats.html">Understanding GEO data formats</a></li>
+    <li><a class="dropdown-item" href="../articles/rnaseq.html">RNA-seq quantifications from GEO</a></li>
+    <li><a class="dropdown-item" href="../articles/single-cell.html">Single-cell data from GEO</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -63,12 +66,12 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Using the GEOquery Package</h1>
+      <h1>Getting started with GEOquery</h1>
 
       <p class="author">Sean Davis</p>
-      <p class="date">2025-08-16</p>
+      <p class="date">2026-06-13</p>
 
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/vignettes/GEOquery.qmd" class="external-link"><code>vignettes/GEOquery.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/docs/pkgdown-articles/vignettes/GEOquery.qmd" class="external-link"><code>vignettes/GEOquery.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -77,250 +80,52 @@
 
 
 
-    <section class="section level2"><h2 id="introduction-to-geo-and-geoquery">Introduction to GEO and GEOquery<a class="anchor" aria-label="anchor" href="#introduction-to-geo-and-geoquery"></a>
+    <p>GEOquery is the bridge between the NCBI Gene Expression Omnibus (GEO) and Bioconductor: it downloads and parses GEO records into Bioconductor objects. This page is a short quick-start and an index; the in-depth, narrative documentation lives in the <strong>articles</strong> listed below.</p>
+<section class="level2"><h2 id="install">Install<a class="anchor" aria-label="anchor" href="#install"></a>
 </h2>
-<p>The NCBI Gene Expression Omnibus (<a href="https://www.ncbi.nlm.nih.gov/geo/" class="external-link">GEO</a>) was established in 2000 as a public repository for high-throughput molecular abundance data, primarily microarray data at the time. Today, GEO hosts a diverse array of data types including gene expression, genomic DNA, and protein abundance measurements from various technologies like microarrays, next-generation sequencing, and mass spectrometry.</p>
-<p>GEOquery was created to bridge the gap between this vast resource and Bioconductor’s analytical tools. First released in 2007, GEOquery has evolved alongside GEO itself, adapting to new data types and formats over time.</p>
-<section class="level2"><h3 id="why-geoquery">Why GEOquery?<a class="anchor" aria-label="anchor" href="#why-geoquery"></a>
-</h3>
-<p>Before GEOquery, researchers would need to:</p>
-<ol type="1">
-<li>Manually download data from the GEO website</li>
-<li>Parse complex SOFT format files</li>
-<li>Construct data structures suitable for analysis</li>
-<li>Integrate metadata with expression data</li>
-</ol>
-<p>GEOquery automates this entire process, allowing researchers to focus on analysis rather than data acquisition and formatting. GEOquery also facilitates automation and reproducibility by incorporating data acquisition into workflows, scripts, or documents.</p>
-</section><section class="level2"><h3 id="geo-data-organization">GEO Data Organization<a class="anchor" aria-label="anchor" href="#geo-data-organization"></a>
-</h3>
-<p>Understanding GEO’s data organization is essential for effective use of GEOquery:</p>
-<ol type="1">
-<li>
-<strong>Platform (GPL)</strong>: Describes array design, probes, or detectable elements</li>
-<li>
-<strong>Sample (GSM)</strong>: Contains individual experiment measurements</li>
-<li>
-<strong>Series (GSE)</strong>: Groups related samples together, typically representing a complete study</li>
-<li>
-<strong>Dataset (GDS)</strong>: Curated by GEO staff, represents biologically and statistically comparable samples</li>
-</ol></section></section><section class="section level2"><h2 id="getting-started-with-geoquery">Getting Started with GEOquery<a class="anchor" aria-label="anchor" href="#getting-started-with-geoquery"></a>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span><span class="st">"GEOquery"</span><span class="op">)</span></span></code></pre></div>
+</section><section class="level2"><h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
-<p>Before working with GEOquery (or any R or Bioconductor package), one must first install the package. Installation is a one-time (or at least not repeated often) operation. To install GEOquery, ensure that you have <a href="https://bioconductor.org/install/" class="external-link">installed R and Bioconductor</a>.</p>
-<p>Then, to install GEOquery:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span><span class="st">'GEOquery'</span><span class="op">)</span></span></code></pre></div>
-</div>
-<p>Before using GEOquery, we need to load the GEOquery library. Loading the GEOquery library must be done <em>each time you start a new R session</em>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/seandavi/GEOquery" class="external-link">GEOquery</a></span><span class="op">)</span></span></code></pre></div>
-</div>
-<section class="level2"><h3 id="downloading-a-geo-series">Downloading a GEO Series<a class="anchor" aria-label="anchor" href="#downloading-a-geo-series"></a>
-</h3>
-<p>The most common use case is downloading a GEO Series (GSE), which typically represents a complete study:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Download GSE2553</span></span>
-<span><span class="va">gse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GSE2553"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span></span></code></pre></div>
-</div>
-<p>Notice that <code>getGEO</code> returns a list. This is because a single GSE can contain experiments from multiple platforms. Each element of the list is an <code>ExpressionSet</code> containing data from one platform:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span></span>
-<span><span class="va">gse</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-</div>
-</section><section class="level2"><h3 id="historical-context-soft-format-vs-gsematrix-files">Historical Context: SOFT Format vs GSEMatrix Files<a class="anchor" aria-label="anchor" href="#historical-context-soft-format-vs-gsematrix-files"></a>
-</h3>
-<p>GEO originally provided data in SOFT (Simple Omnibus Format in Text) format, which contained extensive information but was slow to parse for large datasets. In response to community needs, GEO introduced GSEMatrix files—a more efficient, tab-delimited format.</p>
-<p>GEOquery defaults to using GSEMatrix files (<code>GSEMatrix=TRUE</code>) because: 1. Parsing is substantially faster (often by 10-100x) 2. Memory usage is more efficient 3. The resulting <code>ExpressionSet</code> objects are directly usable with Bioconductor tools</p>
-</section></section><section class="section level2"><h2 id="searching-geo-programmatically">Searching GEO Programmatically<a class="anchor" aria-label="anchor" href="#searching-geo-programmatically"></a>
-</h2>
-<p>While GEO’s web interface is powerful, programmatic searches enable automated data discovery and retrieval. GEOquery provides direct access to GEO’s search capabilities:</p>
-<div id="tbl-search-fields" class="cell quarto-float quarto-figure quarto-figure-center">
-<figure class="quarto-float quarto-float-tbl"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-search-fields-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 1: Available GEO search fields.
-</figcaption><div aria-describedby="tbl-search-fields-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># What fields can we search?</span></span>
-<span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchFieldsGEO.html">searchFieldsGEO</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu">kable</span><span class="op">(</span><span class="va">fields</span><span class="op">)</span></span></code></pre></div>
-</div>
-</figure>
-</div>
-<p>GEO uses a specific search syntax with field identifiers in square brackets:</p>
-<div id="tbl-example-search" class="cell quarto-float quarto-figure quarto-figure-center">
-<figure class="quarto-float quarto-float-tbl"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-example-search-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 2: Top search results for studies related to COVID-19 in humans with GEO-calculated RNA-seq counts available.
-</figcaption><div aria-describedby="tbl-example-search-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Find RNA-seq studies related to COVID-19 in humans</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/searchGEO.html">searchGEO</a></span><span class="op">(</span><span class="st">'covid-19[All Fields] AND "rnaseq counts"[Filter] AND Homo sapiens[ORGN]'</span><span class="op">)</span></span>
-<span><span class="va">results</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Summary<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/strtrim.html" class="external-link">strtrim</a></span><span class="op">(</span><span class="va">Summary</span>,<span class="fl">120</span><span class="op">)</span>, <span class="st">'...'</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/strtrim.html" class="external-link">strtrim</a></span><span class="op">(</span><span class="va">Title</span>, <span class="fl">120</span><span class="op">)</span>, <span class="st">'...'</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">kable</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-</figure>
-</div>
-<p>The search capabilities mirror GEO’s web interface but allow for integration with R workflows.</p>
-</section><section class="section level2"><h2 id="rna-seq-quantifications-ncbis-solution-to-reanalysis-challenges">RNA-seq Quantifications: NCBI’s Solution to Reanalysis Challenges<a class="anchor" aria-label="anchor" href="#rna-seq-quantifications-ncbis-solution-to-reanalysis-challenges"></a>
-</h2>
-<section class="level2"><h3 id="the-challenge-of-rna-seq-reanalysis">The Challenge of RNA-seq Reanalysis<a class="anchor" aria-label="anchor" href="#the-challenge-of-rna-seq-reanalysis"></a>
-</h3>
-<p>A major barrier to exploiting the massive volume of public RNA-seq data has been the computational cost and expertise required to consistently process raw reads into usable expression values. Different processing pipelines can produce different results, making cross-study comparisons challenging.</p>
-</section><section class="level2"><h3 id="ncbis-rna-seq-quantification-pipeline">NCBI’s RNA-seq Quantification Pipeline<a class="anchor" aria-label="anchor" href="#ncbis-rna-seq-quantification-pipeline"></a>
-</h3>
-<p>To address this challenge, in 2020-2021, the NCBI SRA and GEO teams developed a standardized pipeline that precomputes RNA-seq gene expression counts for human and mouse datasets. As described in their <a href="https://www.ncbi.nlm.nih.gov/geo/info/rnaseqcounts.html" class="external-link">documentation</a>, this pipeline:</p>
-<ol type="1">
-<li>Processes RNA-seq data from SRA using the HISAT2 aligner</li>
-<li>Generates gene expression counts using the featureCounts program</li>
-<li>Provides consistent annotation based on current genome builds</li>
-<li>Makes counts available in standardized formats</li>
-</ol>
-<p>GEOquery provides direct access to these precomputed counts:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Check if RNA-seq quantifications are available</span></span>
-<span><span class="va">has_quant</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hasRNASeqQuantifications.html">hasRNASeqQuantifications</a></span><span class="op">(</span><span class="st">"GSE164073"</span><span class="op">)</span></span>
-<span><span class="va">has_quant</span></span></code></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get genome build and species information</span></span>
-<span><span class="va">genome_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getRNASeqQuantGenomeInfo.html">getRNASeqQuantGenomeInfo</a></span><span class="op">(</span><span class="st">"GSE164073"</span><span class="op">)</span></span>
-<span><span class="va">genome_info</span></span></code></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Download and construct a SummarizedExperiment</span></span>
-<span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getRNASeqData.html">getRNASeqData</a></span><span class="op">(</span><span class="st">"GSE164073"</span><span class="op">)</span></span>
-<span><span class="va">se</span></span></code></pre></div>
-</div>
-<p>This feature saves researchers significant time and computational resources while ensuring standardized processing across datasets.</p>
-</section></section><section class="section level2"><h2 id="understanding-supplementary-files-in-geo">Understanding Supplementary Files in GEO<a class="anchor" aria-label="anchor" href="#understanding-supplementary-files-in-geo"></a>
-</h2>
-<p>GEO accessions often include supplementary files containing raw data, processing scripts, or additional results not captured in the standard GEO formats. These files are invaluable for:</p>
-<ol type="1">
-<li>Accessing raw data (e.g., CEL files, FASTQ files)</li>
-<li>Understanding custom processing pipelines</li>
-<li>Retrieving additional metadata or results</li>
-</ol>
-<p>GEOquery makes accessing these files straightforward:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># List available supplementary files without downloading</span></span>
-<span><span class="va">supp_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">'GSE63137'</span>, fetch_files <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">supp_files</span><span class="op">)</span></span></code></pre></div>
-</div>
-<p>You can filter files by pattern to find specific file types:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Find all text files</span></span>
-<span><span class="va">txt_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">'GSE63137'</span>, fetch_files <span class="op">=</span> <span class="cn">FALSE</span>, </span>
-<span>                             filter_regex <span class="op">=</span> <span class="st">'txt'</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">txt_files</span><span class="op">)</span></span></code></pre></div>
-</div>
-<p>And download specific files or all supplementary files:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Download all supplementary files for a sample</span></span>
-<span><span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">'GSM15789'</span><span class="op">)</span> <span class="co"># Files saved to a new directory</span></span></code></pre></div>
-</div>
-</section><section class="section level2"><h2 id="navigating-between-r-and-the-geo-web-interface">Navigating Between R and the GEO Web Interface<a class="anchor" aria-label="anchor" href="#navigating-between-r-and-the-geo-web-interface"></a>
-</h2>
-<p>Sometimes you may want to examine a GEO record in its web interface. GEOquery provides convenience functions for this:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get the URL for a GEO accession</span></span>
-<span><span class="va">url</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/urlForAccession.html">urlForAccession</a></span><span class="op">(</span><span class="st">"GSE262484"</span><span class="op">)</span></span>
-<span><span class="va">url</span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/seandavi/GEOquery" class="external-link">GEOquery</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Open a browser to the GEO page</span></span>
-<span><span class="fu"><a href="../reference/browseGEOAccession.html">browseGEOAccession</a></span><span class="op">(</span><span class="st">"GSE262484"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<p>For RNA-seq datasets specifically, there’s a convenience function to search for RNA-seq counts on the GEO website:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/browseWebsiteRNASeqSearch.html">browseWebsiteRNASeqSearch</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-<p>These functions bridge the programmatic and web interfaces to GEO, allowing seamless transitions between analytical and exploratory modes.</p>
-</section><section class="section level2"><h2 id="working-with-gds-datasets">Working with GDS Datasets<a class="anchor" aria-label="anchor" href="#working-with-gds-datasets"></a>
+<span><span class="co"># A GSE via the fast Series Matrix path -&gt; a list of ExpressionSet,</span></span>
+<span><span class="co"># one per platform.</span></span>
+<span><span class="va">gse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GSE2553"</span><span class="op">)</span></span>
+<span><span class="va">eset</span> <span class="op">&lt;-</span> <span class="va">gse</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span>    <span class="co"># expression matrix</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html" class="external-link">pData</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span>    <span class="co"># sample metadata</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html" class="external-link">fData</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span>    <span class="co"># feature annotation</span></span>
+<span></span>
+<span><span class="co"># Other entity types parse to GEOquery's S4 classes:</span></span>
+<span><span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GSM11805"</span><span class="op">)</span>   <span class="co"># a sample</span></span>
+<span><span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GPL96"</span><span class="op">)</span>      <span class="co"># a platform</span></span>
+<span><span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GDS507"</span><span class="op">)</span>     <span class="co"># a curated dataset</span></span>
+<span></span>
+<span><span class="co"># See what supplementary files a study has, without downloading:</span></span>
+<span><span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">"GSE63137"</span>, fetch_files <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+</section><section class="level2"><h2 id="in-depth-articles">In-depth articles<a class="anchor" aria-label="anchor" href="#in-depth-articles"></a>
 </h2>
-<p>GEO DataSets (GDS) are curated collections of samples, processed and normalized to be directly comparable. While less common in modern workflows, they remain available and GEOquery supports them:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Download a GDS dataset</span></span>
-<span><span class="va">gds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GDS507"</span><span class="op">)</span></span>
-<span><span class="va">gds</span></span></code></pre></div>
-</div>
-<p>GDS objects can be converted to Bioconductor data structures:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Convert to ExpressionSet (with log2 transformation)</span></span>
-<span><span class="va">eset</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coercion.html">GDS2eSet</a></span><span class="op">(</span><span class="va">gds</span>, do.log2<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">eset</span></span></code></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Or to a limma MAList</span></span>
-<span><span class="va">malist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coercion.html">GDS2MA</a></span><span class="op">(</span><span class="va">gds</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">malist</span><span class="op">)</span></span></code></pre></div>
-</div>
-<p>These conversions are particularly useful for integrating older GEO datasets into modern analytical workflows.</p>
-</section><section class="section level2"><h2 id="advanced-features">Advanced Features<a class="anchor" aria-label="anchor" href="#advanced-features"></a>
+<p>The articles go beyond the <em>how</em> to the <em>why</em> — the structure of GEO, the file formats, and how a GEOquery object connects to downstream Bioconductor workflows:</p>
+<ul>
+<li>
+<a href="https://seandavi.github.io/GEOquery/articles/geo-data-formats.html" class="external-link"><strong>Understanding GEO data formats</strong></a> — the four entity types, SOFT vs. Series Matrix, why <code><a href="../reference/getGEO.html">getGEO()</a></code> returns different classes, and <code>ExpressionSet</code> vs. <code>SummarizedExperiment</code>.</li>
+<li>
+<a href="https://seandavi.github.io/GEOquery/articles/rnaseq.html" class="external-link"><strong>RNA-seq quantifications from GEO</strong></a> — NCBI’s uniformly-computed counts and how to retrieve them.</li>
+<li>
+<a href="https://seandavi.github.io/GEOquery/articles/single-cell.html" class="external-link"><strong>Single-cell data from GEO</strong></a> — why single-cell data lives in supplementary files, and the inspect → decide → load workflow into a <code>SingleCellExperiment</code>.</li>
+<li>
+<a href="https://seandavi.github.io/GEOquery/articles/downstream-analysis.html" class="external-link"><strong>From GEO to downstream analysis</strong></a> — taking a GEOquery object into limma / DESeq2 / edgeR / the single-cell ecosystem, with links to the relevant packages.</li>
+</ul></section><section class="level2"><h2 id="getting-help">Getting help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
 </h2>
-<section class="level2"><h3 id="getting-gse-data-tables">Getting GSE Data Tables<a class="anchor" aria-label="anchor" href="#getting-gse-data-tables"></a>
-</h3>
-<p>Some GSE records contain data tables with important metadata not captured in the standard GSE structure:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get data tables from GSE3494</span></span>
-<span><span class="va">dt_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGSEDataTables.html">getGSEDataTables</a></span><span class="op">(</span><span class="st">"GSE3494"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dt_list</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dt_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-</div>
-</section><section class="level2"><h3 id="working-with-gpl-platforms">Working with GPL Platforms<a class="anchor" aria-label="anchor" href="#working-with-gpl-platforms"></a>
-</h3>
-<p>Platform records (GPL) contain important probe annotations:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get a platform record</span></span>
-<span><span class="va">gpl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GPL96"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/GEOData-accessors.html">Table</a></span><span class="op">(</span><span class="va">gpl</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-</div>
-<p>When retrieving GSE records, GEOquery can automatically include GPL annotation:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get GSE with GPL annotation</span></span>
-<span><span class="va">gse_with_gpl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GSE2553"</span>, AnnotGPL<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html" class="external-link">fData</a></span><span class="op">(</span><span class="va">gse_with_gpl</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-</div>
-</section></section><section class="section level2"><h2 id="reporting-bugs-and-contributing">Reporting Bugs and Contributing<a class="anchor" aria-label="anchor" href="#reporting-bugs-and-contributing"></a>
-</h2>
-<p>As GEO continues to evolve, GEOquery adapts to support new features and data types. If you encounter issues:</p>
-<ol type="1">
-<li>Check the <a href="https://support.bioconductor.org/" class="external-link">Bioconductor Support site</a>
-</li>
-<li>Report bugs on <a href="https://github.com/seandavi/GEOquery/issues" class="external-link">GitHub</a>
-</li>
-<li>Consider contributing via pull requests</li>
-</ol></section><section class="section level2"><h2 id="citing-geoquery">Citing GEOquery<a class="anchor" aria-label="anchor" href="#citing-geoquery"></a>
-</h2>
-<p>If you use GEOquery in your research, please cite:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"GEOquery"</span><span class="op">)</span></span></code></pre></div>
-</div>
-</section><section class="section level2"><h2 id="session-information">Session Information<a class="anchor" aria-label="anchor" href="#session-information"></a>
-</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-</section><script id="quarto-html-after-body" type="application/javascript">
+<ul>
+<li>Usage questions: the <a href="https://support.bioconductor.org/" class="external-link">Bioconductor support site</a>, tagged <code>geoquery</code>.</li>
+<li>Bugs and feature requests: the <a href="https://github.com/seandavi/GEOquery/issues" class="external-link">issue tracker</a> — please include a GEO accession and <code><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo()</a></code>.</li>
+</ul></section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);

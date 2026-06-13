@@ -1,98 +1,163 @@
-# Handling single-cell RNA-seq data in GEOquery
+# Single-cell data from GEO
+
+Single-cell studies are now a large fraction of GEO submissions, but
+they do not fit the classic GEO mental model. This article explains
+*why* single-cell data is awkward to retrieve, the file formats you will
+meet, and how GEOquery’s single-cell functions turn them into
+`SingleCellExperiment` objects ready for the Bioconductor single-cell
+ecosystem.
+
+## Why single-cell data is different
+
+For a microarray or bulk RNA-seq study, the processed matrix lives in
+the GEO **Series Matrix** file, and `getGEO("GSE...")` hands you an
+`ExpressionSet` directly. **Single-cell data almost never works this
+way.** The Series Matrix for a single-cell `GSE` is usually empty or
+contains only sample-level metadata, because a per-cell matrix with tens
+of thousands of columns does not belong in GEO’s sample-by-feature
+table.
+
+Instead, the actual data lives in **supplementary files** (see
+[Understanding GEO data
+formats](http://seandavi.github.io/GEOquery/articles/geo-data-formats.md)).
+So a single-cell workflow is fundamentally *supplementary-files-first*:
+you must **look at what is attached, decide what is loadable, and then
+load it** — which is exactly the shape of the GEOquery single-cell API.
+
+## The file formats you will meet
+
+GEO single-cell submissions are heterogeneous. The common formats:
+
+- **10x Matrix Market triplet** — three files per sample: a sparse
+  `matrix.mtx[.gz]`, `barcodes.tsv[.gz]` (cell IDs), and
+  `features.tsv[.gz]`/`genes.tsv[.gz]` (gene IDs). The three must be
+  read *together*; a missing file makes the sample unreadable.
+- **10x HDF5** (`.h5`) — the CellRanger filtered/raw feature-barcode
+  matrix in a single HDF5 file.
+- **AnnData** (`.h5ad`) — the scverse/Python standard; increasingly
+  common on recent GEO submissions.
+- **loom**, **Seurat `.rds`** — less common, and intentionally *not*
+  handled by GEOquery (read them with `LoomExperiment` / `Seurat`
+  directly).
+
+A further wrinkle: files are frequently bundled inside a single
+`GSE_RAW.tar` archive, and naming conventions vary wildly between
+submitters. This is why the first step is always inspection, not
+download.
+
+## Step 1 — inspect: the manifest
+
+[`geoSingleCellManifest()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md)
+lists the supplementary files and classifies each by format and role,
+extracting the GSM sample id — **without downloading** anything. It lets
+you see, often many gigabytes ahead of time, what a study actually
+contains.
 
 ``` r
 
 library(GEOquery)
-library(SingleCellExperiment)
-library(DropletUtils)
+m <- geoSingleCellManifest("GSE161228")
+m
+#> fname                    sample   format    role       url
+#> GSM..._matrix.mtx.gz     GSM...   10x_mtx   matrix     ...
+#> GSM..._barcodes.tsv.gz   GSM...   10x_mtx   barcodes   ...
+#> GSM..._features.tsv.gz   GSM...   10x_mtx   features   ...
 ```
 
-## Single cell searching
+## Step 2 — decide: loadable units
+
+[`geoSingleCellUnits()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellUnits.md)
+collapses that file list into **loadable units** — one per sample and
+format — and tells you whether each is complete. A 10x triplet is only
+loadable if all three files are present:
 
 ``` r
 
-res = searchGEO("single cell mtx matrix")
-head(res)
+u <- geoSingleCellUnits(m)
+u
+#> sample  format   n_files  status                          loadable
+#> GSM1    10x_mtx  3        complete                        TRUE
+#> GSM2    10x_mtx  2        incomplete (missing features)   FALSE
+#> GSM3    h5ad     1        complete                        TRUE
 ```
 
-## Mtx files
+This is where you make decisions: which samples, which format if a study
+offers more than one, and which incomplete units to skip.
+
+## Step 3 — load
+
+For the common, well-structured cases,
+[`getGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.md)
+does the whole thing — manifest → units → download → read — and returns
+a **named list of `SingleCellExperiment`, one per sample**. It tells you
+what it loads and what it skips, so nothing disappears silently:
 
 ``` r
 
-poss= getGEOSuppFiles('GSE248214', fetch_files = FALSE)
-poss
+sces <- getGEOSingleCell("GSE161228")
+#> Loading GSM1 (10x_mtx)...
+#> Loading GSM3 (h5ad)...
+#> Skipping 1 unit(s): GSM2 [incomplete (missing features)]
+
+length(sces)      # one SingleCellExperiment per sample
+sces[[1]]
 ```
 
-## Multiple h5ad files
+It returns a list rather than a single combined object on purpose:
+per-sample matrices often use different references or feature sets, and
+silently reconciling them would be misleading. Combine deliberately when
+you know the features match.
+
+### Full control
+
+[`getGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.md)
+deliberately handles only common layouts. For anything unusual — bespoke
+naming, a single combined matrix for many samples, files inside a
+`_RAW.tar` — use the manifest to find what you want, download with
+[`getGEOSuppFiles()`](http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.md),
+and read one unit at a time with
+[`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md):
 
 ``` r
 
-library(GEOquery)
-s = getGEOSuppFiles('GSE161228', fetch_files = FALSE)
-s
+readGEOSingleCell(path_to_dir_or_file)            # format auto-detected
+readGEOSingleCell(triplet_files, format = "10x_mtx")
 ```
 
-## Single h5ad file
+## The reader dependencies
 
-## SAMPLES
+Reading uses focused Bioconductor importers, kept as optional
+dependencies so a basic GEOquery install stays light:
 
-### mtx file
+- **10x mtx / 10x h5** →
+  [TENxIO](https://bioconductor.org/packages/TENxIO)
+- **h5ad** → [anndataR](https://bioconductor.org/packages/anndataR),
+  which reads AnnData natively in R with no Python dependency.
 
-``` r
+GEOquery will prompt you to install the relevant one if it is missing.
 
-s = getGEOSuppFiles('GSM7908437')
-s
-```
+## Downstream: the single-cell ecosystem
 
-``` r
+Once you have a `SingleCellExperiment`, you are in the heart of
+Bioconductor’s single-cell stack. Natural next steps:
 
-sample_prefix = sub('barcodes.tsv.gz','', grep('barcodes.tsv.gz', s$filepath, value = TRUE))
-gsm_sce <- DropletUtils::read10xCounts(samples = sample_prefix, type = 'prefix')
-gsm_sce
-head(colData(gsm_sce))
-```
+- Quality control, normalization, and feature selection with
+  [scater](https://bioconductor.org/packages/scater) and
+  [scran](https://bioconductor.org/packages/scran).
+- Dimensionality reduction, clustering, and annotation following the
+  [Orchestrating Single-Cell Analysis with
+  Bioconductor](https://bioconductor.org/books/release/OSCA/) (OSCA)
+  book.
+- On-disk / out-of-memory handling of large matrices with
+  [HDF5Array](https://bioconductor.org/packages/HDF5Array) and
+  [DelayedArray](https://bioconductor.org/packages/DelayedArray).
 
-### Tar of mtx files from Series record
+## What is intentionally out of scope
 
-``` r
-
-s = getGEOSuppFiles('GSE248214')
-s
-```
-
-From here, untar and then wrap to get prefixes
-
-``` r
-
-tar_filename = rownames(s)[1]
-exdir = tempdir()
-untar(tar_filename, exdir=exdir)
-sample_prefixes = sub('matrix.mtx.gz','',dir(exdir,pattern='*matrix.mtx.gz',full.names = TRUE))
-gse_sce = DropletUtils::read10xCounts(samples = sample_prefixes, type='prefix')
-gse_sce
-```
-
-### Mix of types in a single GSE
-
-``` r
-
-getGEOSeriesFileListing('GSE288770')
-```
-
-### 10x h5 file
-
-``` r
-
-s = getGEOSuppFiles('GSM8775062')
-sce = DropletUtils::read10xCounts(s$filepath)
-sce
-```
-
-### 10x matrix mtx files
-
-``` r
-
-s = getGEOSuppFiles('GSM8775066')
-sce2 = DropletUtils::read10xCounts(samples = '/Users/davsean/Documents/git/GEOquery/vignettes/GSM8775066/GSM8775066_vivo_day7_1_', type='prefix')
-sce2
-```
+GEOquery’s single-cell support targets the discovery-and-load problem,
+not everything. It does **not** handle loom or Seurat `.rds` files,
+files packaged inside `_RAW.tar`, or idiosyncratic combined-matrix
+layouts. The manifest plus
+[`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
+is the escape hatch for those, and the design notes are in the project’s
+`adr/0004-single-cell-architecture.md`.

@@ -67,14 +67,18 @@
   supplemental files found” and “Using locally cached version”
   ([\#68](https://github.com/seandavi/GEOquery/issues/68),
   [\#182](https://github.com/seandavi/GEOquery/issues/182)).
-- [`getGEOSuppFiles()`](http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.md)
-  gains a `quiet` argument (defaulting to the `GEOquery.quiet` option,
-  or `FALSE`) to suppress informational messages such as “No
-  supplemental files found” and “Using locally cached version”
-  ([\#68](https://github.com/seandavi/GEOquery/issues/68),
-  [\#182](https://github.com/seandavi/GEOquery/issues/182)).
 
 ### Documentation
+
+- Documentation is reorganized into narrative pkgdown **articles** —
+  *Understanding GEO data formats*, *RNA-seq quantifications*,
+  *Single-cell data from GEO*, and *From GEO to downstream analysis* —
+  that cover the *why* (entity types, file formats) and downstream
+  workflows with links to other Bioconductor packages. The package
+  vignette is now a concise quick-start that indexes them; the articles
+  render on the pkgdown site and are excluded from `R CMD check`
+  ([\#156](https://github.com/seandavi/GEOquery/issues/156),
+  [\#191](https://github.com/seandavi/GEOquery/issues/191)).
 
 - The package `DESCRIPTION` and `biocViews` now describe GEOquery’s
   actual scope (microarray, RNA-seq, and single-cell; GEO Series Matrix
