@@ -29,6 +29,12 @@
 
 # Build the manifest data.frame from a vector of filenames (and optional URLs).
 .classify_sc_files <- function(fnames, urls = NA_character_) {
+    if (length(fnames) == 0) {
+        return(data.frame(
+            fname = character(0), sample = character(0), format = character(0),
+            role = character(0), url = character(0), stringsAsFactors = FALSE
+        ))
+    }
     cls <- t(vapply(fnames, .classify_sc_file, character(2)))
     data.frame(
         fname = as.character(fnames),
