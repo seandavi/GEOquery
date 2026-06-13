@@ -4,6 +4,12 @@
 
 ### Bug Fixes
 
+- [`GDS2eSet()`](http://seandavi.github.io/GEOquery/reference/coercion.md)
+  no longer fails when a GDS has an `NA` (or empty) value in its
+  `ID_REF` column (e.g. GDS3666). Such values are replaced with a usable
+  feature name instead of producing “row names contain missing values”
+  ([\#21](https://github.com/seandavi/GEOquery/issues/21),
+  [\#177](https://github.com/seandavi/GEOquery/issues/177)).
 - [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
   now fails with a clear message when an accession is private,
   embargoed, or not yet public (NCBI returns an HTML page) instead of
