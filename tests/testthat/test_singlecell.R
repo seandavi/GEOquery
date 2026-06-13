@@ -64,3 +64,33 @@ test_that("geoSingleCellUnits handles an empty manifest", {
     expect_equal(nrow(u), 0L)
     expect_true(all(c("sample", "format", "status", "loadable") %in% colnames(u)))
 })
+
+test_that("readGEOSingleCell rejects unsupported formats (#158)", {
+    expect_error(readGEOSingleCell("x.loom", format = "loom"), "not supported")
+    expect_error(readGEOSingleCell("x.rds", format = "rds"), "not supported")
+})
+
+test_that(".select_sc_units picks loadable units, one format per sample (#158)", {
+    manifest <- GEOquery:::.classify_sc_files(c(
+        "GSM1_data.h5ad",
+        "GSM1_matrix.mtx.gz", "GSM1_barcodes.tsv.gz", "GSM1_features.tsv.gz",
+        "GSM2_matrix.mtx.gz", "GSM2_barcodes.tsv.gz"   # incomplete
+    ))
+    units <- geoSingleCellUnits(manifest)
+    sel <- GEOquery:::.select_sc_units(units)
+
+    # GSM1 is loadable in two formats; h5ad wins by priority
+    expect_equal(nrow(sel$load), 1L)
+    expect_equal(sel$load$sample, "GSM1")
+    expect_equal(sel$load$format, "h5ad")
+    # GSM2 (incomplete) is among the skipped
+    expect_true("GSM2" %in% sel$skip$sample)
+})
+
+test_that(".select_sc_units honors samples and format filters (#158)", {
+    manifest <- GEOquery:::.classify_sc_files(c("GSM1_a.h5ad", "GSM2_b.h5ad"))
+    units <- geoSingleCellUnits(manifest)
+
+    expect_equal(GEOquery:::.select_sc_units(units, samples = "GSM2")$load$sample, "GSM2")
+    expect_equal(nrow(GEOquery:::.select_sc_units(units, format = "10x_mtx")$load), 0L)
+})

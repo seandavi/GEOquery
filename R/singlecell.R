@@ -137,3 +137,185 @@ geoSingleCellManifest <- function(GEO) {
     }
     .classify_sc_files(files$fname, files$url)
 }
+
+
+# ---- Readers (#158, SC3; ADR-0004) ----------------------------------------
+#
+# Reading uses Bioconductor importers, kept as optional (Suggests) dependencies
+# behind requireNamespace() guards:
+#   10x Matrix Market / 10x HDF5 -> TENxIO
+#   AnnData (.h5ad)              -> anndataR
+# NOT covered (read with their native packages): loom, Seurat .rds, and
+# idiosyncratic layouts (e.g. a single combined matrix for many samples).
+
+.require_pkg <- function(pkg, what) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+        stop(sprintf(
+            "Reading %s requires the '%s' package. Install it with BiocManager::install('%s').",
+            what, pkg, pkg
+        ), call. = FALSE)
+    }
+}
+
+# Arrange a 10x triplet into a directory with canonical filenames that
+# TENxIO::TENxFileList() expects. `x` may already be such a directory.
+.arrange_10x <- function(x) {
+    if (length(x) == 1 && dir.exists(x)) {
+        return(x)
+    }
+    d <- tempfile("tenx_")
+    dir.create(d)
+    for (f in x) {
+        role <- .classify_sc_file(f)[["role"]]
+        gz <- if (grepl("\\.gz$", f)) ".gz" else ""
+        canon <- switch(role,
+            matrix = paste0("matrix.mtx", gz),
+            barcodes = paste0("barcodes.tsv", gz),
+            features = paste0("features.tsv", gz),
+            basename(f)
+        )
+        file.copy(f, file.path(d, canon))
+    }
+    d
+}
+
+.read_sc_10x_mtx <- function(x) {
+    .require_pkg("TENxIO", "10x Matrix Market data")
+    BiocIO::import(TENxIO::TENxFileList(.arrange_10x(x)))
+}
+.read_sc_10x_h5 <- function(path) {
+    .require_pkg("TENxIO", "10x HDF5 data")
+    BiocIO::import(TENxIO::TENxH5(path))
+}
+.read_sc_h5ad <- function(path) {
+    .require_pkg("anndataR", "AnnData (h5ad) data")
+    anndataR::read_h5ad(path, as = "SingleCellExperiment")
+}
+
+#' Read a single-cell file (or 10x triplet) into a SingleCellExperiment
+#'
+#' Low-level reader: given already-downloaded local file(s), dispatch on format
+#' to the appropriate Bioconductor importer and return a
+#' \code{SingleCellExperiment}. Use this for full control; see
+#' \code{\link{getGEOSingleCell}} for the high-level convenience wrapper.
+#'
+#' Supported formats: \code{"10x_mtx"} (a directory, or the matrix/barcodes/
+#' features files, read via TENxIO), \code{"10x_h5"} (CellRanger HDF5, TENxIO),
+#' and \code{"h5ad"} (AnnData, anndataR). loom and Seurat \code{.rds} are not
+#' supported here -- read them with their native packages.
+#'
+#' @param x A path to a single file (\code{.h5}/\code{.h5ad}), a directory
+#'   containing a 10x triplet, or a character vector of the triplet files.
+#' @param format One of "10x_mtx", "10x_h5", "h5ad". If NULL (default), guessed
+#'   from \code{x}.
+#' @return A \code{SingleCellExperiment}.
+#' @seealso \code{\link{getGEOSingleCell}}, \code{\link{geoSingleCellManifest}}
+#' @export
+readGEOSingleCell <- function(x, format = NULL) {
+    if (is.null(format)) {
+        format <- .classify_sc_file(x[1])[["format"]]
+    }
+    switch(format,
+        "10x_mtx" = .read_sc_10x_mtx(x),
+        "10x_h5" = .read_sc_10x_h5(x),
+        "h5ad" = .read_sc_h5ad(x),
+        stop(sprintf(
+            paste0("Single-cell format '%s' is not supported by readGEOSingleCell(). ",
+                "Supported: 10x_mtx, 10x_h5, h5ad. loom and Seurat .rds are not ",
+                "handled; read them with their native packages."),
+            format
+        ), call. = FALSE)
+    )
+}
+
+# When a sample offers more than one loadable format, keep just one, by
+# preference (richer/standard first).
+.format_priority <- c("h5ad", "10x_h5", "10x_mtx")
+.prefer_one_format <- function(load) {
+    if (nrow(load) == 0) {
+        return(load)
+    }
+    keep <- lapply(split(load, load$sample), function(g) {
+        if (nrow(g) == 1) {
+            return(g)
+        }
+        ord <- order(match(g$format, .format_priority))
+        g[ord[1], , drop = FALSE]
+    })
+    out <- do.call(rbind, keep)
+    rownames(out) <- NULL
+    out[order(out$sample), , drop = FALSE]
+}
+
+# Pure unit-selection logic: split units into those to load and those skipped,
+# honoring optional `samples` / `format` filters and one-format-per-sample.
+.select_sc_units <- function(units, samples = NULL, format = NULL) {
+    load <- units[units$loadable %in% TRUE, , drop = FALSE]
+    if (!is.null(samples)) {
+        load <- load[load$sample %in% samples, , drop = FALSE]
+    }
+    if (!is.null(format)) {
+        load <- load[load$format %in% format, , drop = FALSE]
+    }
+    load <- .prefer_one_format(load)
+    loaded_key <- paste(load$sample, load$format)
+    skip <- units[!(paste(units$sample, units$format) %in% loaded_key), , drop = FALSE]
+    list(load = load, skip = skip)
+}
+
+#' Download and read the single-cell data of a GEO Series
+#'
+#' High-level, best-effort convenience wrapper: inventories the GSE
+#' (\code{\link{geoSingleCellManifest}}), groups files into loadable units
+#' (\code{\link{geoSingleCellUnits}}), downloads each loadable unit, reads it
+#' with \code{\link{readGEOSingleCell}}, and returns the results. It reports
+#' which units it loads and which it skips.
+#'
+#' This handles common, well-structured layouts (clean per-sample 10x or
+#' h5ad). It does NOT handle every GSE: loom and Seurat \code{.rds} formats,
+#' files packaged inside a \code{_RAW.tar} archive, and idiosyncratic layouts
+#' (e.g. a single combined matrix for many samples) are out of scope -- use the
+#' manifest plus \code{readGEOSingleCell()} directly for those.
+#'
+#' @param GEO A GEO Series accession, e.g. "GSE161228".
+#' @param samples Optional character vector of GSM ids to restrict to.
+#' @param format Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad").
+#' @param combine Logical; if TRUE attempt to \code{cbind} the per-sample
+#'   objects into one (requires matching features). Default FALSE returns a list.
+#' @param destdir Download destination directory.
+#' @return A named list of \code{SingleCellExperiment} (one per sample), or a
+#'   single combined object if \code{combine = TRUE}.
+#' @seealso \code{\link{geoSingleCellManifest}}, \code{\link{readGEOSingleCell}}
+#' @export
+getGEOSingleCell <- function(GEO, samples = NULL, format = NULL, combine = FALSE,
+    destdir = tempdir()) {
+    manifest <- geoSingleCellManifest(GEO)
+    units <- geoSingleCellUnits(manifest)
+    sel <- .select_sc_units(units, samples, format)
+    if (nrow(sel$load) == 0) {
+        stop(sprintf(
+            "No loadable single-cell units found for %s. Inspect geoSingleCellManifest('%s').",
+            GEO, GEO
+        ), call. = FALSE)
+    }
+    if (nrow(sel$skip) > 0) {
+        message(sprintf(
+            "Skipping %d unit(s): %s", nrow(sel$skip),
+            paste(sprintf("%s [%s]", sel$skip$sample, sel$skip$status), collapse = "; ")
+        ))
+    }
+    results <- list()
+    for (i in seq_len(nrow(sel$load))) {
+        u <- sel$load[i, ]
+        message(sprintf("Loading %s (%s)...", u$sample, u$format))
+        unit_files <- manifest[manifest$sample %in% u$sample & manifest$format == u$format, ]
+        dl <- getGEOSuppFiles(GEO, fetch_files = TRUE, baseDir = destdir,
+            filter_regex = u$sample, quiet = TRUE)
+        local <- dl$filepath[basename(dl$filepath) %in% unit_files$fname]
+        results[[u$sample]] <- readGEOSingleCell(local, format = u$format)
+    }
+    if (combine && length(results) > 1) {
+        return(do.call(SummarizedExperiment::cbind, results))
+    }
+    results
+}
