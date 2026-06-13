@@ -4,6 +4,16 @@
 
 ### New features
 
+- GEOquery now raises typed error conditions — `geoquery_error` and
+  subclasses (`geoquery_private_accession`, `geoquery_download_error`,
+  `geoquery_parse_error`, `geoquery_bad_accession`) — so failures can be
+  handled programmatically with
+  [`tryCatch()`](https://rdrr.io/r/base/conditions.html). The
+  non-public/private-accession error from
+  [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
+  is the first to use them
+  ([\#170](https://github.com/seandavi/GEOquery/issues/170),
+  [\#184](https://github.com/seandavi/GEOquery/issues/184)).
 - [`getGEOSuppFiles()`](http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.md)
   gains a `quiet` argument (defaulting to the `GEOquery.quiet` option,
   or `FALSE`) to suppress informational messages such as “No
