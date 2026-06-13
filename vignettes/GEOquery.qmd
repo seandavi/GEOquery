@@ -6,6 +6,12 @@ last-modified: {{< meta last-modified >}}
 format:
   html:
     toc: true
+# TEMPORARY: code chunks are not executed so that `R CMD check`'s per-vignette
+# rebuild does not make live NCBI calls (intermittent CI failures). This makes
+# the vignette code-only for now. Restore executed output via a pkgdown article
+# or a verified freeze setup -- tracked in #156.
+execute:
+  eval: false
 vignette: >
   %\VignetteIndexEntry{Using GEOquery (Quarto)}
   %\VignetteEngine{quarto::html}
