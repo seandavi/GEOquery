@@ -16,3 +16,4 @@ Dockerfile
 ^CLAUDE\.md$
 ^ROADMAP\.md$
 ^CONTRIBUTING\.md$
+^vignettes/articles$
