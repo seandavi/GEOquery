@@ -12,7 +12,8 @@ getGEO(
   GSEMatrix = TRUE,
   AnnotGPL = FALSE,
   getGPL = TRUE,
-  parseCharacteristics = TRUE
+  parseCharacteristics = TRUE,
+  returnType = c("ExpressionSet", "SummarizedExperiment")
 )
 }
 \arguments{
@@ -58,6 +59,12 @@ specifying FALSE.}
 \item{parseCharacteristics}{A boolean defaulting to TRUE as to whether or not
 to parse the characteristics information (if available) for a GSE Matrix file.
 Set this to FALSE if you experience trouble while parsing the characteristics.}
+
+\item{returnType}{One of "ExpressionSet" (default) or "SummarizedExperiment".
+For GSE Series Matrix results, controls whether each entity is returned as an
+\code{ExpressionSet} or coerced to a \code{SummarizedExperiment}. SOFT-format
+results (GDS/GPL/GSM/GSE S4 objects) are unaffected. The default will change to
+"SummarizedExperiment" in a future release.}
 }
 \value{
 An object of the appropriate class (GDS, GPL, GSM, or GSE) is

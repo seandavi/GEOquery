@@ -87,6 +87,11 @@
 #' @param parseCharacteristics A boolean defaulting to TRUE as to whether or not
 #' to parse the characteristics information (if available) for a GSE Matrix file.
 #' Set this to FALSE if you experience trouble while parsing the characteristics.
+#' @param returnType One of "ExpressionSet" (default) or "SummarizedExperiment".
+#' For GSE Series Matrix results, controls whether each entity is returned as an
+#' ExpressionSet or coerced to a SummarizedExperiment. SOFT-format results
+#' (GDS/GPL/GSM/GSE S4 objects) are unaffected. The default will change to
+#' "SummarizedExperiment" in a future release.
 #' @return An object of the appropriate class (GDS, GPL, GSM, or GSE) is
 #' returned.  If the GSEMatrix option is used, then a list of ExpressionSet
 #' objects is returned, one for each SeriesMatrix file associated with the GSE
@@ -115,7 +120,10 @@
 #' 
 #' @export
 getGEO <- function(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits = NULL,
-    GSEMatrix = TRUE, AnnotGPL = FALSE, getGPL = TRUE, parseCharacteristics = TRUE) {
+    GSEMatrix = TRUE, AnnotGPL = FALSE, getGPL = TRUE, parseCharacteristics = TRUE,
+    returnType = c("ExpressionSet", "SummarizedExperiment")) {
+    returnType_default <- missing(returnType)
+    returnType <- match.arg(returnType)
     con <- NULL
     if (!is.null(GSElimits)) {
         if (length(GSElimits) != 2) {
@@ -129,12 +137,65 @@ getGEO <- function(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits =
         GEO <- toupper(GEO)
         geotype <- toupper(substr(GEO, 1, 3))
         if (GSEMatrix & geotype == "GSE") {
-            return(getAndParseGSEMatrices(GEO, destdir, AnnotGPL = AnnotGPL, getGPL = getGPL,
-                parseCharacteristics = parseCharacteristics))
+            ret <- getAndParseGSEMatrices(GEO, destdir, AnnotGPL = AnnotGPL, getGPL = getGPL,
+                parseCharacteristics = parseCharacteristics)
+            return(.applyReturnType(ret, returnType, returnType_default))
         }
         filename <- getGEOfile(GEO, destdir = destdir, AnnotGPL = AnnotGPL)
     }
     ret <- parseGEO(filename, GSElimits, destdir, AnnotGPL = AnnotGPL, getGPL = getGPL,
         parseCharacteristics = parseCharacteristics)
-    return(ret)
+    return(.applyReturnType(ret, returnType, returnType_default))
+}
+
+# Apply the requested return type to a parsed result. ExpressionSet results
+# (the GSE Series Matrix path) may be coerced to SummarizedExperiment; SOFT S4
+# objects (GSE/GSM/GPL/GDS) are returned unchanged. See ADR-0002 (#168).
+.applyReturnType <- function(ret, returnType, notify_default = FALSE) {
+    is_eset <- function(x) methods::is(x, "ExpressionSet")
+    contains_eset <- (is.list(ret) && length(ret) > 0 && is_eset(ret[[1]])) || is_eset(ret)
+
+    if (notify_default && returnType == "ExpressionSet" && contains_eset) {
+        rlang::inform(
+            paste0(
+                "getGEO() returns 'ExpressionSet' objects by default; a future ",
+                "version will default to 'SummarizedExperiment'. Pass ",
+                "returnType= explicitly to silence this message."
+            ),
+            .frequency = "once", .frequency_id = "geoquery_returnType_default"
+        )
+    }
+
+    if (returnType == "ExpressionSet") {
+        return(ret)
+    }
+    coerce_one <- function(x) if (is_eset(x)) as_SummarizedExperiment(x) else x
+    if (is.list(ret)) {
+        return(lapply(ret, coerce_one))
+    }
+    coerce_one(ret)
+}
+
+#' Coerce a GEOquery ExpressionSet to a SummarizedExperiment
+#'
+#' A thin wrapper around
+#' \code{SummarizedExperiment::makeSummarizedExperimentFromExpressionSet()} used
+#' by \code{getGEO(..., returnType = "SummarizedExperiment")}, and available
+#' directly so existing ExpressionSet results can be modernized without
+#' re-downloading.
+#'
+#' @param eset An \code{ExpressionSet}, e.g. an element returned by
+#'   \code{getGEO()} for a GSE Series Matrix file.
+#' @return A \code{SummarizedExperiment}.
+#' @examples
+#' \dontrun{
+#'   gse <- getGEO("GSE2553")[[1]]
+#'   se <- as_SummarizedExperiment(gse)
+#' }
+#' @export
+as_SummarizedExperiment <- function(eset) {
+    if (!methods::is(eset, "ExpressionSet")) {
+        stop("'eset' must be an ExpressionSet")
+    }
+    SummarizedExperiment::makeSummarizedExperimentFromExpressionSet(eset)
 }
