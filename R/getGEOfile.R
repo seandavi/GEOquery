@@ -150,6 +150,16 @@ getGEORaw <- function(GEO, destdir = tempdir()) {
 # removed and a typed `geoquery_download_error` is raised (#170, #173).
 downloadFile <- function(url, destfile, mode = "wb", quiet = TRUE,
     timeout = getOption("GEOquery.download.timeout", 300)) {
+  use_cache <- isTRUE(getOption("GEOquery.cache", FALSE))
+  # Cache hit: copy the cached file into place and skip the download (#171).
+  if (use_cache) {
+    cached <- tryCatch(.cache_lookup(url), error = function(...) NULL)
+    if (!is.null(cached) && file.exists(cached)) {
+      file.copy(cached, destfile, overwrite = TRUE)
+      if (!quiet) message("Using cached download: ", destfile)
+      return(invisible(TRUE))
+    }
+  }
   req <- .geo_request(url, timeout) |>
     httr2::req_headers(`accept-encoding` = "gzip")
   tryCatch(
@@ -165,6 +175,11 @@ downloadFile <- function(url, destfile, mode = "wb", quiet = TRUE,
       )
     }
   )
+  # Cache miss: store the freshly downloaded file for next time (#171). A cache
+  # failure must never break the download.
+  if (use_cache) {
+    tryCatch(.cache_add(url, destfile), error = function(...) NULL)
+  }
   if (!quiet) {
     message("File stored at: ", destfile)
   }
