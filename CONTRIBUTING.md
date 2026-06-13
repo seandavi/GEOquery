@@ -5,6 +5,26 @@ changelog convention, and the checks a pull request must pass. GEOquery
 is a [Bioconductor](https://bioconductor.org) package; `devel` is the
 working branch.
 
+## Issues vs. pull requests
+
+Not every change needs an issue — file one where it helps users and
+contributors, not as ceremony.
+
+- **Bug, feature, or behavior change → open an issue first** (or link an
+  existing one), then reference it from the PR with `Fixes #123`. These
+  are user-facing, so they also get a `NEWS.md` bullet that links both
+  the issue and the PR. For bugs, include a **GEO accession +
+  reproducible example +
+  [`sessionInfo()`](https://rdrr.io/r/utils/sessionInfo.html)** (the bug
+  issue form prompts for these).
+- **Chore, CI, docs, or refactor → a pull request alone is fine.** No
+  issue needed; use a `chore:` / `ci:` / `docs:` / `refactor:` commit
+  prefix.
+
+Planned work is tracked on the [`3.0`
+milestone](https://github.com/seandavi/GEOquery/milestones); see
+`ROADMAP.md` for the broader plan.
+
 ## Development workflow
 
 1.  Branch off `devel` (e.g. `git switch -c fix/issue-123`).

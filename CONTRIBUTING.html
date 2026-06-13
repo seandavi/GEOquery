@@ -47,6 +47,15 @@
 
 <p>Thanks for contributing. This guide covers the development workflow, the changelog convention, and the checks a pull request must pass. GEOquery is a <a href="https://bioconductor.org" class="external-link">Bioconductor</a> package; <code>devel</code> is the working branch.</p>
 <div class="section level2">
+<h2 id="issues-vs-pull-requests">Issues vs. pull requests<a class="anchor" aria-label="anchor" href="#issues-vs-pull-requests"></a></h2>
+<p>Not every change needs an issue — file one where it helps users and contributors, not as ceremony.</p>
+<ul><li>
+<strong>Bug, feature, or behavior change → open an issue first</strong> (or link an existing one), then reference it from the PR with <code>Fixes #123</code>. These are user-facing, so they also get a <code>NEWS.md</code> bullet that links both the issue and the PR. For bugs, include a <strong>GEO accession + reproducible example + <code><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo()</a></code></strong> (the bug issue form prompts for these).</li>
+<li>
+<strong>Chore, CI, docs, or refactor → a pull request alone is fine.</strong> No issue needed; use a <code>chore:</code> / <code>ci:</code> / <code>docs:</code> / <code>refactor:</code> commit prefix.</li>
+</ul><p>Planned work is tracked on the <a href="https://github.com/seandavi/GEOquery/milestones" class="external-link"><code>3.0</code> milestone</a>; see <code>ROADMAP.md</code> for the broader plan.</p>
+</div>
+<div class="section level2">
 <h2 id="development-workflow">Development workflow<a class="anchor" aria-label="anchor" href="#development-workflow"></a></h2>
 <ol style="list-style-type: decimal"><li><p>Branch off <code>devel</code> (e.g. <code>git switch -c fix/issue-123</code>).</p></li>
 <li><p>Make the change. Keep PRs focused — one logical change per PR.</p></li>
