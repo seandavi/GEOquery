@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/seandavi/GEOquery/blob/fix/parsecharacteristics-forwarding/inst/CITATION)
+[`inst/CITATION`](https://github.com/seandavi/GEOquery/blob/devel/inst/CITATION)
 
 Davis S, Meltzer P (2007). “GEOquery: a bridge between the Gene
 Expression Omnibus (GEO) and BioConductor.” *Bioinformatics*, **14**,
