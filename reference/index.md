@@ -52,6 +52,8 @@
   : Convert a GDS data structure to a BioConductor data structure
 - [`geoSingleCellManifest()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md)
   : Inventory the single-cell supplementary files of a GEO Series
+- [`geoSingleCellUnits()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellUnits.md)
+  : Group a single-cell manifest into loadable units
 - [`getDirListing()`](http://seandavi.github.io/GEOquery/reference/getDirListing.md)
   : get a directory listing from NCBI GEO
 - [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md) :

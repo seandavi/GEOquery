@@ -9,10 +9,14 @@
   inventories a GSE’s supplementary files and classifies them by
   single-cell format (10x Matrix Market triplet, 10x HDF5, AnnData h5ad,
   loom, Seurat rds, tar), grouping by GSM sample — so you can see what a
-  single-cell study contains before downloading. The first step toward
+  single-cell study contains before downloading.
+  [`geoSingleCellUnits()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellUnits.md)
+  collapses the manifest into loadable units (per sample + format) and
+  flags completeness (e.g. an incomplete 10x triplet). Steps toward
   single-cell readers (ADR-0004)
   ([\#158](https://github.com/seandavi/GEOquery/issues/158),
-  [\#188](https://github.com/seandavi/GEOquery/issues/188)).
+  [\#188](https://github.com/seandavi/GEOquery/issues/188),
+  [\#189](https://github.com/seandavi/GEOquery/issues/189)).
 - [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
   gains a `returnType` argument. With
   `returnType = "SummarizedExperiment"`, GSE Series Matrix results are
