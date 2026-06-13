@@ -25,4 +25,22 @@ getGSEDataTables(GSE)
 
 A list of data.frames.
 
+## See also
+
+[`getGEO`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
+
+## Author
+
+Sean Davis <sdavis2@mail.nih.gov>
+
 ## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+
+dfl = getGSEDataTables('GSE3494')
+lapply(dfl,head)
+
+
+} # }
+```

@@ -161,4 +161,26 @@ take quite some time and memory. So, particularly when working with
 large GSE entries, expect that you may need a good chunk of memory and
 that coffee may be involved when parsing....
 
+## See also
+
+[`getGEOfile`](http://seandavi.github.io/GEOquery/reference/getGEOfile.md)
+
+## Author
+
+Sean Davis
+
 ## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+
+gds <- getGEO('GDS10')
+gds
+
+gse <- getGEO('GSE10')
+# Returns a list, so look at first item
+
+gse[[1]]
+
+} # }
+```
