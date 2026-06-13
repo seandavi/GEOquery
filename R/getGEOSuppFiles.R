@@ -1,5 +1,13 @@
+# Join a base URL and a path (or vector of paths) with a single slash,
+# preserving the scheme's '//'. Unlike file.path(), this does not collapse
+# 'https://' into 'https:/' and does not produce a double slash when the base
+# already ends in '/' (#131). Vectorized over `path`.
+url_join <- function(base, path) {
+    paste0(sub("/+$", "", base), "/", sub("^/+", "", path))
+}
+
 #' get a directory listing from NCBI GEO
-#' 
+#'
 #' This one makes some assumptions about the structure of the HTML response
 #' returned.
 #'
@@ -139,7 +147,7 @@ getGEOSuppFiles <- function(
         ret$GEO <- GEO
         return(ret)
     } else {
-        return(data.frame(fname = fnames, url = file.path(url, fnames)))
+        return(data.frame(fname = fnames, url = url_join(url, fnames)))
     }
 }
 
@@ -163,7 +171,7 @@ getGEOSuppFiles <- function(
 #' @export
 getGEOSeriesFileListing <- function(GSE) {
   url = getGEOSuppFileURL(GSE)
-  ret <- readr::read_tsv(file.path(url,'filelist.txt'))
+  ret <- readr::read_tsv(url_join(url, 'filelist.txt'))
   ret |> 
     dplyr::rename_with(tolower) |>
     dplyr::rename('archive_or_file'='#archive/file')

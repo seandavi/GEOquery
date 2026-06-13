@@ -2,6 +2,7 @@
 
 ## Bug Fixes
 
+- Supplemental-file URLs are now built with a small `url_join()` helper instead of `file.path()`, which mangled `https://` into `https:/` and produced double slashes. Affects `getGEOSuppFiles(fetch_files = FALSE)` and `getGEOSeriesFileListing()` (#131, #178).
 - `GDS2eSet()` no longer fails when a GDS has an `NA` (or empty) value in its `ID_REF` column (e.g. GDS3666). Such values are replaced with a usable feature name instead of producing "row names contain missing values" (#21, #177).
 - `getGEO()` now fails with a clear message when an accession is private, embargoed, or not yet public (NCBI returns an HTML page) instead of mis-parsing it or, in older versions, looping. `findFirstEntity()` is also hardened against a multi-line edge case that could error and against unbounded reads (#58, #176).
 - `getGEO(parseCharacteristics = FALSE)` now actually skips characteristics parsing. The flag was accepted at the top level but dropped before reaching `parseGSEMatrix()`; it is now threaded through `getAndParseGSEMatrices()` and `parseGEO()` (#60, #175).
