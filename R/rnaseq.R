@@ -126,8 +126,10 @@ urlExtractRNASeqQuantGenomeInfo <- function(url) {
 #' @return A character vector with the genome build and species information
 #'
 #' @examples
+#' \dontrun{
 #' getRNASeqQuantGenomeInfo("GSE164073")
 #'
+#' }
 #' @export
 getRNASeqQuantGenomeInfo <- function(gse) {
   links <- getGSEDownloadPageURLs(gse)
@@ -288,9 +290,11 @@ hasRNASeqQuantifications <- function(accession) {
 #'
 #'
 #' @examples
+#' \dontrun{
 #' se <- getRNASeqData("GSE164073")
 #' se
 #'
+#' }
 #' @export
 getRNASeqData <- function(accession) {
   quantifications <- getRNASeqQuantResults(accession)

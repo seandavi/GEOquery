@@ -17,6 +17,9 @@ This function extracts the genome build and species information
 for a GEO RNA-seq quantification.
 }
 \examples{
+\dontrun{
 getRNASeqQuantGenomeInfo("GSE164073")
 
 }
+}
+

@@ -136,6 +136,7 @@ that coffee may be involved when parsing....
 }
 
 \examples{
+\dontrun{
 
 gds <- getGEO('GDS10')
 gds
@@ -146,6 +147,8 @@ gse <- getGEO('GSE10')
 gse[[1]]
 
 }
+}
+
 \seealso{
 \code{\link{getGEOfile}}
 }

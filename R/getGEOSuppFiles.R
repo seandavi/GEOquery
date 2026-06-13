@@ -94,6 +94,7 @@ getGEOSuppFileURL <- function(GEO) {
 #' @author Sean Davis <sdavis2@@mail.nih.gov>
 #' @keywords IO database
 #' @examples
+#' \dontrun{
 #' 
 #' a <- getGEOSuppFiles('GSM1137', fetch_files = FALSE)
 #' a
@@ -102,6 +103,7 @@ getGEOSuppFileURL <- function(GEO) {
 #' a <- getGEOSuppFiles('GSE161228', fetch_files = FALSE)
 #' a
 #' 
+#' }
 #' @export
 getGEOSuppFiles <- function(
     GEO,
@@ -177,8 +179,10 @@ getGEOSuppFiles <- function(
 #' @param GSE character(1) the GSE accession
 #' 
 #' @examples
+#' \dontrun{
 #' getGEOSeriesFileListing('GSE288770')
 #' 
+#' }
 #' @export
 getGEOSeriesFileListing <- function(GSE) {
   url = getGEOSuppFileURL(GSE)

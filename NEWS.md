@@ -11,6 +11,7 @@
 
 ## Documentation
 
+- The S4 class and accessor documentation is filled in: the `GEOData` accessors (`Meta`, `Table`, `Columns`, `dataTable`, `Accession`, `GSMList`, `GPLList`) now have real descriptions, return values, and examples, and the class pages no longer imply constructing objects with `new()` — they are returned by `getGEO()` (#103, #192).
 - Documentation is reorganized into narrative pkgdown **articles** — *Understanding GEO data formats*, *RNA-seq quantifications*, *Single-cell data from GEO*, and *From GEO to downstream analysis* — that cover the *why* (entity types, file formats) and downstream workflows with links to other Bioconductor packages. The package vignette is now a concise quick-start that indexes them; the articles render on the pkgdown site and are excluded from `R CMD check` (#156, #191).
 
 - The package `DESCRIPTION` and `biocViews` now describe GEOquery's actual scope (microarray, RNA-seq, and single-cell; GEO Series Matrix files parsed to `ExpressionSet` by default) instead of microarray-only (#71, #181).

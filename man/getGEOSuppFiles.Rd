@@ -54,6 +54,7 @@ computer.
 Again, just a note that the files are simply downloaded.
 }
 \examples{
+\dontrun{
 
 a <- getGEOSuppFiles('GSM1137', fetch_files = FALSE)
 a
@@ -63,6 +64,8 @@ a <- getGEOSuppFiles('GSE161228', fetch_files = FALSE)
 a
 
 }
+}
+
 \author{
 Sean Davis \href{mailto:sdavis2@mail.nih.gov}{sdavis2@mail.nih.gov}
 }
