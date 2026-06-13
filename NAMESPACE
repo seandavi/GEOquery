@@ -2,6 +2,7 @@
 
 export(GDS2MA)
 export(GDS2eSet)
+export(as_SummarizedExperiment)
 export(browseGEOAccession)
 export(browseWebsiteRNASeqSearch)
 export(getGEO)
