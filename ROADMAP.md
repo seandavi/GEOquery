@@ -4,6 +4,47 @@ This roadmap synthesizes six parallel audits (bugs, features, UX, docs, CI/CD, t
 
 ---
 
+## Release plan: GEOquery 3.0 & paper
+
+This roadmap doubles as the release plan. Version is currently `2.99.x`; in Bioconductor's scheme `2.99.z` is the last devel series before `3.0.0`, so the number rolls to 3.0 at the next release boundary regardless. The goal here is to make 3.0 a **milestone**, not just a tick — branded on *shipped* code, with a coherent theme.
+
+**3.0 theme — modern object model + modern data types.** SummarizedExperiment/SingleCellExperiment return types and single-cell support are the headline; bug fixes, CI, and triage automation are supporting cast.
+
+### 3.0 batch (must ship before cutting 3.0)
+
+The minimum coherent set that earns the version bump. Everything else is post-3.0.
+
+| Area | Items | Why in 3.0 |
+|------|-------|-----------|
+| **Object model** | SE return-type migration ([ADR-0002](adr/0002-return-type-migration.md)); return-type consistency (#71); `getGEO` extension policy ([ADR-0003](adr/0003-getgeo-extension-policy.md)) | The headline. Also reconciles the false NEWS 2.99.0 SE claim. |
+| **Single-cell core** | SC architecture ADR (0004); SC1 manifest → SC2 10x → SC3 formats → SC4 combine | The other headline; the most-requested modern data class. |
+| **Correctness floor** | #58/#154 `findFirstEntity` hardening; accession validation; #60 parseCharacteristics; #21 GDS NA ids; #131 URL join; #147 timeout floor | A 3.0 with known crash-on-input bugs is not paper-ready. |
+| **Foundations** | offline test fixtures (XL); structured `rlang` conditions; BiocFileCache caching | Prerequisite for stable CI, coverage, and the paper's reproducibility story. |
+| **Docs** | fill class/accessor roxygen (#103); restructure main vignette + complete SC vignette (#156); rewrite DESCRIPTION/biocViews; correct NEWS | **Hard prerequisite for the paper** — cannot cite a tool whose class docs are empty. |
+
+### Post-3.0 (after the milestone, before or alongside the paper)
+
+Triage automation (Layers 1–3), CI expansion (coverage/BiocCheck/lint/integration), retry/resume + parallel download, metadata-only fetch, tidy output, SOFT `series_table` (#80), token auth (#154), SC5–SC9 (lazy assays, spatial), remaining bug backlog (#98, #148, #14).
+
+### Paper (capstone — strictly downstream of the 3.0 batch + docs)
+
+A citable update is warranted: ~18 years since the original (Davis & Meltzer, *Bioinformatics* 2007), and GEO itself transformed (RNA-seq, single-cell, spatial). **Write about shipped reality, not this roadmap.**
+
+- **Venue:** bioRxiv preprint first (priority + README/CITATION link) → **Bioinformatics Application Note** or **F1000Research** "GEOquery 3.0:" update. This sidesteps JOSS's prior-publication concern (the 2007 note already exists); use JOSS only to emphasize the software-engineering modernization.
+- **Material already in hand:** the ADRs + this ROADMAP + NEWS history are the "design decisions / what changed since 2007" section. Keep writing ADRs through the 3.0 batch — they are the methods notes.
+- **Needs before submission:** the 3.0 batch shipped, docs fixed (#103/#156), one or two worked examples / light benchmarks on real GSEs, updated `CITATION.cff`.
+
+### Sequence
+
+1. Land the 3.0 batch (object model + SC core + correctness floor + foundations + docs).
+2. Cut **GEOquery 3.0.0** at the Bioconductor release boundary.
+3. Worked examples / validation on real GSEs.
+4. bioRxiv preprint → App Note; update `CITATION.cff`.
+
+> **Failure mode to avoid:** announcing 3.0 + paper on aspiration, then spending a year catching the code up to the abstract. Code and docs ship first; the paper describes what exists.
+
+---
+
 ## Legend
 
 **Priority** — P0: critical / blocking or actively breaking users · P1: high leverage, do soon · P2: valuable, schedule deliberately · P3: nice-to-have / opportunistic.
