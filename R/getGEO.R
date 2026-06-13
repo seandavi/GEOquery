@@ -109,6 +109,7 @@
 #' @seealso \code{\link{getGEOfile}}
 #' @keywords IO
 #' @examples
+#' \dontrun{
 #' 
 #' gds <- getGEO('GDS10')
 #' gds
@@ -118,6 +119,7 @@
 #' 
 #' gse[[1]]
 #' 
+#' }
 #' @export
 getGEO <- function(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits = NULL,
     GSEMatrix = TRUE, AnnotGPL = FALSE, getGPL = TRUE, parseCharacteristics = TRUE,

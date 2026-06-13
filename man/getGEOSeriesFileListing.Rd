@@ -23,6 +23,8 @@ This function reads that file listing file and returns the results
 as a data.frame.
 }
 \examples{
+\dontrun{
 getGEOSeriesFileListing('GSE288770')
 
 }
+

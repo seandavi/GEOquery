@@ -38,7 +38,9 @@ See the
 for more details.
 }
 \examples{
+\dontrun{
 se <- getRNASeqData("GSE164073")
 se
 
 }
+
