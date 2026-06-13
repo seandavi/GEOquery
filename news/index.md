@@ -4,16 +4,30 @@
 
 ### New features
 
+- Downloads now stream to disk instead of buffering the entire response
+  in memory, retry on transient HTTP errors, and honor a configurable
+  `GEOquery.download.timeout` option (default 300 seconds) — replacing
+  the previous enforced 120-second floor that ignored lower user
+  timeouts. Failures raise a typed `geoquery_download_error` carrying
+  the URL and HTTP status.
+  [`getDirListing()`](http://seandavi.github.io/GEOquery/reference/getDirListing.md)
+  now uses the same httr2 layer
+  ([\#147](https://github.com/seandavi/GEOquery/issues/147),
+  [\#173](https://github.com/seandavi/GEOquery/issues/173)).
 - GEOquery now raises typed error conditions — `geoquery_error` and
   subclasses (`geoquery_private_accession`, `geoquery_download_error`,
   `geoquery_parse_error`, `geoquery_bad_accession`) — so failures can be
   handled programmatically with
-  [`tryCatch()`](https://rdrr.io/r/base/conditions.html). The
-  non-public/private-accession error from
-  [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
-  is the first to use them
+  [`tryCatch()`](https://rdrr.io/r/base/conditions.html)
   ([\#170](https://github.com/seandavi/GEOquery/issues/170),
-  [\#184](https://github.com/seandavi/GEOquery/issues/184)).
+  [\#184](https://github.com/seandavi/GEOquery/issues/184),
+  [\#186](https://github.com/seandavi/GEOquery/issues/186)).
+- [`getGEOSuppFiles()`](http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.md)
+  gains a `quiet` argument (defaulting to the `GEOquery.quiet` option,
+  or `FALSE`) to suppress informational messages such as “No
+  supplemental files found” and “Using locally cached version”
+  ([\#68](https://github.com/seandavi/GEOquery/issues/68),
+  [\#182](https://github.com/seandavi/GEOquery/issues/182)).
 - [`getGEOSuppFiles()`](http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.md)
   gains a `quiet` argument (defaulting to the `GEOquery.quiet` option,
   or `FALSE`) to suppress informational messages such as “No
