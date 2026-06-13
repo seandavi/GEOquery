@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Bioconductor support site
+    url: https://support.bioconductor.org/
+    about: Usage questions ("how do I ...?") are best asked here, tagged `geoquery`. You'll reach a wider audience and a searchable archive.
+  - name: GEO (NCBI) data questions
+    url: https://www.ncbi.nlm.nih.gov/geo/info/
+    about: Questions about GEO records themselves (not the R package) should go to NCBI GEO.

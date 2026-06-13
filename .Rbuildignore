@@ -15,3 +15,4 @@ Dockerfile
 ^adr$
 ^CLAUDE\.md$
 ^ROADMAP\.md$
+^CONTRIBUTING\.md$
