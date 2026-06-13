@@ -16,9 +16,12 @@ url_join <- function(base, path) {
 #' 
 #' @importFrom xml2 read_html xml_text xml_find_all 
 getDirListing <- function(url) {
-    # Takes a URL and returns a character vector of filenames
-    a <- xml2::read_html(url)
-    fnames = grep("^G", xml_text(xml_find_all(a, "//a/@href")), value = TRUE)
+    # Fetch the index page through the shared httr2 request (.geo_request) so it
+    # uses the same timeout/retry handling as downloadFile and can be mocked in
+    # tests (#173). Returns a character vector of GEO filenames.
+    resp <- httr2::req_perform(.geo_request(url))
+    a <- xml2::read_html(httr2::resp_body_string(resp))
+    fnames <- grep("^G", xml2::xml_text(xml2::xml_find_all(a, "//a/@href")), value = TRUE)
     return(fnames)
 }
 
