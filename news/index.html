@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.14</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.15</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,14 +40,15 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/feat/sc-manifest/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="geoquery-development-version">GEOquery (development version)<a class="anchor" aria-label="anchor" href="#geoquery-development-version"></a></h2>
 <div class="section level3">
 <h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
-<ul><li>
+<ul><li>New <code><a href="../reference/geoSingleCellManifest.html">geoSingleCellManifest()</a></code> inventories a GSE’s supplementary files and classifies them by single-cell format (10x Matrix Market triplet, 10x HDF5, AnnData h5ad, loom, Seurat rds, tar), grouping by GSM sample — so you can see what a single-cell study contains before downloading. The first step toward single-cell readers (ADR-0004) (<a href="https://github.com/seandavi/GEOquery/issues/158" class="external-link">#158</a>, <a href="https://github.com/seandavi/GEOquery/issues/188" class="external-link">#188</a>).</li>
+<li>
 <code><a href="../reference/getGEO.html">getGEO()</a></code> gains a <code>returnType</code> argument. With <code>returnType = "SummarizedExperiment"</code>, GSE Series Matrix results are returned as <code>SummarizedExperiment</code> objects instead of <code>ExpressionSet</code>. The default remains <code>"ExpressionSet"</code> for now (with a one-time notice) and will switch to <code>"SummarizedExperiment"</code> in a future release. A new exported <code><a href="../reference/as_SummarizedExperiment.html">as_SummarizedExperiment()</a></code> coerces an existing <code>ExpressionSet</code> result without re-downloading. See ADR-0002 (<a href="https://github.com/seandavi/GEOquery/issues/168" class="external-link">#168</a>).</li>
 <li>Downloads now stream to disk instead of buffering the entire response in memory, retry on transient HTTP errors, and honor a configurable <code>GEOquery.download.timeout</code> option (default 300 seconds) — replacing the previous enforced 120-second floor that ignored lower user timeouts. Failures raise a typed <code>geoquery_download_error</code> carrying the URL and HTTP status. <code><a href="../reference/getDirListing.html">getDirListing()</a></code> now uses the same httr2 layer (<a href="https://github.com/seandavi/GEOquery/issues/147" class="external-link">#147</a>, <a href="https://github.com/seandavi/GEOquery/issues/173" class="external-link">#173</a>).</li>
 <li>GEOquery now raises typed error conditions — <code>geoquery_error</code> and subclasses (<code>geoquery_private_accession</code>, <code>geoquery_download_error</code>, <code>geoquery_parse_error</code>, <code>geoquery_bad_accession</code>) — so failures can be handled programmatically with <code><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch()</a></code> (<a href="https://github.com/seandavi/GEOquery/issues/170" class="external-link">#170</a>, <a href="https://github.com/seandavi/GEOquery/issues/184" class="external-link">#184</a>, <a href="https://github.com/seandavi/GEOquery/issues/186" class="external-link">#186</a>).</li>

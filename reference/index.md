@@ -50,6 +50,8 @@
   [`GDS2MA`](http://seandavi.github.io/GEOquery/reference/coercion.md)
   [`GDS2eSet`](http://seandavi.github.io/GEOquery/reference/coercion.md)
   : Convert a GDS data structure to a BioConductor data structure
+- [`geoSingleCellManifest()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md)
+  : Inventory the single-cell supplementary files of a GEO Series
 - [`getDirListing()`](http://seandavi.github.io/GEOquery/reference/getDirListing.md)
   : get a directory listing from NCBI GEO
 - [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md) :
