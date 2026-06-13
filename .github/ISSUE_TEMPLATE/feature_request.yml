@@ -1,0 +1,32 @@
+name: Feature request
+description: Suggest new functionality or an enhancement
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the use case or limitation you are running into.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would you like GEOquery to do? An example API call is helpful.
+      render: r
+    validations:
+      required: false
+  - type: input
+    id: accession
+    attributes:
+      label: Example accession (if relevant)
+      description: A GEO accession that exercises the requested capability.
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
