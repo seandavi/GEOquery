@@ -14,7 +14,8 @@ getGEOSuppFiles(
   makeDirectory = TRUE,
   baseDir = getwd(),
   fetch_files = TRUE,
-  filter_regex = NULL
+  filter_regex = NULL,
+  quiet = getOption("GEOquery.quiet", FALSE)
 )
 ```
 
@@ -46,6 +47,12 @@ getGEOSuppFiles(
   A character(1) regular expression that will be used to filter the
   filenames from GEO to limit those files that will be downloaded. This
   is useful to limit to, for example, bed files only.
+
+- quiet:
+
+  logical(1). If TRUE, suppress informational messages such as "No
+  supplemental files found" and "Using locally cached version". Defaults
+  to the \`GEOquery.quiet\` option, or FALSE.
 
 ## Value
 

@@ -15,7 +15,7 @@ computer."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +48,7 @@ computer."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Get Supplemental Files from GEO</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/R/getGEOSuppFiles.R" class="external-link"><code>R/getGEOSuppFiles.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/fix/quiet-arg/R/getGEOSuppFiles.R" class="external-link"><code>R/getGEOSuppFiles.R</code></a></small>
       <div class="d-none name"><code>getGEOSuppFiles.Rd</code></div>
     </div>
 
@@ -67,7 +67,8 @@ computer.</p>
 <span>  makeDirectory <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  baseDir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  fetch_files <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  filter_regex <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  filter_regex <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"GEOquery.quiet"</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -102,6 +103,12 @@ without actual download.</p></dd>
 used to filter the filenames from GEO to limit those files that
 will be downloaded. This is useful to limit to, for example,
 bed files only.</p></dd>
+
+
+<dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>
+<dd><p>logical(1). If TRUE, suppress informational messages such as
+"No supplemental files found" and "Using locally cached version".
+Defaults to the `GEOquery.quiet` option, or FALSE.</p></dd>
 
 </dl></div>
     <div class="section level2">

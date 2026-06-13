@@ -2,6 +2,15 @@
 
 ## GEOquery (development version)
 
+### New features
+
+- [`getGEOSuppFiles()`](http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.md)
+  gains a `quiet` argument (defaulting to the `GEOquery.quiet` option,
+  or `FALSE`) to suppress informational messages such as “No
+  supplemental files found” and “Using locally cached version”
+  ([\#68](https://github.com/seandavi/GEOquery/issues/68),
+  [\#182](https://github.com/seandavi/GEOquery/issues/182)).
+
 ### Documentation
 
 - The package `DESCRIPTION` and `biocViews` now describe GEOquery’s
