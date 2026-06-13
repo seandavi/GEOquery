@@ -27,4 +27,5 @@ as a data.frame.
 getGEOSeriesFileListing('GSE288770')
 
 }
+}
 

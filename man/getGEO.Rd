@@ -147,6 +147,7 @@ gse <- getGEO('GSE10')
 gse[[1]]
 
 }
+}
 
 \seealso{
 \code{\link{getGEOfile}}
