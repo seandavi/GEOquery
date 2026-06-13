@@ -15,10 +15,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Detect whether any package-relevant files changed. Docs-only changes
+  # (adr/, ROADMAP/CLAUDE/CONTRIBUTING/README, issue templates, _pkgdown.yml,
+  # etc.) skip the expensive, network-bound check matrix entirely.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - 'R/**'
+              - 'src/**'
+              - 'tests/**'
+              - 'vignettes/**'
+              - 'man/**'
+              - 'inst/**'
+              - 'data/**'
+              - 'DESCRIPTION'
+              - 'NAMESPACE'
+              - 'NEWS.md'
+              - '.github/workflows/**'
+
   R-CMD-check:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    # windows-latest is allowed to fail without blocking: its vignette/HDF5
+    # toolchain is the most fragile leg. It still runs and its logs are kept.
+    continue-on-error: ${{ matrix.config.os == 'windows-latest' }}
 
     strategy:
       fail-fast: false
@@ -54,3 +86,23 @@ jobs:
         with:
           upload-snapshots: true
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+
+  # Single required status check. Branch protection requires `all-checks`
+  # instead of the individual matrix legs, so docs-only PRs (matrix skipped)
+  # are still mergeable, while code PRs gate on the matrix result. The
+  # windows leg is continue-on-error, so it never fails this gate.
+  all-checks:
+    if: always()
+    needs: [changes, R-CMD-check]
+    runs-on: ubuntu-latest
+    name: all-checks
+    steps:
+      - name: Required checks passed
+        run: |
+          result="${{ needs.R-CMD-check.result }}"
+          echo "R-CMD-check result: ${result}"
+          if [ "${result}" = "failure" ] || [ "${result}" = "cancelled" ]; then
+            echo "::error::R-CMD-check did not pass"
+            exit 1
+          fi
+          echo "OK (matrix ${result:-skipped})"
