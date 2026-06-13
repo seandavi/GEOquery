@@ -40,7 +40,12 @@
     } else {
         expr <- mat
     }
-    rownames(expr) <- as.character(Table(GDS)$ID_REF)
+    ## Guard against NA/empty ID_REF values, which otherwise make row names
+    ## with missing values and break ExpressionSet construction (#21). Mirror
+    ## the handling already used on the series-matrix path.
+    idref <- as.character(Table(GDS)$ID_REF)
+    idref[is.na(idref) | idref == ""] <- "NA"
+    rownames(expr) <- make.unique(idref)
     tmp <- Columns(GDS)
     rownames(tmp) <- as.character(tmp$sample)
     pheno <- new("AnnotatedDataFrame", data = tmp)
