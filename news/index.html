@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.18</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.19</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/docs/class-accessor-docs/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
@@ -61,7 +61,8 @@
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-development-version">Documentation<a class="anchor" aria-label="anchor" href="#documentation-development-version"></a></h3>
-<ul><li><p>Documentation is reorganized into narrative pkgdown <strong>articles</strong> — <em>Understanding GEO data formats</em>, <em>RNA-seq quantifications</em>, <em>Single-cell data from GEO</em>, and <em>From GEO to downstream analysis</em> — that cover the <em>why</em> (entity types, file formats) and downstream workflows with links to other Bioconductor packages. The package vignette is now a concise quick-start that indexes them; the articles render on the pkgdown site and are excluded from <code>R CMD check</code> (<a href="https://github.com/seandavi/GEOquery/issues/156" class="external-link">#156</a>, <a href="https://github.com/seandavi/GEOquery/issues/191" class="external-link">#191</a>).</p></li>
+<ul><li><p>The S4 class and accessor documentation is filled in: the <code>GEOData</code> accessors (<code>Meta</code>, <code>Table</code>, <code>Columns</code>, <code>dataTable</code>, <code>Accession</code>, <code>GSMList</code>, <code>GPLList</code>) now have real descriptions, return values, and examples, and the class pages no longer imply constructing objects with <code><a href="https://rdrr.io/r/methods/new.html" class="external-link">new()</a></code> — they are returned by <code><a href="../reference/getGEO.html">getGEO()</a></code> (<a href="https://github.com/seandavi/GEOquery/issues/103" class="external-link">#103</a>, <a href="https://github.com/seandavi/GEOquery/issues/192" class="external-link">#192</a>).</p></li>
+<li><p>Documentation is reorganized into narrative pkgdown <strong>articles</strong> — <em>Understanding GEO data formats</em>, <em>RNA-seq quantifications</em>, <em>Single-cell data from GEO</em>, and <em>From GEO to downstream analysis</em> — that cover the <em>why</em> (entity types, file formats) and downstream workflows with links to other Bioconductor packages. The package vignette is now a concise quick-start that indexes them; the articles render on the pkgdown site and are excluded from <code>R CMD check</code> (<a href="https://github.com/seandavi/GEOquery/issues/156" class="external-link">#156</a>, <a href="https://github.com/seandavi/GEOquery/issues/191" class="external-link">#191</a>).</p></li>
 <li><p>The package <code>DESCRIPTION</code> and <code>biocViews</code> now describe GEOquery’s actual scope (microarray, RNA-seq, and single-cell; GEO Series Matrix files parsed to <code>ExpressionSet</code> by default) instead of microarray-only (<a href="https://github.com/seandavi/GEOquery/issues/71" class="external-link">#71</a>, <a href="https://github.com/seandavi/GEOquery/issues/181" class="external-link">#181</a>).</p></li>
 </ul></div>
 <div class="section level3">

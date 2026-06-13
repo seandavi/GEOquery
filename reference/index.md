@@ -12,7 +12,7 @@
   [`GSMList`](http://seandavi.github.io/GEOquery/reference/GEOData-accessors.md)
   [`Meta`](http://seandavi.github.io/GEOquery/reference/GEOData-accessors.md)
   [`Table`](http://seandavi.github.io/GEOquery/reference/GEOData-accessors.md)
-  : Generic functions for GEOquery
+  : Accessors for GEOquery objects
 - [`GEOData-class`](http://seandavi.github.io/GEOquery/reference/GEOData-class.md)
   [`Accession,GEOData-method`](http://seandavi.github.io/GEOquery/reference/GEOData-class.md)
   [`Columns,GEOData-method`](http://seandavi.github.io/GEOquery/reference/GEOData-class.md)

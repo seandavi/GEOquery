@@ -70,6 +70,16 @@
 
 ### Documentation
 
+- The S4 class and accessor documentation is filled in: the `GEOData`
+  accessors (`Meta`, `Table`, `Columns`, `dataTable`, `Accession`,
+  `GSMList`, `GPLList`) now have real descriptions, return values, and
+  examples, and the class pages no longer imply constructing objects
+  with [`new()`](https://rdrr.io/r/methods/new.html) — they are returned
+  by
+  [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
+  ([\#103](https://github.com/seandavi/GEOquery/issues/103),
+  [\#192](https://github.com/seandavi/GEOquery/issues/192)).
+
 - Documentation is reorganized into narrative pkgdown **articles** —
   *Understanding GEO data formats*, *RNA-seq quantifications*,
   *Single-cell data from GEO*, and *From GEO to downstream analysis* —
