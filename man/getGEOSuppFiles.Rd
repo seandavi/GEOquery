@@ -9,7 +9,8 @@ getGEOSuppFiles(
   makeDirectory = TRUE,
   baseDir = getwd(),
   fetch_files = TRUE,
-  filter_regex = NULL
+  filter_regex = NULL,
+  quiet = getOption("GEOquery.quiet", FALSE)
 )
 }
 \arguments{
@@ -31,6 +32,10 @@ without actual download.}
 used to filter the filenames from GEO to limit those files that
 will be downloaded. This is useful to limit to, for example,
 bed files only.}
+
+\item{quiet}{logical(1). If TRUE, suppress informational messages such as
+"No supplemental files found" and "Using locally cached version".
+Defaults to the `GEOquery.quiet` option, or FALSE.}
 }
 \value{
 If fetch_files=TRUE, a data frame is returned invisibly with rownames representing the

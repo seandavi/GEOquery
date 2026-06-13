@@ -1,5 +1,9 @@
 # GEOquery (development version)
 
+## New features
+
+- `getGEOSuppFiles()` gains a `quiet` argument (defaulting to the `GEOquery.quiet` option, or `FALSE`) to suppress informational messages such as "No supplemental files found" and "Using locally cached version" (#68, #182).
+
 ## Documentation
 
 - The package `DESCRIPTION` and `biocViews` now describe GEOquery's actual scope (microarray, RNA-seq, and single-cell; GEO Series Matrix files parsed to `ExpressionSet` by default) instead of microarray-only (#71, #181).
