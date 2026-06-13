@@ -14,8 +14,8 @@
 A virtual class for holding GEO samples, platforms, and datasets
 }
 \section{Objects from the Class}{
- Objects can be created by calls of the form
-\code{new('GEOData', ...)}.
+ Objects of this class are returned by
+\code{\link{getGEO}}; they are not normally constructed directly.
 }
 
 \seealso{
