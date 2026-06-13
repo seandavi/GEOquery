@@ -29,6 +29,12 @@
 
 # Build the manifest data.frame from a vector of filenames (and optional URLs).
 .classify_sc_files <- function(fnames, urls = NA_character_) {
+    if (length(fnames) == 0) {
+        return(data.frame(
+            fname = character(0), sample = character(0), format = character(0),
+            role = character(0), url = character(0), stringsAsFactors = FALSE
+        ))
+    }
     cls <- t(vapply(fnames, .classify_sc_file, character(2)))
     data.frame(
         fname = as.character(fnames),
@@ -39,6 +45,66 @@
         stringsAsFactors = FALSE,
         row.names = NULL
     )
+}
+
+# Roles that make a complete 10x Matrix Market unit.
+.mtx_roles <- c("matrix", "barcodes", "features")
+
+# Group a manifest into loadable units (one per sample + format) and assess
+# completeness. Pure logic; used by geoSingleCellUnits().
+.sc_units <- function(manifest) {
+    cols <- c("sample", "format", "n_files", "status", "loadable")
+    if (nrow(manifest) == 0) {
+        out <- data.frame(matrix(nrow = 0, ncol = length(cols)))
+        colnames(out) <- cols
+        return(out)
+    }
+    key <- paste(manifest$sample, manifest$format, sep = "|")
+    parts <- lapply(split(manifest, key), function(g) {
+        fmt <- g$format[1]
+        if (fmt == "10x_mtx") {
+            missing <- setdiff(.mtx_roles, unique(g$role))
+            status <- if (length(missing) == 0) {
+                "complete"
+            } else {
+                sprintf("incomplete (missing %s)", paste(missing, collapse = ", "))
+            }
+        } else if (fmt %in% c("h5ad", "10x_h5", "loom", "rds")) {
+            status <- "complete"
+        } else {
+            status <- "unsupported"
+        }
+        data.frame(
+            sample = g$sample[1], format = fmt, n_files = nrow(g),
+            status = status, loadable = identical(status, "complete"),
+            stringsAsFactors = FALSE
+        )
+    })
+    out <- do.call(rbind, parts)
+    rownames(out) <- NULL
+    out[order(out$sample, out$format), ]
+}
+
+#' Group a single-cell manifest into loadable units
+#'
+#' Collapses a \code{\link{geoSingleCellManifest}} into one row per loadable
+#' unit (a sample + format combination) and reports completeness. A 10x Matrix
+#' Market unit is "complete" only when its matrix, barcodes, and features files
+#' are all present; single-file formats (h5ad, 10x h5, loom, rds) are always
+#' complete. The \code{loadable} column flags units a reader can consume.
+#'
+#' @param manifest A data.frame returned by \code{geoSingleCellManifest()}.
+#' @return A data.frame with columns \code{sample}, \code{format},
+#'   \code{n_files}, \code{status}, and \code{loadable}.
+#' @seealso \code{\link{geoSingleCellManifest}}
+#' @examples
+#' \dontrun{
+#'   m <- geoSingleCellManifest("GSE161228")
+#'   geoSingleCellUnits(m)
+#' }
+#' @export
+geoSingleCellUnits <- function(manifest) {
+    .sc_units(manifest)
 }
 
 #' Inventory the single-cell supplementary files of a GEO Series

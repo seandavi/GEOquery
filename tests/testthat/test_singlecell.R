@@ -33,3 +33,34 @@ test_that(".sc_sample_id extracts GSM ids or NA", {
     expect_equal(GEOquery:::.sc_sample_id("GSM98765_matrix.mtx.gz"), "GSM98765")
     expect_true(is.na(GEOquery:::.sc_sample_id("combined_matrix.mtx.gz")))
 })
+
+test_that("geoSingleCellUnits groups by sample/format and assesses completeness (#158)", {
+    manifest <- GEOquery:::.classify_sc_files(c(
+        "GSM1_matrix.mtx.gz", "GSM1_barcodes.tsv.gz", "GSM1_features.tsv.gz", # complete 10x
+        "GSM2_matrix.mtx.gz", "GSM2_barcodes.tsv.gz",                         # incomplete (no features)
+        "GSM3_data.h5ad",                                                     # single-file complete
+        "GSM4_notes.txt"                                                      # unsupported
+    ))
+    u <- geoSingleCellUnits(manifest)
+
+    gsm1 <- u[u$sample == "GSM1", ]
+    expect_equal(gsm1$status, "complete")
+    expect_true(gsm1$loadable)
+    expect_equal(gsm1$n_files, 3L)
+
+    gsm2 <- u[u$sample == "GSM2", ]
+    expect_match(gsm2$status, "incomplete")
+    expect_match(gsm2$status, "features")
+    expect_false(gsm2$loadable)
+
+    expect_true(u[u$sample == "GSM3", "loadable"])
+    expect_equal(u[u$sample == "GSM4", "status"], "unsupported")
+    expect_false(u[u$sample == "GSM4", "loadable"])
+})
+
+test_that("geoSingleCellUnits handles an empty manifest", {
+    empty <- GEOquery:::.classify_sc_files(character(0), character(0))
+    u <- geoSingleCellUnits(empty)
+    expect_equal(nrow(u), 0L)
+    expect_true(all(c("sample", "format", "status", "loadable") %in% colnames(u)))
+})
