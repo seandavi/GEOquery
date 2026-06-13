@@ -8,9 +8,10 @@
 - Downloads now stream to disk instead of buffering the entire response in memory, retry on transient HTTP errors, and honor a configurable `GEOquery.download.timeout` option (default 300 seconds) — replacing the previous enforced 120-second floor that ignored lower user timeouts. Failures raise a typed `geoquery_download_error` carrying the URL and HTTP status. `getDirListing()` now uses the same httr2 layer (#147, #173).
 - GEOquery now raises typed error conditions — `geoquery_error` and subclasses (`geoquery_private_accession`, `geoquery_download_error`, `geoquery_parse_error`, `geoquery_bad_accession`) — so failures can be handled programmatically with `tryCatch()` (#170, #184, #186).
 - `getGEOSuppFiles()` gains a `quiet` argument (defaulting to the `GEOquery.quiet` option, or `FALSE`) to suppress informational messages such as "No supplemental files found" and "Using locally cached version" (#68, #182).
-- `getGEOSuppFiles()` gains a `quiet` argument (defaulting to the `GEOquery.quiet` option, or `FALSE`) to suppress informational messages such as "No supplemental files found" and "Using locally cached version" (#68, #182).
 
 ## Documentation
+
+- Documentation is reorganized into narrative pkgdown **articles** — *Understanding GEO data formats*, *RNA-seq quantifications*, *Single-cell data from GEO*, and *From GEO to downstream analysis* — that cover the *why* (entity types, file formats) and downstream workflows with links to other Bioconductor packages. The package vignette is now a concise quick-start that indexes them; the articles render on the pkgdown site and are excluded from `R CMD check` (#156, #191).
 
 - The package `DESCRIPTION` and `biocViews` now describe GEOquery's actual scope (microarray, RNA-seq, and single-cell; GEO Series Matrix files parsed to `ExpressionSet` by default) instead of microarray-only (#71, #181).
 
