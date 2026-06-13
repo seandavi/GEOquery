@@ -4,6 +4,14 @@
 
 ### Bug Fixes
 
+- [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
+  now fails with a clear message when an accession is private,
+  embargoed, or not yet public (NCBI returns an HTML page) instead of
+  mis-parsing it or, in older versions, looping. `findFirstEntity()` is
+  also hardened against a multi-line edge case that could error and
+  against unbounded reads
+  ([\#58](https://github.com/seandavi/GEOquery/issues/58),
+  [\#176](https://github.com/seandavi/GEOquery/issues/176)).
 - `getGEO(parseCharacteristics = FALSE)` now actually skips
   characteristics parsing. The flag was accepted at the top level but
   dropped before reaching
