@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.77.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>GEOquery Improvement Roadmap</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/ci/docs-fast-path/ROADMAP.md" class="external-link"><code>ROADMAP.md</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/adr/single-cell-architecture/ROADMAP.md" class="external-link"><code>ROADMAP.md</code></a></small>
     </div>
 
 <div id="geoquery-improvement-roadmap" class="section level1">
@@ -365,9 +365,8 @@
 <p><strong>The reframe that makes this section necessary:</strong> for single-cell data the series matrix is the <em>wrong abstraction</em>. GEOquery’s core model (assay matrix + phenoData → ExpressionSet) assumes data lives in the series matrix. SC data almost never does — it lives in <strong>supplementary files</strong>, and the series matrix is typically empty or metadata-only. So <code>getGEO("GSExxxxx")</code> on an SC study returns a near-useless object today. The fix is a <strong>supplementary-files-first SC entry point</strong>, not patching the matrix path. Every item below builds on that premise. Target output classes: <code>SingleCellExperiment</code>, and <code>SpatialExperiment</code> for spatial.</p>
 </blockquote>
 <div class="section level3">
-<h3 id="decide-first-dependency-architecture-blocks-the-rest">Decide first: dependency architecture (blocks the rest)<a class="anchor" aria-label="anchor" href="#decide-first-dependency-architecture-blocks-the-rest"></a></h3>
-<p>SC support pulls heavy deps (<code>DropletUtils</code>, <code>zellkonverter</code>, <code>SingleCellExperiment</code>, <code>SpatialExperiment</code>, <code>HDF5Array</code>, optionally <code>Seurat</code>, <code>LoomExperiment</code>). Two paths: - <strong>In-package, <code>Suggests</code> + <code><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace()</a></code> guards</strong> — keeps core install light; errors helpfully (“install zellkonverter for h5ad”). Lower friction for users. - <strong>Companion package <code>GEOquerySingleCell</code></strong> — keeps core lean, simplifies BiocCheck, lets SC churn faster than core.</p>
-<p><strong>Recommendation:</strong> in-package with <code>Suggests</code> guards for the manifest + 10x + h5ad core (highest demand, modest dep weight); defer Seurat/loom/spatial to guards or a companion if dep weight trips BiocCheck. <strong>This is an ADR-worthy decision</strong> — draft <code>adr/0004-single-cell-architecture.md</code> before coding.</p>
+<h3 id="dependency-architecture--decided-adr-0004">Dependency architecture — DECIDED (<a href="adr/0004-single-cell-architecture.html">ADR-0004</a>)<a class="anchor" aria-label="anchor" href="#dependency-architecture--decided-adr-0004"></a></h3>
+<p>Readers: <strong>TENxIO</strong> for 10x Matrix-Market (<code>.mtx</code>) and CellRanger HDF5 (<code>.h5</code>), <strong>anndataR</strong> for AnnData (<code>.h5ad</code>) — both Bioconductor, used for their <code>SingleCellExperiment</code> assemblers. <strong>In-package</strong>, in <code>Suggests</code>, behind <code><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace()</a></code> guards. <code>DropletUtils</code> (for <code>emptyDrops</code>/advanced CellRanger) and <code>BPCells</code> (on-disk/lazy, SC5) stay optional. Rejected as defaults: <code>DropletUtils</code> (heavy compiled chain — it broke Windows CI, #166), <code>zellkonverter</code> (bundles Python via basilisk), <code>Seurat</code> (weight/ecosystem), and hand-rolled <code><a href="https://rdrr.io/pkg/Matrix/man/externalFormats.html" class="external-link">Matrix::readMM</a></code> (prefer Bioc assemblers). Prefer Bioconductor readers wherever one exists.</p>
 </div>
 <div class="section level3">
 <h3 id="roadmap">Roadmap<a class="anchor" aria-label="anchor" href="#roadmap"></a></h3>
@@ -390,13 +389,13 @@
 <td>P1</td>
 <td>M</td>
 <td>#158</td>
-<td>The real pain isn’t reading — it’s that GEO ships <code>GSMxxx_matrix.mtx.gz</code>/<code>_barcodes.tsv.gz</code>/<code>_features.tsv.gz</code> flat or tarred, while <code><a href="https://rdrr.io/pkg/DropletUtils/man/read10xCounts.html" class="external-link">DropletUtils::read10xCounts()</a></code> wants a <em>directory per sample with canonical names</em>. → Auto-group + symlink/rename into the expected layout, then read. ~80% of “handle 10x”.</td>
+<td>The real pain isn’t reading — it’s that GEO ships <code>GSMxxx_matrix.mtx.gz</code>/<code>_barcodes.tsv.gz</code>/<code>_features.tsv.gz</code> flat or tarred, while a reader wants a <em>directory per sample with canonical names</em>. → Auto-group + symlink/rename into the expected layout, then import via <strong>TENxIO</strong> (<a href="adr/0004-single-cell-architecture.html">ADR-0004</a>) → <code>SingleCellExperiment</code>. ~80% of “handle 10x”.</td>
 </tr><tr><td>SC3</td>
 <td><strong>Multi-format reader dispatch</strong></td>
 <td>P1</td>
 <td>L</td>
 <td>#158</td>
-<td>Beyond 10x mtx/h5: <strong>h5ad/AnnData</strong> (<code>zellkonverter::readH5AD</code>), <strong>loom</strong> (<code>LoomExperiment</code>), <strong>CellRanger <code>.h5</code></strong> (<code>read10xCounts</code>), <strong>Seurat <code>.rds</code></strong> (<code>Seurat::as.SingleCellExperiment</code>, guarded). → Dispatch table keyed on detected format → <code>SingleCellExperiment</code>. h5ad and Seurat <code>.rds</code> are very common on recent GEO and currently force hand-rolling.</td>
+<td>Dispatch keyed on detected format → <code>SingleCellExperiment</code>, all <code><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace()</a></code>-guarded (<a href="adr/0004-single-cell-architecture.html">ADR-0004</a>): <code>.mtx</code> + CellRanger <code>.h5</code> → <strong>TENxIO</strong>; <code>.h5ad</code>/AnnData → <strong>anndataR</strong> (native R, no Python). <code>DropletUtils</code> optional for <code>emptyDrops</code>/advanced CellRanger. h5ad is very common on recent GEO and currently forces hand-rolling.</td>
 </tr><tr><td>SC4</td>
 <td><strong>Combined SCE + sample→cell metadata broadcast</strong></td>
 <td>P1</td>
@@ -408,7 +407,7 @@
 <td>P1</td>
 <td>M</td>
 <td>—</td>
-<td>SC matrices blow past memory. → <code>delayed=TRUE</code> → HDF5Array/DelayedArray-backed assays (<code>read10xCounts(type="HDF5")</code> or <code><a href="https://rdrr.io/pkg/HDF5Array/man/writeHDF5Array.html" class="external-link">HDF5Array::writeHDF5Array</a></code>). Pairs hard with the <strong>BiocFileCache</strong> item (huge downloads must persist across sessions). Without this, large GSEs OOM.</td>
+<td>SC matrices blow past memory. → <code>delayed=TRUE</code> → HDF5Array/DelayedArray-backed assays, or <strong>BPCells</strong> (<code>open_matrix_10x_hdf5</code>, on-disk bit-packed, ~70× less memory) as an opt-in backend. Pairs hard with the <strong>BiocFileCache</strong> item (huge downloads must persist across sessions). Without this, large GSEs OOM.</td>
 </tr><tr><td>SC6</td>
 <td><strong>Cell-level metadata join</strong></td>
 <td>P2</td>
