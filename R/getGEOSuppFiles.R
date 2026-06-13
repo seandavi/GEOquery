@@ -81,6 +81,9 @@ getGEOSuppFileURL <- function(GEO) {
 #'     files. If FALSE, just return the filenames that would have been
 #'     downloaded. Useful for testing and getting a list of files
 #'     without actual download.
+#' @param quiet logical(1). If TRUE, suppress informational messages such as
+#'     "No supplemental files found" and "Using locally cached version".
+#'     Defaults to the `GEOquery.quiet` option, or FALSE.
 #' @return If fetch_files=TRUE, a data frame is returned invisibly with rownames representing the
 #' full path of the resulting downloaded files and the records in the
 #' data.frame the output of file.info for each downloaded file.
@@ -102,7 +105,8 @@ getGEOSuppFiles <- function(
     makeDirectory = TRUE,
     baseDir = getwd(),
     fetch_files = TRUE,
-    filter_regex = NULL
+    filter_regex = NULL,
+    quiet = getOption("GEOquery.quiet", FALSE)
 ) {
     geotype <- toupper(substr(GEO, 1, 3))
     storedir <- baseDir
@@ -110,9 +114,11 @@ getGEOSuppFiles <- function(
     url <- getGEOSuppFileURL(GEO)
     fnames <- try(getDirListing(url), silent = TRUE)
     if (inherits(fnames, "try-error")) {
-        message("No supplemental files found.")
-        message("Check URL manually if in doubt")
-        message(url)
+        if (!quiet) {
+            message("No supplemental files found.")
+            message("Check URL manually if in doubt")
+            message(url)
+        }
         return(NULL)
     }
     if (makeDirectory) {
@@ -134,8 +140,10 @@ getGEOSuppFiles <- function(
                       httr2::req_perform(path=destfile)
                     res <- 0
                 } else {
-                  message(sprintf("Using locally cached version of supplementary file(s) %s found here:\n%s ",
-                    GEO, destfile))
+                  if (!quiet) {
+                    message(sprintf("Using locally cached version of supplementary file(s) %s found here:\n%s ",
+                      GEO, destfile))
+                  }
                     res <- 0
                 }
             fileinfo[[destfile]] <- file.info(destfile)
