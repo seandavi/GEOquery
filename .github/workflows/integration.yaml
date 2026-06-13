@@ -1,0 +1,38 @@
+# Live-network integration tests against NCBI GEO. These are the tests gated by
+# skip_if_no_integration() (issue #169): they are non-deterministic and so are
+# kept out of PR CI. This workflow runs them on a schedule (to catch GEO format
+# drift / outages) and on demand. It does not gate any pull request.
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # weekly, Monday 06:00 UTC
+  workflow_dispatch:
+
+name: integration
+
+permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    container:
+      image: bioconductor/bioconductor_docker:devel
+    env:
+      GEOQUERY_INTEGRATION: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          options(repos = BiocManager::repositories())
+          install.packages(c("remotes", "rcmdcheck"))
+          remotes::install_deps(dependencies = TRUE)
+        shell: Rscript {0}
+
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
+          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'

@@ -2,6 +2,7 @@ library(testthat)
 context('GSM')
 
 test_that("basic GSM works", {
+    skip_if_no_integration()
     gsm = getGEO('GSM11805')
 
     expect_is(gsm,'GSM')
