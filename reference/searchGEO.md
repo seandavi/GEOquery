@@ -34,7 +34,7 @@ a data.frame contains the search results
 
 The NCBI allows users to access more records (10 per second) if they
 register for and use an API key.
-[set_entrez_key](https://docs.ropensci.org/rentrez/reference/set_entrez_key.html)
+[set_entrez_key](https://rdrr.io/pkg/rentrez/man/set_entrez_key.html)
 function allows users to set this key for all calls to rentrez functions
 during a particular R session. You can also set an environment variable
 `ENTREZ_KEY` by [Sys.setenv](https://rdrr.io/r/base/Sys.setenv.html).
