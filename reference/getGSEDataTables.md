@@ -38,9 +38,50 @@ Sean Davis <sdavis2@mail.nih.gov>
 ``` r
 
 dfl = getGSEDataTables('GSE3494')
-#> Warning: Failed to open 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?targ=self&form=xml&view=full&acc=GSE3494': The requested URL returned error: 504
-#> Error in open.connection(x, "rb"): cannot open the connection
+#> Rows: 251 Columns: 12
+#> ── Column specification ────────────────────────────────────────────────────────
+#> Delimiter: "\t"
+#> chr (6): X1, X2, X5, X6, X7, X10
+#> dbl (6): X3, X4, X8, X9, X11, X12
+#> 
+#> ℹ Use `spec()` to retrieve the full column specification for this data.
+#> ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+#> Rows: 502 Columns: 3
+#> ── Column specification ────────────────────────────────────────────────────────
+#> Delimiter: "\t"
+#> chr (3): X1, X2, X3
+#> 
+#> ℹ Use `spec()` to retrieve the full column specification for this data.
+#> ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 lapply(dfl,head)
-#> Error in h(simpleError(msg, call)): error in evaluating the argument 'X' in selecting a method for function 'lapply': object 'dfl' not found
+#> [[1]]
+#> # A tibble: 6 × 12
+#>   `INDEX (ID)` p53 seq mut status (p53+=mutant; p53-=wt…¹ p53 DLDA classifier …²
+#>   <chr>        <chr>                                                       <dbl>
+#> 1 X101B88      p53+                                                            1
+#> 2 X102B06      p53+                                                            1
+#> 3 X104B91      p53+                                                            0
+#> 4 X110B34      p53+                                                            1
+#> 5 X111B51      p53+                                                            1
+#> 6 X127B00      p53+                                                            1
+#> # ℹ abbreviated names: ¹​`p53 seq mut status (p53+=mutant; p53-=wt)`,
+#> #   ²​`p53 DLDA classifier result (0=wt-like, 1=mt-like)`
+#> # ℹ 9 more variables: `DLDA error (1=yes, 0=no)` <dbl>,
+#> #   `Elston histologic grade` <chr>, `ER status` <chr>, `PgR status` <chr>,
+#> #   `age at diagnosis` <dbl>, `tumor size (mm)` <dbl>,
+#> #   `Lymph node status` <chr>,
+#> #   `DSS TIME (Disease-Specific Survival Time in years)` <dbl>, …
+#> 
+#> [[2]]
+#> # A tibble: 6 × 3
+#>   `GEO Sample Accession #` `Patient ID` `Affy platform`
+#>   <chr>                    <chr>        <chr>          
+#> 1 GSM79114                 X100B08      HG-U133A       
+#> 2 GSM79115                 X101B88      HG-U133A       
+#> 3 GSM79116                 X102B06      HG-U133A       
+#> 4 GSM79117                 X103B41      HG-U133A       
+#> 5 GSM79118                 X104B91      HG-U133A       
+#> 6 GSM79119                 X105B13      HG-U133A       
+#> 
 
 ```
