@@ -134,6 +134,7 @@ getGEO <- function(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits =
         }
         filename <- getGEOfile(GEO, destdir = destdir, AnnotGPL = AnnotGPL)
     }
-    ret <- parseGEO(filename, GSElimits, destdir, AnnotGPL = AnnotGPL, getGPL = getGPL)
+    ret <- parseGEO(filename, GSElimits, destdir, AnnotGPL = AnnotGPL, getGPL = getGPL,
+        parseCharacteristics = parseCharacteristics)
     return(ret)
 }

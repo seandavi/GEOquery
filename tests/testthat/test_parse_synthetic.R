@@ -68,3 +68,18 @@ test_that("parseCharacteristics = FALSE leaves characteristics unparsed (regress
     # ... and the raw characteristics column is retained
     expect_true(any(grepl("^characteristics_ch1", cols)))
 })
+
+test_that("parseGEO threads parseCharacteristics through to parseGSEMatrix (#60)", {
+    # The #60 bug was that parseCharacteristics was accepted at the top level
+    # but dropped before reaching parseGSEMatrix. Exercise the local-file
+    # forwarding path (parseGEO -> parseGSEMatrix) offline via getGPL = FALSE.
+    f <- make_fake_series_matrix()
+
+    eset_off <- GEOquery:::parseGEO(f, GSElimits = NULL, getGPL = FALSE,
+        parseCharacteristics = FALSE)
+    expect_false("tissue:ch1" %in% colnames(Biobase::pData(eset_off)))
+
+    eset_on <- GEOquery:::parseGEO(f, GSElimits = NULL, getGPL = FALSE,
+        parseCharacteristics = TRUE)
+    expect_true("tissue:ch1" %in% colnames(Biobase::pData(eset_on)))
+})
