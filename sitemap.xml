@@ -30,6 +30,7 @@
 <url><loc>http://seandavi.github.io/GEOquery/reference/getDirListing.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEO.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEOSeriesFileListing.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEOSuppFileURL.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEOfile.html</loc></url>
@@ -44,6 +45,7 @@
 <url><loc>http://seandavi.github.io/GEOquery/reference/index.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/parseGEO.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/parseGSEMatrix.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/readRNAQuantAnnotation.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/readRNAQuantRawCounts.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/searchFieldsGEO.html</loc></url>

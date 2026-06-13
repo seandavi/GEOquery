@@ -5,6 +5,22 @@
 ### New features
 
 - New
+  [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
+  and
+  [`getGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.md)
+  read GEO single-cell supplementary data into `SingleCellExperiment`
+  objects: 10x Matrix Market and 10x HDF5 via **TENxIO**, AnnData
+  `.h5ad` via **anndataR** (optional `Suggests`).
+  [`getGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.md)
+  returns a named list of per-sample objects (combine with care) and
+  reports which units it loads and skips. loom, Seurat `.rds`, files
+  inside `_RAW.tar`, and idiosyncratic layouts are intentionally out of
+  scope — use
+  [`geoSingleCellManifest()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md) +
+  [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
+  for those ([\#158](https://github.com/seandavi/GEOquery/issues/158),
+  [\#190](https://github.com/seandavi/GEOquery/issues/190)).
+- New
   [`geoSingleCellManifest()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md)
   inventories a GSE’s supplementary files and classifies them by
   single-cell format (10x Matrix Market triplet, 10x HDF5, AnnData h5ad,

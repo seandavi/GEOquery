@@ -96,6 +96,8 @@ possible.
   Get a GEO object from NCBI or file
 - [`getGEOSeriesFileListing()`](http://seandavi.github.io/GEOquery/reference/getGEOSeriesFileListing.md)
   : GSE Supplemental file listing
+- [`getGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.md)
+  : Download and read the single-cell data of a GEO Series
 - [`getGEOSuppFileURL()`](http://seandavi.github.io/GEOquery/reference/getGEOSuppFileURL.md)
   : Get GEO supplemental file URL for a given GEO accession
 - [`getGEOSuppFiles()`](http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.md)
@@ -112,6 +114,8 @@ possible.
   : Does a GEO accession have RNA-seq quantifications?
 - [`parseGEO()`](http://seandavi.github.io/GEOquery/reference/parseGEO.md)
   : Parse GEO text
+- [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
+  : Read a single-cell file (or 10x triplet) into a SingleCellExperiment
 - [`searchFieldsGEO()`](http://seandavi.github.io/GEOquery/reference/searchFieldsGEO.md)
   : Provide a list of possible search fields for GEO search
 - [`searchGEO()`](http://seandavi.github.io/GEOquery/reference/searchGEO.md)
