@@ -4,6 +4,16 @@
 
 ### New features
 
+- [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
+  gains a `returnType` argument. With
+  `returnType = "SummarizedExperiment"`, GSE Series Matrix results are
+  returned as `SummarizedExperiment` objects instead of `ExpressionSet`.
+  The default remains `"ExpressionSet"` for now (with a one-time notice)
+  and will switch to `"SummarizedExperiment"` in a future release. A new
+  exported
+  [`as_SummarizedExperiment()`](http://seandavi.github.io/GEOquery/reference/as_SummarizedExperiment.md)
+  coerces an existing `ExpressionSet` result without re-downloading. See
+  ADR-0002 ([\#168](https://github.com/seandavi/GEOquery/issues/168)).
 - Downloads now stream to disk instead of buffering the entire response
   in memory, retry on transient HTTP errors, and honor a configurable
   `GEOquery.download.timeout` option (default 300 seconds) — replacing

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>GEOquery Improvement Roadmap</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/ROADMAP.md" class="external-link"><code>ROADMAP.md</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/feat/summarizedexperiment-returntype/ROADMAP.md" class="external-link"><code>ROADMAP.md</code></a></small>
     </div>
 
 <div id="geoquery-improvement-roadmap" class="section level1">
@@ -471,7 +471,7 @@
 <td>L</td>
 <td>#71, #168</td>
 <td>
-<code>tech-debt</code>. The series-matrix path still returns <code>ExpressionSet</code> (<code>parseGSEMatrix</code>, parseGEO.R:620); the premature NEWS SE claim was removed in the version reconciliation. → Build SE directly (or <code>eset_to_se()</code>), gate behind <code>getGEO(..., returnType = c("ExpressionSet","SummarizedExperiment"))</code> defaulting to ExpressionSet for one release with a deprecation warning, then flip. Export <code>as_SummarizedExperiment()</code>.</td>
+<code>tech-debt</code>. The series-matrix path still returns <code>ExpressionSet</code> (<code>parseGSEMatrix</code>, parseGEO.R:620); the premature NEWS SE claim was removed in the version reconciliation. → Build SE directly (or <code>eset_to_se()</code>), gate behind <code>getGEO(..., returnType = c("ExpressionSet","SummarizedExperiment"))</code> defaulting to ExpressionSet for one release with a deprecation warning, then flip. Export <code><a href="reference/as_SummarizedExperiment.html">as_SummarizedExperiment()</a></code>.</td>
 </tr><tr><td><strong>Validate <code>destdir</code>/<code>baseDir</code>/flag inputs</strong></td>
 <td>P2</td>
 <td>M</td>

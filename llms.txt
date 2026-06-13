@@ -76,6 +76,8 @@ possible.
   : Class 'GSE'
 - [`GSM-class`](http://seandavi.github.io/GEOquery/reference/GSM-class.md)
   : Class 'GSM'
+- [`as_SummarizedExperiment()`](http://seandavi.github.io/GEOquery/reference/as_SummarizedExperiment.md)
+  : Coerce a GEOquery ExpressionSet to a SummarizedExperiment
 - [`browseGEOAccession()`](http://seandavi.github.io/GEOquery/reference/browseGEOAccession.md)
   : Open the GEO page for a given accession
 - [`browseWebsiteRNASeqSearch()`](http://seandavi.github.io/GEOquery/reference/browseWebsiteRNASeqSearch.md)

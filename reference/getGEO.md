@@ -17,7 +17,8 @@ getGEO(
   GSEMatrix = TRUE,
   AnnotGPL = FALSE,
   getGPL = TRUE,
-  parseCharacteristics = TRUE
+  parseCharacteristics = TRUE,
+  returnType = c("ExpressionSet", "SummarizedExperiment")
 )
 ```
 
@@ -84,6 +85,14 @@ getGEO(
   characteristics information (if available) for a GSE Matrix file. Set
   this to FALSE if you experience trouble while parsing the
   characteristics.
+
+- returnType:
+
+  One of "ExpressionSet" (default) or "SummarizedExperiment". For GSE
+  Series Matrix results, controls whether each entity is returned as an
+  `ExpressionSet` or coerced to a `SummarizedExperiment`. SOFT-format
+  results (GDS/GPL/GSM/GSE S4 objects) are unaffected. The default will
+  change to "SummarizedExperiment" in a future release.
 
 ## Value
 
@@ -308,6 +317,8 @@ gds
 gse <- getGEO('GSE10')
 #> Found 1 file(s)
 #> GSE10_series_matrix.txt.gz
+#> getGEO() returns 'ExpressionSet' objects by default; a future version will default to 'SummarizedExperiment'. Pass returnType= explicitly to silence this message.
+#> This message is displayed once per session.
 # Returns a list, so look at first item
 
 gse[[1]]
