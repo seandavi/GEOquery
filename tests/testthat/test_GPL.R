@@ -2,6 +2,7 @@ library(GEOquery)
 context('GPL')
 
 test_that("generic GPL parsing works as expected", {
+    skip_if_no_integration()
     gpl = getGEO('GPL96')
     
     expect_is(gpl,'GPL') #gpl is not a GPL object!')
@@ -14,12 +15,14 @@ test_that("generic GPL parsing works as expected", {
 })
 
 test_that("quoted GPL works", {
+    skip_if_no_integration()
     gpl = getGEO('GPL4133')
 
     expect_equivalent(45220,nrow(Table(gpl))) #GPL4133 should have 45220 rows
 })
 
 test_that("short GPL works", {
+    skip_if_no_integration()
     gpl = getGEO('GPL15505')
     
     expect_is(gpl,'GPL')
@@ -27,6 +30,7 @@ test_that("short GPL works", {
 })
 
 test_that("GPL with no data table works", {
+    skip_if_no_integration()
     gpl = getGEO("GPL5082")
     
     expect_is(gpl,'GPL')

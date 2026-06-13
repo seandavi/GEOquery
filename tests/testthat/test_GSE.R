@@ -3,6 +3,7 @@ context("GSE")
 
 
 test_that("empty GSE is handled correctly", {
+    skip_if_no_integration()
     gse = getGEO('GSE11413')
 
     expect_is(gse, 'list')
@@ -12,12 +13,14 @@ test_that("empty GSE is handled correctly", {
 })
 
 test_that("case-mismatched IDs in GSEs handled correctly", {
+    skip_if_no_integration()
     gse = getGEO('GSE35683')
 
     expect_equivalent(nrow(gse[[1]]), 54675)
 })
 
 test_that("single-sample GSE handled correctly", {
+    skip_if_no_integration()
     gse = getGEO("GSE11595")
     
     expect_is(gse[[1]], "ExpressionSet")
@@ -25,12 +28,14 @@ test_that("single-sample GSE handled correctly", {
 })
 
 test_that("short GSE handled correctly", {
+    skip_if_no_integration()
     gse = getGEO("GSE34145")
 
     expect_equivalent(nrow(gse[[1]]), 15)
 })
 
 test_that("generic SOFT format GSE handled correctly", {
+    skip_if_no_integration()
     gse = getGEO('GSE1563',GSEMatrix=FALSE)
 
     expect_equal(62, length(GSMList(gse)))
@@ -44,6 +49,7 @@ test_that("generic SOFT format GSE handled correctly", {
 })
 
 test_that("GSE with more than one value per characteristic handled", {
+    skip_if_no_integration()
   gse = getGEO("GSE71989")
   
   expect_equivalent(nrow(gse[[1]]), 54675)
@@ -52,6 +58,7 @@ test_that("GSE with more than one value per characteristic handled", {
 
 
 test_that("GSE has populated experimentData", {
+    skip_if_no_integration()
   gse = getGEO("GSE53986")
   
   ed <- experimentData(gse[[1]])
@@ -66,6 +73,7 @@ test_that("GSE has populated experimentData", {
 })
 
 test_that("GSE populates experimentData as much as possible", {
+    skip_if_no_integration()
   gse = getGEO("GSE99709")
   
   ed <- experimentData(gse[[1]])
@@ -99,6 +107,7 @@ test_that("Empty files produces an error", {
 })
 
 test_that("GSE/GPL with integer64 columns handled correctly", {
+    skip_if_no_integration()
   gse = getGEO("GSE7864")[[1]]
   fdata = fData(gse)
   expect_s3_class(fdata$ID, "integer64")
@@ -106,12 +115,14 @@ test_that("GSE/GPL with integer64 columns handled correctly", {
 })
 
 test_that("Test regression against issue 144", {
+    skip_if_no_integration()
   gse = getGEO("GSE225759")[[1]]
   expect_equivalent(nrow(gse), 442)
   expect_equivalent(ncol(gse), 272)
 })
 
 test_that("GSE425 parsing with malformed sample lines", {
+    skip_if_no_integration()
   gse = getGEO("GSE425")
   expect_is(gse, 'list')
   expect_is(gse[[1]], 'ExpressionSet')
