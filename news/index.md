@@ -1,6 +1,6 @@
 # Changelog
 
-## GEOquery 2.81.21 (2026-06-13)
+## GEOquery (development version)
 
 ### Breaking changes
 
@@ -20,6 +20,20 @@
 
 ### New features
 
+- Seurat interoperability for single-cell data (optional; `Seurat` in
+  `Suggests`).
+  [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
+  now reads `.rds` supplementary files containing a Seurat or
+  `SingleCellExperiment` object (detected by class, Seurat coerced to
+  `SingleCellExperiment`), and both
+  [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
+  and
+  [`getGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.md)
+  gain `as = "Seurat"` to return Seurat objects. `SingleCellExperiment`
+  remains the internal representation; see ADR-0006
+  ([\#195](https://github.com/seandavi/GEOquery/issues/195),
+  [\#196](https://github.com/seandavi/GEOquery/issues/196),
+  [\#197](https://github.com/seandavi/GEOquery/issues/197)).
 - Optional persistent download cache backed by **BiocFileCache**. Set
   `options(GEOquery.cache = TRUE)` to have downloads keyed on their URL
   and reused across sessions (location defaults to
@@ -40,9 +54,8 @@
   `.h5ad` via **anndataR** (optional `Suggests`).
   [`getGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.md)
   returns a named list of per-sample objects (combine with care) and
-  reports which units it loads and skips. loom, Seurat `.rds`, files
-  inside `_RAW.tar`, and idiosyncratic layouts are intentionally out of
-  scope — use
+  reports which units it loads and skips. loom, files inside `_RAW.tar`,
+  and idiosyncratic layouts are intentionally out of scope — use
   [`geoSingleCellManifest()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md) +
   [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
   for those ([\#158](https://github.com/seandavi/GEOquery/issues/158),
@@ -157,8 +170,7 @@
 - Fixed error when parsing GSE matrix files with malformed or empty
   lines between sample metadata (e.g., GSE425). Sample lines are now
   extracted directly using pattern matching to avoid issues with
-  irregular file formatting
-  ([\#162](https://github.com/seandavi/GEOquery/issues/162)).
+  irregular file formatting.
 
 ## GEOquery 2.75.0 (2024-10-01)
 
