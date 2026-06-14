@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.20</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.21</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>GEOquery Improvement Roadmap</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/ROADMAP.md" class="external-link"><code>ROADMAP.md</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/feat/se-default/ROADMAP.md" class="external-link"><code>ROADMAP.md</code></a></small>
     </div>
 
 <div id="geoquery-improvement-roadmap" class="section level1">
@@ -469,12 +469,12 @@
 <td>#71</td>
 <td>
 <code>getGEO</code> returns a named list for GSE+matrix but bare S4 otherwise; callers must defensively <code><a href="https://rdrr.io/r/base/list.html" class="external-link">is.list()</a></code> + <code>[[1]]</code>. → <strong>Always</strong> return a list for GSE; add <code>simplify=FALSE</code> for single-element convenience; rewrite <code>@return</code> and DESCRIPTION to lead with the GSEMatrix default; add a migration <code>@section</code>.</td>
-</tr><tr><td><strong>Deliver the SummarizedExperiment migration</strong></td>
+</tr><tr><td>
+<strong>SummarizedExperiment migration</strong> ✅</td>
 <td>P1</td>
 <td>L</td>
 <td>#71, #168</td>
-<td>
-<code>tech-debt</code>. The series-matrix path still returns <code>ExpressionSet</code> (<code>parseGSEMatrix</code>, parseGEO.R:620); the premature NEWS SE claim was removed in the version reconciliation. → Build SE directly (or <code>eset_to_se()</code>), gate behind <code>getGEO(..., returnType = c("ExpressionSet","SummarizedExperiment"))</code> defaulting to ExpressionSet for one release with a deprecation warning, then flip. Export <code><a href="reference/as_SummarizedExperiment.html">as_SummarizedExperiment()</a></code>.</td>
+<td>DONE. <code>getGEO(returnType=)</code> added with <code><a href="reference/as_SummarizedExperiment.html">as_SummarizedExperiment()</a></code> coercion (ADR-0002); the default was then flipped to <code>SummarizedExperiment</code> immediately (ADR-0005) rather than staged. <code>ExpressionSet</code> remains available via <code>returnType = "ExpressionSet"</code>.</td>
 </tr><tr><td><strong>Validate <code>destdir</code>/<code>baseDir</code>/flag inputs</strong></td>
 <td>P2</td>
 <td>M</td>

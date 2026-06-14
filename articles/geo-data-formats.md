@@ -62,16 +62,16 @@ features, columns = samples). This is what most analyses actually need,
 and it parses orders of magnitude faster than SOFT.
 
 This is the GEOquery **default** (`GSEMatrix = TRUE`). The result is a
-Bioconductor `ExpressionSet` (or, opting in, a `SummarizedExperiment` —
-see below):
+Bioconductor `SummarizedExperiment` (or, opting back, an `ExpressionSet`
+— see below):
 
 ``` r
 
-gse <- getGEO("GSE2553")   # returns a list, one ExpressionSet per platform
-eset <- gse[[1]]
-exprs(eset)    # the expression matrix
-pData(eset)    # sample (phenotype) metadata
-fData(eset)    # feature annotation, from the platform GPL
+gse <- getGEO("GSE2553")   # returns a list, one SummarizedExperiment per platform
+se <- gse[[1]]
+assay(se)      # the expression matrix
+colData(se)    # sample (phenotype) metadata
+rowData(se)    # feature annotation, from the platform GPL
 ```
 
 If you ever need a field that the Series Matrix omits, drop to SOFT with
@@ -82,7 +82,8 @@ If you ever need a field that the Series Matrix omits, drop to SOFT with
 This is the most common source of confusion, and it follows directly
 from the formats:
 
-- `GSE` + Series Matrix (default) → a **list** of `ExpressionSet`
+- `GSE` + Series Matrix (default) → a **list** of `SummarizedExperiment`
+  (or `ExpressionSet` with `returnType = "ExpressionSet"`)
 - `GSE` + SOFT (`GSEMatrix = FALSE`) → a single `GSE` S4 object
 - `GSM` / `GPL` / `GDS` → the corresponding S4 object
 
@@ -92,23 +93,27 @@ may span platforms.
 
 ## ExpressionSet vs. SummarizedExperiment
 
-`ExpressionSet` (from **Biobase**) is the historical container and
-remains the default. `SummarizedExperiment` is the modern Bioconductor
-standard and the substrate that single-cell (`SingleCellExperiment`) and
-spatial (`SpatialExperiment`) classes build on. GEOquery can return
-either:
+`SummarizedExperiment` is the modern Bioconductor standard and the
+substrate that single-cell (`SingleCellExperiment`) and spatial
+(`SpatialExperiment`) classes build on; it is now the GEOquery
+**default**. `ExpressionSet` (from **Biobase**) is the historical
+container, still available on request:
 
 ``` r
 
-se_list <- getGEO("GSE2553", returnType = "SummarizedExperiment")
-# or convert an existing result without re-downloading:
-se <- as_SummarizedExperiment(getGEO("GSE2553")[[1]])
+# default: SummarizedExperiment
+se_list <- getGEO("GSE2553")
+# opt back into the legacy ExpressionSet:
+eset_list <- getGEO("GSE2553", returnType = "ExpressionSet")
+# or convert an existing ExpressionSet without re-downloading:
+se <- as_SummarizedExperiment(eset_list[[1]])
 ```
 
-The accessor vocabulary differs — `exprs()`/`pData()`/`fData()` for
-`ExpressionSet` versus `assay()`/`colData()`/`rowData()` for
-`SummarizedExperiment` — so pick one and stay consistent. The default
-will move to `SummarizedExperiment` in a future release.
+The accessor vocabulary differs —
+[`assay()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)/[`colData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)/[`rowData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
+for `SummarizedExperiment` versus
+[`exprs()`](https://rdrr.io/pkg/Biobase/man/exprs.html)/[`pData()`](https://rdrr.io/pkg/Biobase/man/phenoData.html)/[`fData()`](https://rdrr.io/pkg/Biobase/man/featureData.html)
+for `ExpressionSet` — so pick one and stay consistent.
 
 ## Supplementary files: where everything else lives
 

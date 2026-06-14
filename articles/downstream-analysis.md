@@ -15,8 +15,8 @@ formats](http://seandavi.github.io/GEOquery/articles/geo-data-formats.md)):
 
 | You have | Typical source | Downstream entry point |
 |----|----|----|
-| `ExpressionSet` (list) | microarray GSE, Series Matrix | limma |
-| `SummarizedExperiment` | `returnType=`, RNA-seq counts | limma / DESeq2 / edgeR |
+| `SummarizedExperiment` (list) | GSE Series Matrix (default), RNA-seq counts | limma / DESeq2 / edgeR |
+| `ExpressionSet` (list) | GSE Series Matrix with `returnType = "ExpressionSet"` | limma |
 | `SingleCellExperiment` | single-cell readers | scater / scran / OSCA |
 | `GSE`/`GSM`/`GPL`/`GDS` S4 | SOFT parsing | accessors, then convert |
 
@@ -24,19 +24,21 @@ formats](http://seandavi.github.io/GEOquery/articles/geo-data-formats.md)):
 
 Microarray Series Matrix data arrives already processed (typically
 log-transformed, normalized intensities). The standard path is a linear
-model with [limma](https://bioconductor.org/packages/limma):
+model with [limma](https://bioconductor.org/packages/limma), which
+accepts a matrix:
 
 ``` r
 
 library(limma)
-eset <- getGEO("GSE2553")[[1]]
-design <- model.matrix(~ group, data = pData(eset))
-fit <- eBayes(lmFit(exprs(eset), design))
+library(SummarizedExperiment)
+se <- getGEO("GSE2553")[[1]]                 # SummarizedExperiment (default)
+design <- model.matrix(~ group, data = colData(se))
+fit <- eBayes(lmFit(assay(se), design))
 topTable(fit, coef = 2)
 ```
 
 The hardest part is usually not the model but extracting clean grouping
-variables from `pData(eset)` — GEO sample metadata is free text, so
+variables from `colData(se)` — GEO sample metadata is free text, so
 expect to parse `characteristics_ch1` fields.
 
 ## RNA-seq counts: DESeq2 / edgeR / limma-voom
@@ -73,13 +75,15 @@ quality-control → normalization → clustering → annotation arc.
 
 Two recurring needs:
 
-- **Modernize the container.** Convert an `ExpressionSet` to a
-  `SummarizedExperiment` (the substrate most newer tools expect) without
-  re-downloading:
+- **Modernize a legacy result.**
+  [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
+  returns `SummarizedExperiment` by default now, but if you have an
+  older `ExpressionSet` (or asked for one with
+  `returnType = "ExpressionSet"`), convert it without re-downloading:
 
   ``` r
 
-  se <- as_SummarizedExperiment(getGEO("GSE2553")[[1]])
+  se <- as_SummarizedExperiment(getGEO("GSE2553", returnType = "ExpressionSet")[[1]])
   ```
 
 - **Re-annotate features.** GEO platform annotation can be dated. For

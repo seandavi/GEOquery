@@ -18,7 +18,7 @@ getGEO(
   AnnotGPL = FALSE,
   getGPL = TRUE,
   parseCharacteristics = TRUE,
-  returnType = c("ExpressionSet", "SummarizedExperiment")
+  returnType = c("SummarizedExperiment", "ExpressionSet")
 )
 ```
 
@@ -88,19 +88,20 @@ getGEO(
 
 - returnType:
 
-  One of "ExpressionSet" (default) or "SummarizedExperiment". For GSE
-  Series Matrix results, controls whether each entity is returned as an
-  `ExpressionSet` or coerced to a `SummarizedExperiment`. SOFT-format
-  results (GDS/GPL/GSM/GSE S4 objects) are unaffected. The default will
-  change to "SummarizedExperiment" in a future release.
+  One of "SummarizedExperiment" (default) or "ExpressionSet". For GSE
+  Series Matrix results, controls whether each entity is returned as a
+  `SummarizedExperiment` or an `ExpressionSet`. SOFT-format results
+  (GDS/GPL/GSM/GSE S4 objects) are unaffected. As of this release the
+  default is "SummarizedExperiment"; pass `returnType = "ExpressionSet"`
+  for the previous behavior.
 
 ## Value
 
 An object of the appropriate class (GDS, GPL, GSM, or GSE) is returned.
-If the GSEMatrix option is used, then a list of ExpressionSet objects is
-returned, one for each SeriesMatrix file associated with the GSE
-accesion. If the filename argument is used in combination with a
-GSEMatrix file, then the return value is a single ExpressionSet.
+If the GSEMatrix option is used, then a list of `SummarizedExperiment`
+objects is returned by default (or `ExpressionSet` objects if
+`returnType = "ExpressionSet"`), one for each SeriesMatrix file
+associated with the GSE accession.
 
 ## Details
 

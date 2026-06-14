@@ -21,13 +21,13 @@ BiocManager::install("GEOquery")
 
 library(GEOquery)
 
-# A GSE via the fast Series Matrix path -> a list of ExpressionSet,
-# one per platform.
+# A GSE via the fast Series Matrix path -> a list of SummarizedExperiment,
+# one per platform. (Pass returnType = "ExpressionSet" for the legacy class.)
 gse <- getGEO("GSE2553")
-eset <- gse[[1]]
-exprs(eset)    # expression matrix
-pData(eset)    # sample metadata
-fData(eset)    # feature annotation
+se <- gse[[1]]
+assay(se)      # expression matrix
+colData(se)    # sample metadata
+rowData(se)    # feature annotation
 
 # Other entity types parse to GEOquery's S4 classes:
 getGEO("GSM11805")   # a sample

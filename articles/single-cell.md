@@ -10,11 +10,11 @@ ecosystem.
 ## Why single-cell data is different
 
 For a microarray or bulk RNA-seq study, the processed matrix lives in
-the GEO **Series Matrix** file, and `getGEO("GSE...")` hands you an
-`ExpressionSet` directly. **Single-cell data almost never works this
-way.** The Series Matrix for a single-cell `GSE` is usually empty or
-contains only sample-level metadata, because a per-cell matrix with tens
-of thousands of columns does not belong in GEO’s sample-by-feature
+the GEO **Series Matrix** file, and `getGEO("GSE...")` hands you a
+`SummarizedExperiment` directly. **Single-cell data almost never works
+this way.** The Series Matrix for a single-cell `GSE` is usually empty
+or contains only sample-level metadata, because a per-cell matrix with
+tens of thousands of columns does not belong in GEO’s sample-by-feature
 table.
 
 Instead, the actual data lives in **supplementary files** (see

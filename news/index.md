@@ -2,6 +2,22 @@
 
 ## GEOquery (development version)
 
+### Breaking changes
+
+- **[`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
+  now returns `SummarizedExperiment` objects by default** for GSE Series
+  Matrix records (previously `ExpressionSet`). Update downstream code
+  from
+  [`exprs()`](https://rdrr.io/pkg/Biobase/man/exprs.html)/[`pData()`](https://rdrr.io/pkg/Biobase/man/phenoData.html)/[`fData()`](https://rdrr.io/pkg/Biobase/man/featureData.html)
+  to
+  [`assay()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)/[`colData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)/[`rowData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html),
+  or pass `returnType = "ExpressionSet"` to keep the old behavior.
+  Existing results can also be converted with
+  [`as_SummarizedExperiment()`](http://seandavi.github.io/GEOquery/reference/as_SummarizedExperiment.md).
+  SOFT-format results (GDS/GPL/GSM/GSE S4 objects) are unaffected. See
+  ADR-0002 and ADR-0005
+  ([\#168](https://github.com/seandavi/GEOquery/issues/168)).
+
 ### New features
 
 - Optional persistent download cache backed by **BiocFileCache**. Set

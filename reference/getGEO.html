@@ -13,7 +13,7 @@ each of the important parts of the GEO SOFT format easily accessible."></head><b
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.20</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.21</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,7 +49,7 @@ each of the important parts of the GEO SOFT format easily accessible."></head><b
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Get a GEO object from NCBI or file</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/R/getGEO.R" class="external-link"><code>R/getGEO.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/feat/se-default/R/getGEO.R" class="external-link"><code>R/getGEO.R</code></a></small>
       <div class="d-none name"><code>getGEO.Rd</code></div>
     </div>
 
@@ -71,7 +71,7 @@ each of the important parts of the GEO SOFT format easily accessible.</p>
 <span>  AnnotGPL <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  getGPL <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  parseCharacteristics <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  returnType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ExpressionSet"</span>, <span class="st">"SummarizedExperiment"</span><span class="op">)</span></span>
+<span>  returnType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SummarizedExperiment"</span>, <span class="st">"ExpressionSet"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -139,20 +139,21 @@ Set this to FALSE if you experience trouble while parsing the characteristics.</
 
 
 <dt id="arg-returntype">returnType<a class="anchor" aria-label="anchor" href="#arg-returntype"></a></dt>
-<dd><p>One of "ExpressionSet" (default) or "SummarizedExperiment".
-For GSE Series Matrix results, controls whether each entity is returned as an
-<code>ExpressionSet</code> or coerced to a <code>SummarizedExperiment</code>. SOFT-format
-results (GDS/GPL/GSM/GSE S4 objects) are unaffected. The default will change to
-"SummarizedExperiment" in a future release.</p></dd>
+<dd><p>One of "SummarizedExperiment" (default) or "ExpressionSet".
+For GSE Series Matrix results, controls whether each entity is returned as a
+<code>SummarizedExperiment</code> or an <code>ExpressionSet</code>. SOFT-format results
+(GDS/GPL/GSM/GSE S4 objects) are unaffected. As of this release the default is
+"SummarizedExperiment"; pass <code>returnType = "ExpressionSet"</code> for the
+previous behavior.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>An object of the appropriate class (GDS, GPL, GSM, or GSE) is
-returned.  If the GSEMatrix option is used, then a list of ExpressionSet
-objects is returned, one for each SeriesMatrix file associated with the GSE
-accesion.  If the filename argument is used in combination with a GSEMatrix
-file, then the return value is a single ExpressionSet.</p>
+returned.  If the GSEMatrix option is used, then a list of
+<code>SummarizedExperiment</code> objects is returned by default (or
+<code>ExpressionSet</code> objects if <code>returnType = "ExpressionSet"</code>), one for
+each SeriesMatrix file associated with the GSE accession.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>

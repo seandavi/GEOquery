@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.20</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.21</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
       <p class="author">Sean Davis</p>
 
 
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/vignettes/articles/single-cell.qmd" class="external-link"><code>vignettes/articles/single-cell.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/feat/se-default/vignettes/articles/single-cell.qmd" class="external-link"><code>vignettes/articles/single-cell.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -83,7 +83,7 @@
     <p>Single-cell studies are now a large fraction of GEO submissions, but they do not fit the classic GEO mental model. This article explains <em>why</em> single-cell data is awkward to retrieve, the file formats you will meet, and how GEOquery’s single-cell functions turn them into <code>SingleCellExperiment</code> objects ready for the Bioconductor single-cell ecosystem.</p>
 <section class="level2"><h2 id="why-single-cell-data-is-different">Why single-cell data is different<a class="anchor" aria-label="anchor" href="#why-single-cell-data-is-different"></a>
 </h2>
-<p>For a microarray or bulk RNA-seq study, the processed matrix lives in the GEO <strong>Series Matrix</strong> file, and <code>getGEO("GSE...")</code> hands you an <code>ExpressionSet</code> directly. <strong>Single-cell data almost never works this way.</strong> The Series Matrix for a single-cell <code>GSE</code> is usually empty or contains only sample-level metadata, because a per-cell matrix with tens of thousands of columns does not belong in GEO’s sample-by-feature table.</p>
+<p>For a microarray or bulk RNA-seq study, the processed matrix lives in the GEO <strong>Series Matrix</strong> file, and <code>getGEO("GSE...")</code> hands you a <code>SummarizedExperiment</code> directly. <strong>Single-cell data almost never works this way.</strong> The Series Matrix for a single-cell <code>GSE</code> is usually empty or contains only sample-level metadata, because a per-cell matrix with tens of thousands of columns does not belong in GEO’s sample-by-feature table.</p>
 <p>Instead, the actual data lives in <strong>supplementary files</strong> (see <a href="geo-data-formats.html">Understanding GEO data formats</a>). So a single-cell workflow is fundamentally <em>supplementary-files-first</em>: you must <strong>look at what is attached, decide what is loadable, and then load it</strong> — which is exactly the shape of the GEOquery single-cell API.</p>
 </section><section class="level2"><h2 id="the-file-formats-you-will-meet">The file formats you will meet<a class="anchor" aria-label="anchor" href="#the-file-formats-you-will-meet"></a>
 </h2>

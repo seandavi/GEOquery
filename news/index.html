@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.20</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.21</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,11 +43,16 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/feat/se-default/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="geoquery-development-version">GEOquery (development version)<a class="anchor" aria-label="anchor" href="#geoquery-development-version"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
+<ul><li>
+<strong><code><a href="../reference/getGEO.html">getGEO()</a></code> now returns <code>SummarizedExperiment</code> objects by default</strong> for GSE Series Matrix records (previously <code>ExpressionSet</code>). Update downstream code from <code><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs()</a></code>/<code><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html" class="external-link">pData()</a></code>/<code><a href="https://rdrr.io/pkg/Biobase/man/featureData.html" class="external-link">fData()</a></code> to <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay()</a></code>/<code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData()</a></code>/<code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData()</a></code>, or pass <code>returnType = "ExpressionSet"</code> to keep the old behavior. Existing results can also be converted with <code><a href="../reference/as_SummarizedExperiment.html">as_SummarizedExperiment()</a></code>. SOFT-format results (GDS/GPL/GSM/GSE S4 objects) are unaffected. See ADR-0002 and ADR-0005 (<a href="https://github.com/seandavi/GEOquery/issues/168" class="external-link">#168</a>).</li>
+</ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
 <ul><li>Optional persistent download cache backed by <strong>BiocFileCache</strong>. Set <code>options(GEOquery.cache = TRUE)</code> to have downloads keyed on their URL and reused across sessions (location defaults to <code>tools::R_user_dir("GEOquery", "cache")</code>, overridable via <code>options(GEOquery.cache.path = ...)</code>). New <code><a href="../reference/geoCache.html">geoCache()</a></code> and <code><a href="../reference/clearGEOCache.html">clearGEOCache()</a></code> expose and clear it. Off by default for now, preserving the historical <code>destdir</code> behavior (<a href="https://github.com/seandavi/GEOquery/issues/171" class="external-link">#171</a>).</li>
