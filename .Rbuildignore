@@ -13,6 +13,7 @@ Dockerfile
 ^LICENSE\.md$
 ^CITATION\.cff$
 ^adr$
+^dev$
 ^CLAUDE\.md$
 ^ROADMAP\.md$
 ^CONTRIBUTING\.md$

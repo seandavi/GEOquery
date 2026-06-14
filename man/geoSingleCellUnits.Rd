@@ -10,15 +10,18 @@ geoSingleCellUnits(manifest)
 \item{manifest}{A data.frame returned by \code{geoSingleCellManifest()}.}
 }
 \value{
-A data.frame with columns \code{sample}, \code{format},
-\code{n_files}, \code{status}, and \code{loadable}.
+A data.frame with columns \code{unit} (the grouping key),
+\code{sample}, \code{platform} (GPL, or NA), \code{format}, \code{n_files},
+\code{status}, and \code{loadable}.
 }
 \description{
-Collapses a \code{\link{geoSingleCellManifest}} into one row per loadable
-unit (a sample + format combination) and reports completeness. A 10x Matrix
-Market unit is "complete" only when its matrix, barcodes, and features files
-are all present; single-file formats (h5ad, 10x h5, loom, rds) are always
-complete. The \code{loadable} column flags units a reader can consume.
+Collapses a \code{\link{geoSingleCellManifest}} into one row per unit and
+reports completeness. A 10x Matrix Market unit groups a sample's matrix,
+barcodes, and features files and is "complete" only when all three are
+present; every other format is one unit per file. The \code{loadable} column
+flags units a built-in reader can consume -- complete 10x Matrix Market, 10x
+HDF5, and AnnData h5ad. loom and Seurat \code{.rds} are reported but not
+loadable (read them with their native packages).
 }
 \examples{
 \dontrun{
