@@ -322,3 +322,17 @@ test_that("whole-study .h5ad.gz files are one unit each (#190)", {
     expect_equal(nrow(u), 3L)
     expect_true(all(u$loadable))
 })
+
+test_that("getGEOSingleCell reads a (modern) h5ad into a SingleCellExperiment (#190)", {
+    skip_if_no_integration()
+    skip_if_not_installed("anndataR")
+    skip_if_not_installed("SingleCellExperiment")
+    # GSE312831 is a small (~2 MB) whole-study .h5ad written with a recent
+    # anndata, so anndataR can import it. Exercises the h5ad reader pathway
+    # end-to-end (found via the OmicIDX GEO parquet; see dev/ notes).
+    res <- getGEOSingleCell("GSE312831", destdir = tempfile("ad_"))
+    expect_type(res, "list")
+    expect_length(res, 1L)
+    expect_s4_class(res[[1]], "SingleCellExperiment")
+    expect_gt(nrow(res[[1]]), 0L)
+})
