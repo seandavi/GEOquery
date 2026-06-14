@@ -106,6 +106,49 @@ test_that(".sc_manifest_from_gsms returns an empty manifest for no input", {
     expect_true(all(c("fname", "sample", "format", "role", "url") %in% colnames(m)))
 })
 
+# A minimal SingleCellExperiment with the given feature (row) names.
+.fake_sce <- function(genes, cells) {
+    m <- matrix(
+        seq_len(length(genes) * length(cells)),
+        nrow = length(genes),
+        dimnames = list(genes, cells)
+    )
+    SingleCellExperiment::SingleCellExperiment(assays = list(counts = m))
+}
+
+test_that(".combine_sce binds samples that share all features (#190)", {
+    skip_if_not_installed("SingleCellExperiment")
+    a <- .fake_sce(c("g1", "g2", "g3"), c("c1", "c2"))
+    b <- .fake_sce(c("g1", "g2", "g3"), c("c3", "c4", "c5"))
+    out <- GEOquery:::.combine_sce(list(A = a, B = b))
+    expect_equal(nrow(out), 3L)
+    expect_equal(ncol(out), 5L)
+    expect_equal(rownames(out), c("g1", "g2", "g3"))
+})
+
+test_that(".combine_sce restricts to common features when they differ (#190)", {
+    skip_if_not_installed("SingleCellExperiment")
+    a <- .fake_sce(c("g1", "g2", "g3"), c("c1", "c2"))
+    b <- .fake_sce(c("g2", "g3", "g4"), c("c3", "c4"))
+    expect_message(
+        out <- GEOquery:::.combine_sce(list(A = a, B = b)),
+        "Combining on 2 feature"
+    )
+    expect_equal(nrow(out), 2L)
+    expect_equal(ncol(out), 4L)
+    expect_setequal(rownames(out), c("g2", "g3"))
+})
+
+test_that(".combine_sce errors when samples share no features (#190)", {
+    skip_if_not_installed("SingleCellExperiment")
+    a <- .fake_sce(c("g1", "g2"), c("c1"))
+    b <- .fake_sce(c("g3", "g4"), c("c2"))
+    expect_error(
+        GEOquery:::.combine_sce(list(A = a, B = b)),
+        "no common features"
+    )
+})
+
 # ---- Integration tests (live network; GSE132771) --------------------------
 # GSE132771 ships only a GSE..._RAW.tar at the series level; its per-sample 10x
 # triplets live in each GSM suppl directory. Exercises the GSM-level fallback
@@ -157,4 +200,30 @@ test_that("getGEOSingleCell(GSE, samples=) reads selected samples (#190)", {
         samples = c("GSM3891614", "GSM3891615"), destdir = tempfile("sc_"))
     expect_named(res, c("GSM3891614", "GSM3891615"))
     expect_s4_class(res[[1]], "SingleCellExperiment")
+})
+
+test_that("getGEOSingleCell(combine=TRUE) binds same-platform samples (#190)", {
+    skip_if_no_integration()
+    skip_if_not_installed("TENxIO")
+    skip_if_not_installed("SingleCellExperiment")
+    # GSM3891614/615 are both mouse (GPL21103) -> identical features.
+    out <- getGEOSingleCell("GSE132771",
+        samples = c("GSM3891614", "GSM3891615"), destdir = tempfile("sc_"),
+        combine = TRUE)
+    expect_s4_class(out, "SingleCellExperiment")
+    expect_gt(ncol(out), 0L)
+})
+
+test_that("getGEOSingleCell(combine=TRUE) errors on incompatible platforms (#190)", {
+    skip_if_no_integration()
+    skip_if_not_installed("TENxIO")
+    skip_if_not_installed("SingleCellExperiment")
+    # GSM3891612 is mouse (GPL21103), GSM3891620 is human (GPL24676): no shared
+    # features, so a combined object is impossible -- expect a clear error.
+    expect_error(
+        getGEOSingleCell("GSE132771",
+            samples = c("GSM3891612", "GSM3891620"), destdir = tempfile("sc_"),
+            combine = TRUE),
+        "no common features"
+    )
 })
