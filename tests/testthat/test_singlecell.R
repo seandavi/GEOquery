@@ -94,3 +94,67 @@ test_that(".select_sc_units honors samples and format filters (#158)", {
     expect_equal(GEOquery:::.select_sc_units(units, samples = "GSM2")$load$sample, "GSM2")
     expect_equal(nrow(GEOquery:::.select_sc_units(units, format = "10x_mtx")$load), 0L)
 })
+
+test_that("geoSingleCellManifest rejects non-GSE/GSM accessions", {
+    expect_error(geoSingleCellManifest("GPL570"), "GSE or GSM")
+    expect_error(geoSingleCellManifest("GDS507"), "GSE or GSM")
+})
+
+test_that(".sc_manifest_from_gsms returns an empty manifest for no input", {
+    m <- GEOquery:::.sc_manifest_from_gsms(character(0))
+    expect_equal(nrow(m), 0L)
+    expect_true(all(c("fname", "sample", "format", "role", "url") %in% colnames(m)))
+})
+
+# ---- Integration tests (live network; GSE132771) --------------------------
+# GSE132771 ships only a GSE..._RAW.tar at the series level; its per-sample 10x
+# triplets live in each GSM suppl directory. Exercises the GSM-level fallback
+# and the GSM-accession entry point.
+
+test_that("geoSingleCellManifest(GSM) inventories a single sample (#190)", {
+    skip_if_no_integration()
+    m <- geoSingleCellManifest("GSM3891612")
+    expect_equal(nrow(m), 3L)
+    expect_true(all(m$sample == "GSM3891612"))
+    expect_true(all(m$format == "10x_mtx"))
+    expect_setequal(m$role, c("matrix", "barcodes", "features"))
+})
+
+test_that("geoSingleCellManifest(GSE) falls back to GSM-level files (#190)", {
+    skip_if_no_integration()
+    # Series level is only a _RAW.tar -> no loadable units -> GSM fallback.
+    m <- geoSingleCellManifest("GSE132771")
+    expect_gt(nrow(m), 3L)
+    expect_true(all(m$format == "10x_mtx"))
+    u <- geoSingleCellUnits(m)
+    expect_true(all(u$loadable))
+    expect_gt(sum(u$loadable), 1L)
+})
+
+test_that("geoSingleCellManifest(GSE, samples=) restricts without enumerating all (#190)", {
+    skip_if_no_integration()
+    m <- geoSingleCellManifest("GSE132771", samples = c("GSM3891612", "GSM3891613"))
+    expect_setequal(unique(m$sample), c("GSM3891612", "GSM3891613"))
+})
+
+test_that("getGEOSingleCell reads a GSM into a SingleCellExperiment (#190)", {
+    skip_if_no_integration()
+    skip_if_not_installed("TENxIO")
+    skip_if_not_installed("SingleCellExperiment")
+    res <- getGEOSingleCell("GSM3891612", destdir = tempfile("sc_"))
+    expect_type(res, "list")
+    expect_named(res, "GSM3891612")
+    expect_s4_class(res[[1]], "SingleCellExperiment")
+    expect_gt(nrow(res[[1]]), 0L)
+    expect_gt(ncol(res[[1]]), 0L)
+})
+
+test_that("getGEOSingleCell(GSE, samples=) reads selected samples (#190)", {
+    skip_if_no_integration()
+    skip_if_not_installed("TENxIO")
+    skip_if_not_installed("SingleCellExperiment")
+    res <- getGEOSingleCell("GSE132771",
+        samples = c("GSM3891614", "GSM3891615"), destdir = tempfile("sc_"))
+    expect_named(res, c("GSM3891614", "GSM3891615"))
+    expect_s4_class(res[[1]], "SingleCellExperiment")
+})

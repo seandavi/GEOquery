@@ -1,3 +1,9 @@
+# GEOquery 2.81.22 (2026-06-14)
+
+## New features
+
+- `geoSingleCellManifest()` and `getGEOSingleCell()` now handle the common case where a Series ships only a `GSE..._RAW.tar` at the series level and the per-sample files live in each sample's own GSM suppl directory (e.g. GSE132771). When the series level has no loadable single-cell units, the manifest falls back to enumerating the Series' samples (via `getGEO()`) and inventorying each GSM suppl directory. Both functions also accept a GSM accession directly (`getGEOSingleCell("GSM3891612")`), and `geoSingleCellManifest()` gains a `samples` argument to restrict to specific GSMs without enumerating the whole Series. Unit files are downloaded by URL, so the readers work whether the data lives at the series or sample level (#190).
+
 # GEOquery 2.81.21 (2026-06-13)
 
 ## Breaking changes

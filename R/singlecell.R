@@ -6,6 +6,14 @@
 # can see what a study contains -- and how 10x triplets group by sample --
 # before downloading what may be many gigabytes. The classification logic is
 # factored into pure helpers so it can be tested without network access.
+#
+# A GSE's series-level suppl directory often does NOT hold the per-sample
+# single-cell files directly: many studies (e.g. GSE132771) ship only a
+# `GSE..._RAW.tar`, with the loadable 10x triplets / h5 / h5ad living in each
+# sample's own GSM suppl directory. When the series level yields nothing
+# loadable, the manifest falls back to enumerating the series' samples (via
+# getGEO()) and inventorying each GSM suppl directory. A GSM accession may also
+# be passed directly to inventory or load a single sample.
 
 # Classify a single supplementary filename into a (format, role) pair.
 .classify_sc_file <- function(fname) {
@@ -107,35 +115,117 @@ geoSingleCellUnits <- function(manifest) {
     .sc_units(manifest)
 }
 
-#' Inventory the single-cell supplementary files of a GEO Series
-#'
-#' Lists the supplementary files attached to a GSE and classifies each by
-#' single-cell format (10x Matrix Market triplet, 10x HDF5, AnnData h5ad, loom,
-#' Seurat rds, tar archive, or other), extracting the GSM sample id where
-#' present. This lets you see what a single-cell study contains -- and how 10x
-#' triplets group by sample -- before downloading potentially many gigabytes.
-#'
-#' No files are downloaded. The result feeds the planned single-cell readers
-#' (see ADR-0004); reading itself uses Bioconductor importers (TENxIO, anndataR)
-#' that are optional dependencies.
-#'
-#' @param GEO A GEO Series accession, e.g. "GSE161228".
-#' @return A data.frame with columns \code{fname}, \code{sample} (GSM id or NA),
-#'   \code{format}, \code{role}, and \code{url}. Zero rows if the GSE has no
-#'   supplementary files.
-#' @seealso \code{\link{getGEOSuppFiles}}
-#' @examples
-#' \dontrun{
-#'   m <- geoSingleCellManifest("GSE161228")
-#'   m
-#' }
-#' @export
-geoSingleCellManifest <- function(GEO) {
+# Inventory a single accession's suppl directory and classify the files. For a
+# GSM, any filename that does not itself embed the GSM id still belongs to that
+# sample, so fill NA sample ids with the accession.
+.sc_manifest_for_accession <- function(GEO) {
     files <- getGEOSuppFiles(GEO, fetch_files = FALSE, quiet = TRUE)
     if (is.null(files) || nrow(files) == 0) {
         return(.classify_sc_files(character(0), character(0)))
     }
-    .classify_sc_files(files$fname, files$url)
+    m <- .classify_sc_files(files$fname, files$url)
+    if (toupper(substr(GEO, 1, 3)) == "GSM") {
+        m$sample[is.na(m$sample)] <- GEO
+    }
+    m
+}
+
+# Enumerate the GSM accessions belonging to a GSE. Uses getGEO() (Series Matrix
+# path, GPL fetch skipped for speed) and reads the sample ids off the returned
+# object column names. Returns character(0) on any failure.
+.gse_gsm_ids <- function(GEO) {
+    es <- tryCatch(
+        getGEO(GEO, GSEMatrix = TRUE, getGPL = FALSE),
+        error = function(e) NULL
+    )
+    if (is.null(es)) {
+        return(character(0))
+    }
+    if (!is.list(es)) {
+        es <- list(es)
+    }
+    ids <- unlist(lapply(es, function(x) {
+        tryCatch(colnames(x), error = function(e) NULL)
+    }), use.names = FALSE)
+    unique(ids[grepl("^GSM", ids)])
+}
+
+# Build a single-cell manifest from a set of GSM accessions by inventorying each
+# sample's suppl directory and stacking the results.
+.sc_manifest_from_gsms <- function(gsms) {
+    parts <- lapply(gsms, function(g) {
+        tryCatch(.sc_manifest_for_accession(g), error = function(e) NULL)
+    })
+    parts <- Filter(function(x) !is.null(x) && nrow(x) > 0, parts)
+    if (length(parts) == 0) {
+        return(.classify_sc_files(character(0), character(0)))
+    }
+    out <- do.call(rbind, parts)
+    rownames(out) <- NULL
+    out
+}
+
+#' Inventory the single-cell supplementary files of a GEO Series or Sample
+#'
+#' Lists the supplementary files attached to a GSE (or a single GSM) and
+#' classifies each by single-cell format (10x Matrix Market triplet, 10x HDF5,
+#' AnnData h5ad, loom, Seurat rds, tar archive, or other), extracting the GSM
+#' sample id where present. This lets you see what a single-cell study contains
+#' -- and how 10x triplets group by sample -- before downloading potentially
+#' many gigabytes.
+#'
+#' For a GSE, the series-level suppl directory is inventoried first. Many
+#' single-cell studies ship only a \code{GSE..._RAW.tar} there, with the
+#' loadable per-sample files (10x triplets, h5, h5ad) living in each sample's
+#' own GSM suppl directory. When the series level yields no loadable units, the
+#' manifest falls back to enumerating the series' samples (via
+#' \code{\link{getGEO}}) and inventorying each GSM suppl directory. Pass a GSM
+#' accession to inventory just that one sample.
+#'
+#' No files are downloaded. The result feeds the single-cell readers (see
+#' ADR-0004); reading itself uses Bioconductor importers (TENxIO, anndataR)
+#' that are optional dependencies.
+#'
+#' @param GEO A GEO Series (\code{"GSE..."}) or Sample (\code{"GSM..."})
+#'   accession, e.g. "GSE132771" or "GSM3891612".
+#' @param samples Optional character vector of GSM ids. For a GSE, restricts the
+#'   inventory to these samples; when the series level has no loadable units this
+#'   also avoids enumerating the whole series. Ignored when \code{GEO} is a GSM.
+#' @return A data.frame with columns \code{fname}, \code{sample} (GSM id or NA),
+#'   \code{format}, \code{role}, and \code{url}. Zero rows if nothing is found.
+#' @seealso \code{\link{getGEOSuppFiles}}, \code{\link{getGEOSingleCell}}
+#' @examples
+#' \dontrun{
+#'   geoSingleCellManifest("GSE132771")        # GSE: falls back to GSM level
+#'   geoSingleCellManifest("GSM3891612")       # a single sample
+#' }
+#' @export
+geoSingleCellManifest <- function(GEO, samples = NULL) {
+    geotype <- toupper(substr(GEO, 1, 3))
+    if (geotype == "GSM") {
+        return(.sc_manifest_for_accession(GEO))
+    }
+    if (geotype != "GSE") {
+        stop("geoSingleCellManifest() requires a GSE or GSM accession; got '",
+            GEO, "'.", call. = FALSE)
+    }
+    # Series-level suppl files first. If they already hold loadable per-sample
+    # single-cell units, use them (optionally restricted to `samples`).
+    series_m <- .sc_manifest_for_accession(GEO)
+    if (any(.sc_units(series_m)$loadable %in% TRUE)) {
+        if (!is.null(samples)) {
+            series_m <- series_m[series_m$sample %in% samples, , drop = FALSE]
+            rownames(series_m) <- NULL
+        }
+        return(series_m)
+    }
+    # Otherwise fall back to per-sample (GSM) suppl directories.
+    gsms <- if (!is.null(samples)) samples else .gse_gsm_ids(GEO)
+    if (length(gsms) == 0) {
+        return(series_m)
+    }
+    gsm_m <- .sc_manifest_from_gsms(gsms)
+    if (nrow(gsm_m) > 0) gsm_m else series_m
 }
 
 
@@ -263,22 +353,43 @@ readGEOSingleCell <- function(x, format = NULL) {
     list(load = load, skip = skip)
 }
 
-#' Download and read the single-cell data of a GEO Series
+# Download the files of one loadable unit (rows of the manifest, each carrying a
+# full `url`) into destdir, skipping any already present, and return the local
+# paths. Downloading by URL -- rather than re-listing a suppl directory -- works
+# whether the files live at the series level or in a GSM suppl directory.
+.download_sc_unit <- function(unit_files, destdir) {
+    dir.create(destdir, showWarnings = FALSE, recursive = TRUE)
+    vapply(seq_len(nrow(unit_files)), function(i) {
+        dest <- file.path(destdir, unit_files$fname[i])
+        if (!file.exists(dest)) {
+            downloadFile(unit_files$url[i], dest, quiet = TRUE)
+        }
+        dest
+    }, character(1))
+}
+
+#' Download and read the single-cell data of a GEO Series or Sample
 #'
-#' High-level, best-effort convenience wrapper: inventories the GSE
+#' High-level, best-effort convenience wrapper: inventories the GSE (or GSM)
 #' (\code{\link{geoSingleCellManifest}}), groups files into loadable units
 #' (\code{\link{geoSingleCellUnits}}), downloads each loadable unit, reads it
 #' with \code{\link{readGEOSingleCell}}, and returns the results. It reports
 #' which units it loads and which it skips.
 #'
 #' This handles common, well-structured layouts (clean per-sample 10x or
-#' h5ad). It does NOT handle every GSE: loom and Seurat \code{.rds} formats,
-#' files packaged inside a \code{_RAW.tar} archive, and idiosyncratic layouts
-#' (e.g. a single combined matrix for many samples) are out of scope -- use the
-#' manifest plus \code{readGEOSingleCell()} directly for those.
+#' h5ad), including the very common case where the series ships only a
+#' \code{_RAW.tar} and the per-sample files live in each GSM suppl directory
+#' (the manifest falls back to the GSM level automatically). You may also pass a
+#' single GSM accession to load just that sample. It does NOT handle every GSE:
+#' loom and Seurat \code{.rds} formats, files available \emph{only} inside a
+#' \code{_RAW.tar} archive, and idiosyncratic layouts (e.g. a single combined
+#' matrix for many samples) are out of scope -- use the manifest plus
+#' \code{readGEOSingleCell()} directly for those.
 #'
-#' @param GEO A GEO Series accession, e.g. "GSE161228".
-#' @param samples Optional character vector of GSM ids to restrict to.
+#' @param GEO A GEO Series (\code{"GSE..."}) or Sample (\code{"GSM..."})
+#'   accession, e.g. "GSE132771" or "GSM3891612".
+#' @param samples Optional character vector of GSM ids to restrict to. Ignored
+#'   when \code{GEO} is itself a GSM.
 #' @param format Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad").
 #' @param combine Logical; if TRUE attempt to \code{cbind} the per-sample
 #'   objects into one (requires matching features). Default FALSE returns a list.
@@ -286,10 +397,17 @@ readGEOSingleCell <- function(x, format = NULL) {
 #' @return A named list of \code{SingleCellExperiment} (one per sample), or a
 #'   single combined object if \code{combine = TRUE}.
 #' @seealso \code{\link{geoSingleCellManifest}}, \code{\link{readGEOSingleCell}}
+#' @examples
+#' \dontrun{
+#'   sce <- getGEOSingleCell("GSM3891612")                  # one sample
+#'   all <- getGEOSingleCell("GSE132771")                   # whole series
+#'   two <- getGEOSingleCell("GSE132771",
+#'                           samples = c("GSM3891612", "GSM3891613"))
+#' }
 #' @export
 getGEOSingleCell <- function(GEO, samples = NULL, format = NULL, combine = FALSE,
     destdir = tempdir()) {
-    manifest <- geoSingleCellManifest(GEO)
+    manifest <- geoSingleCellManifest(GEO, samples = samples)
     units <- geoSingleCellUnits(manifest)
     sel <- .select_sc_units(units, samples, format)
     if (nrow(sel$load) == 0) {
@@ -309,9 +427,7 @@ getGEOSingleCell <- function(GEO, samples = NULL, format = NULL, combine = FALSE
         u <- sel$load[i, ]
         message(sprintf("Loading %s (%s)...", u$sample, u$format))
         unit_files <- manifest[manifest$sample %in% u$sample & manifest$format == u$format, ]
-        dl <- getGEOSuppFiles(GEO, fetch_files = TRUE, baseDir = destdir,
-            filter_regex = u$sample, quiet = TRUE)
-        local <- dl$filepath[basename(dl$filepath) %in% unit_files$fname]
+        local <- .download_sc_unit(unit_files, destdir)
         results[[u$sample]] <- readGEOSingleCell(local, format = u$format)
     }
     if (combine && length(results) > 1) {
