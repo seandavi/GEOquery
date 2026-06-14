@@ -2,6 +2,7 @@ library(testthat)
 context("geo_rnaseq")
 
 test_that("getGSEDownloadPageURLs returns character vector", {
+    skip_if_no_integration()
   gse <- "GSE83322"
   result <- getGSEDownloadPageURLs(gse)
 
@@ -10,6 +11,7 @@ test_that("getGSEDownloadPageURLs returns character vector", {
 })
 
 test_that("getRNAQuantRawCountsURL returns character vector", {
+    skip_if_no_integration()
   gse <- "GSE83322"
   links <- getGSEDownloadPageURLs(gse)
   result <- getRNAQuantRawCountsURL(links)
@@ -19,6 +21,7 @@ test_that("getRNAQuantRawCountsURL returns character vector", {
 })
 
 test_that("getRNAQuantAnnotationURL returns character vector", {
+    skip_if_no_integration()
   gse <- "GSE83322"
   links <- getGSEDownloadPageURLs(gse)
   result <- getRNAQuantAnnotationURL(links)
@@ -30,6 +33,7 @@ test_that("getRNAQuantAnnotationURL returns character vector", {
 links <- getGSEDownloadPageURLs("GSE83322")
 
 test_that("readRNAQuantRawCounts returns matrix", {
+    skip_if_no_integration()
   link <- getRNAQuantRawCountsURL(links)
   result <- readRNAQuantRawCounts(link)
 
@@ -39,6 +43,7 @@ test_that("readRNAQuantRawCounts returns matrix", {
 })
 
 test_that("readRNAQuantAnnotation returns data.frame", {
+    skip_if_no_integration()
   link <- getRNAQuantAnnotationURL(links)
   result <- readRNAQuantAnnotation(link)
 
@@ -48,6 +53,7 @@ test_that("readRNAQuantAnnotation returns data.frame", {
 })
 
 test_that("getRNASeqQuantResults returns list", {
+    skip_if_no_integration()
   gse <- "GSE83322"
   result <- getRNASeqQuantResults(gse)
 
@@ -58,6 +64,7 @@ test_that("getRNASeqQuantResults returns list", {
 })
 
 test_that("getRNASeqData returns SummarizedExperiment", {
+    skip_if_no_integration()
   gse <- "GSE83322"
   result <- getRNASeqData(gse)
 
@@ -67,6 +74,7 @@ test_that("getRNASeqData returns SummarizedExperiment", {
 })
 
 test_that("hasRNASeqQuantifications returns logical", {
+    skip_if_no_integration()
   gse <- "GSE83322"
   result <- hasRNASeqQuantifications(gse)
 
@@ -74,6 +82,7 @@ test_that("hasRNASeqQuantifications returns logical", {
 })
 
 test_that("hasRNASeqQuantifications returns TRUE for GSE83322", {
+    skip_if_no_integration()
   gse <- "GSE83322"
   result <- hasRNASeqQuantifications(gse)
 
@@ -81,6 +90,7 @@ test_that("hasRNASeqQuantifications returns TRUE for GSE83322", {
 })
 
 test_that("hasRNASeqQuantifications returns FALSE for GSE2553", {
+    skip_if_no_integration()
   gse <- "GSE2553"
   result <- hasRNASeqQuantifications(gse)
 
@@ -88,6 +98,7 @@ test_that("hasRNASeqQuantifications returns FALSE for GSE2553", {
 })
 
 test_that("getRNASeqQuantGenomeInfo returns correct data", {
+    skip_if_no_integration()
   genome_info <- getRNASeqQuantGenomeInfo("GSE83322")
 
   expect_length(genome_info, 3)

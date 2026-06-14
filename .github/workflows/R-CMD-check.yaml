@@ -10,11 +10,73 @@ name: R-CMD-check
 
 permissions: read-all
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  # Detect whether any package-relevant files changed. Docs-only changes
+  # (adr/, ROADMAP/CLAUDE/CONTRIBUTING/README, issue templates, _pkgdown.yml,
+  # etc.) skip the expensive, network-bound checks entirely.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - 'R/**'
+              - 'src/**'
+              - 'tests/**'
+              - 'vignettes/**'
+              - 'man/**'
+              - 'inst/**'
+              - 'data/**'
+              - 'DESCRIPTION'
+              - 'NAMESPACE'
+              - 'NEWS.md'
+              - '.github/workflows/**'
+
+  # Linux checks run inside the Bioconductor devel container: pre-installed
+  # system libraries and core Bioconductor packages, binary installs, and no
+  # tag to bump (`:devel` always tracks current Bioconductor devel).
+  bioc-check:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    name: bioc-devel (linux)
+    container:
+      image: bioconductor/bioconductor_docker:devel
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          options(repos = BiocManager::repositories())
+          install.packages(c("remotes", "rcmdcheck"))
+          remotes::install_deps(dependencies = TRUE)
+        shell: Rscript {0}
+
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
+          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+
+  # Cross-platform checks (macOS + Windows) via r-lib setup. Windows is the
+  # most fragile leg (vignette/HDF5 toolchain), so it is continue-on-error:
+  # it still runs and keeps logs, but does not block the gate.
   R-CMD-check:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    continue-on-error: ${{ matrix.config.os == 'windows-latest' }}
 
     strategy:
       fail-fast: false
@@ -22,9 +84,6 @@ jobs:
         config:
           - {os: macos-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,   r: 'release'}
-          - {os: ubuntu-latest,   r: 'oldrel-1'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -50,3 +109,26 @@ jobs:
         with:
           upload-snapshots: true
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+
+  # Single required status check. Branch protection requires `all-checks`
+  # instead of the individual jobs, so docs-only PRs (checks skipped) stay
+  # mergeable, while code PRs gate on the Linux (bioc-devel) and macOS
+  # results. Windows is continue-on-error and never fails this gate.
+  all-checks:
+    if: always()
+    needs: [changes, bioc-check, R-CMD-check]
+    runs-on: ubuntu-latest
+    name: all-checks
+    steps:
+      - name: Required checks passed
+        run: |
+          bioc="${{ needs.bioc-check.result }}"
+          xplat="${{ needs.R-CMD-check.result }}"
+          echo "bioc-check: ${bioc:-skipped} | R-CMD-check: ${xplat:-skipped}"
+          for r in "$bioc" "$xplat"; do
+            if [ "$r" = "failure" ] || [ "$r" = "cancelled" ]; then
+              echo "::error::a required check did not pass"
+              exit 1
+            fi
+          done
+          echo "OK"

@@ -20,11 +20,13 @@
 #' 
 #' @keywords IO
 #' @examples
+#' \dontrun{
 #' 
 #' dfl = getGSEDataTables('GSE3494')
 #' lapply(dfl,head)
 #'
 #' 
+#' }
 #' @export 
 getGSEDataTables <- function(GSE) {
     url = sprintf("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?targ=self&form=xml&view=full&acc=%s",

@@ -1,20 +1,41 @@
-# GEOquery 2.99.1 (unreleased)
+# GEOquery (development version)
+
+## Breaking changes
+
+- **`getGEO()` now returns `SummarizedExperiment` objects by default** for GSE Series Matrix records (previously `ExpressionSet`). Update downstream code from `exprs()`/`pData()`/`fData()` to `assay()`/`colData()`/`rowData()`, or pass `returnType = "ExpressionSet"` to keep the old behavior. Existing results can also be converted with `as_SummarizedExperiment()`. SOFT-format results (GDS/GPL/GSM/GSE S4 objects) are unaffected. See ADR-0002 and ADR-0005 (#168).
+
+## New features
+
+- Optional persistent download cache backed by **BiocFileCache**. Set `options(GEOquery.cache = TRUE)` to have downloads keyed on their URL and reused across sessions (location defaults to `tools::R_user_dir("GEOquery", "cache")`, overridable via `options(GEOquery.cache.path = ...)`). New `geoCache()` and `clearGEOCache()` expose and clear it. Off by default for now, preserving the historical `destdir` behavior (#171).
+- New `readGEOSingleCell()` and `getGEOSingleCell()` read GEO single-cell supplementary data into `SingleCellExperiment` objects: 10x Matrix Market and 10x HDF5 via **TENxIO**, AnnData `.h5ad` via **anndataR** (optional `Suggests`). `getGEOSingleCell()` returns a named list of per-sample objects (combine with care) and reports which units it loads and skips. loom, Seurat `.rds`, files inside `_RAW.tar`, and idiosyncratic layouts are intentionally out of scope — use `geoSingleCellManifest()` + `readGEOSingleCell()` for those (#158, #190).
+- New `geoSingleCellManifest()` inventories a GSE's supplementary files and classifies them by single-cell format (10x Matrix Market triplet, 10x HDF5, AnnData h5ad, loom, Seurat rds, tar), grouping by GSM sample — so you can see what a single-cell study contains before downloading. `geoSingleCellUnits()` collapses the manifest into loadable units (per sample + format) and flags completeness (e.g. an incomplete 10x triplet). Steps toward single-cell readers (ADR-0004) (#158, #188, #189).
+- `getGEO()` gains a `returnType` argument. With `returnType = "SummarizedExperiment"`, GSE Series Matrix results are returned as `SummarizedExperiment` objects instead of `ExpressionSet`. The default remains `"ExpressionSet"` for now (with a one-time notice) and will switch to `"SummarizedExperiment"` in a future release. A new exported `as_SummarizedExperiment()` coerces an existing `ExpressionSet` result without re-downloading. See ADR-0002 (#168).
+- Downloads now stream to disk instead of buffering the entire response in memory, retry on transient HTTP errors, and honor a configurable `GEOquery.download.timeout` option (default 300 seconds) — replacing the previous enforced 120-second floor that ignored lower user timeouts. Failures raise a typed `geoquery_download_error` carrying the URL and HTTP status. `getDirListing()` now uses the same httr2 layer (#147, #173).
+- GEOquery now raises typed error conditions — `geoquery_error` and subclasses (`geoquery_private_accession`, `geoquery_download_error`, `geoquery_parse_error`, `geoquery_bad_accession`) — so failures can be handled programmatically with `tryCatch()` (#170, #184, #186).
+- `getGEOSuppFiles()` gains a `quiet` argument (defaulting to the `GEOquery.quiet` option, or `FALSE`) to suppress informational messages such as "No supplemental files found" and "Using locally cached version" (#68, #182).
+
+## Documentation
+
+- The S4 class and accessor documentation is filled in: the `GEOData` accessors (`Meta`, `Table`, `Columns`, `dataTable`, `Accession`, `GSMList`, `GPLList`) now have real descriptions, return values, and examples, and the class pages no longer imply constructing objects with `new()` — they are returned by `getGEO()` (#103, #192).
+- Documentation is reorganized into narrative pkgdown **articles** — *Understanding GEO data formats*, *RNA-seq quantifications*, *Single-cell data from GEO*, and *From GEO to downstream analysis* — that cover the *why* (entity types, file formats) and downstream workflows with links to other Bioconductor packages. The package vignette is now a concise quick-start that indexes them; the articles render on the pkgdown site and are excluded from `R CMD check` (#156, #191).
+
+- The package `DESCRIPTION` and `biocViews` now describe GEOquery's actual scope (microarray, RNA-seq, and single-cell; GEO Series Matrix files parsed to `ExpressionSet` by default) instead of microarray-only (#71, #181).
 
 ## Bug Fixes
 
+- Supplemental-file URLs are now built with a small `url_join()` helper instead of `file.path()`, which mangled `https://` into `https:/` and produced double slashes. Affects `getGEOSuppFiles(fetch_files = FALSE)` and `getGEOSeriesFileListing()` (#131, #178).
+- `GDS2eSet()` no longer fails when a GDS has an `NA` (or empty) value in its `ID_REF` column (e.g. GDS3666). Such values are replaced with a usable feature name instead of producing "row names contain missing values" (#21, #177).
+- `getGEO()` now fails with a clear message when an accession is private, embargoed, or not yet public (NCBI returns an HTML page) instead of mis-parsing it or, in older versions, looping. `findFirstEntity()` is also hardened against a multi-line edge case that could error and against unbounded reads (#58, #176).
+- `getGEO(parseCharacteristics = FALSE)` now actually skips characteristics parsing. The flag was accepted at the top level but dropped before reaching `parseGSEMatrix()`; it is now threaded through `getAndParseGSEMatrices()` and `parseGEO()` (#60, #175).
 - Fixed error when parsing GSE matrix files with malformed or empty lines between sample metadata (e.g., GSE425). Sample lines are now extracted directly using pattern matching to avoid issues with irregular file formatting.
 
-# GEOquery 2.99.0 (2024-10-01)
+# GEOquery 2.75.0 (2024-10-01)
 
 ## New Features
 
 - RNAseq data support for GEOquery. Now you can use RNASeq quantification data prepared by NCBI.
 - Basic search in GEO database. Now you can search for datasets in GEO database using GEOquery.
 - browseGEO() function to open a web browser with a GEO accession.
-
-## Breaking changes
-
-- `getGEO()` now returns a list of SummarizedExperiment objects. This is a breaking change from previous versions of GEOquery. If you are using GEOquery in a script, you will need to update your code to reflect this change.
 
 ## Bug Fixes or Improvements
 

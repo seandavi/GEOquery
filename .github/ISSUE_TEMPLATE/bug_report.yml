@@ -1,0 +1,51 @@
+name: Bug report
+description: Report incorrect behavior, an error, or a parsing failure
+labels: ["bug", "needs-repro"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. The single most useful thing you can provide is a
+        **GEO accession** and a **minimal reproducible example** — most GEOquery
+        bugs are specific to how one record is formatted on NCBI.
+  - type: input
+    id: accession
+    attributes:
+      label: GEO accession(s)
+      description: The GSE / GSM / GPL / GDS accession(s) that trigger the problem.
+      placeholder: e.g. GSE23397
+    validations:
+      required: true
+  - type: textarea
+    id: reprex
+    attributes:
+      label: Reproducible example
+      description: Minimal R code that reproduces the issue. Please use a reprex if you can.
+      render: r
+      placeholder: |
+        library(GEOquery)
+        gse <- getGEO("GSE23397", GSEMatrix = TRUE)
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: What happened?
+      description: The full error message, warning, or wrong output. Paste the verbatim console output.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: false
+  - type: textarea
+    id: sessioninfo
+    attributes:
+      label: Session info
+      description: Output of `sessionInfo()` (or `sessioninfo::session_info()`). Includes your GEOquery and R versions.
+      render: text
+    validations:
+      required: true

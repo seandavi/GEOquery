@@ -23,12 +23,15 @@ tables.  This function simply downloads the ``header'' information from the
 GSE record and parses out the data tables into R data.frames.
 }
 \examples{
+\dontrun{
 
 dfl = getGSEDataTables('GSE3494')
 lapply(dfl,head)
 
 
 }
+}
+
 \seealso{
 \code{\link{getGEO}}
 }

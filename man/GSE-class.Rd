@@ -11,8 +11,8 @@
 Contains a GEO Series entity
 }
 \section{Objects from the Class}{
- Objects can be created by calls of the form
-\code{new('GSE', ...)}.
+ Objects of this class are returned by
+\code{\link{getGEO}}; they are not normally constructed directly.
 }
 
 \seealso{

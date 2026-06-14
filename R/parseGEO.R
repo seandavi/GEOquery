@@ -25,6 +25,9 @@
 #' @param AnnotGPL Fetch the annotation GPL if available
 #' @param getGPL Fetch the GPL associated with a GSEMatrix entity (should
 #' remain TRUE for all normal use cases)
+#' @param parseCharacteristics Whether or not to parse the characteristics
+#' information (if available) for a GSE Matrix file. Set to FALSE if you
+#' experience trouble parsing the characteristics.
 #' @return parseGEO returns an object of the associated type.  For example, if
 #' it is passed the text from a GDS entry, a GDS object is returned.
 #' @author Sean Davis
@@ -32,7 +35,8 @@
 #' @keywords IO
 #' 
 #' @export
-parseGEO <- function(fname, GSElimits, destdir = tempdir(), AnnotGPL = FALSE, getGPL = TRUE) {
+parseGEO <- function(fname, GSElimits, destdir = tempdir(), AnnotGPL = FALSE, getGPL = TRUE,
+    parseCharacteristics = TRUE) {
     con <- fileOpen(fname)
     first.entity <- findFirstEntity(con)
     close(con)
@@ -43,7 +47,8 @@ parseGEO <- function(fname, GSElimits, destdir = tempdir(), AnnotGPL = FALSE, ge
     }, platform = {
         parseGPL(fname)
     }, `0` = {
-        parseGSEMatrix(fname, destdir = destdir, AnnotGPL = AnnotGPL, getGPL = getGPL)$eset
+        parseGSEMatrix(fname, destdir = destdir, AnnotGPL = AnnotGPL, getGPL = getGPL,
+            parseCharacteristics = parseCharacteristics)$eset
     }, )
     return(ret)
 }
@@ -215,16 +220,27 @@ parseGSE <- function(fname, GSElimits = NULL) {
 
 
 findFirstEntity <- function(con) {
-    while (TRUE) {
+    # Safety bound: a well-formed file terminates via the length-0 check below,
+    # but a misbehaving connection should not spin forever (see #58).
+    max_chunks <- 100000L
+    for (chunk in seq_len(max_chunks)) {
         line <- suppressWarnings(readLines(con, 100))
         if (length(line) == 0)
             return(0)
+        # An HTML response almost always means the accession is private,
+        # embargoed, not yet public, or does not exist. Fail clearly rather
+        # than mis-parsing the error page as an empty SOFT/series-matrix file
+        # (which previously surfaced as a cryptic downstream error; see #58).
+        if (any(grepl("<!DOCTYPE|<html|not currently public|could not be found",
+            line, ignore.case = TRUE))) {
+            .abort_private_accession()
+        }
         entity.line <- grep("^\\^(DATASET|SAMPLE|SERIES|PLATFORM|ANNOTATION)", line,
             ignore.case = TRUE, value = TRUE, perl = TRUE)
         entity.line <- gsub("annotation", "platform", entity.line, ignore.case = TRUE)
         if (length(entity.line) > 0) {
-            ret <- c(tolower(sub("\\^", "", strsplit(entity.line, " = ")[[1]][1])),
-                strsplit(entity.line, " = ")[[1]][2])
+            parts <- strsplit(entity.line[1], " = ")[[1]]
+            ret <- c(tolower(sub("\\^", "", parts[1])), parts[2])
             return(ret)
         }
         # catch GSE SeriesMatrix files
@@ -232,10 +248,10 @@ findFirstEntity <- function(con) {
             perl = TRUE)
         # Messy, but GSEMatrix files use tab-separation rather than '=' for
         # separation, so if the ' = ' is not present, we presume to have a
-        # GSEMatrix file (return 0)
-        if (length(checkline) > 0) {
-            if (!grepl(" = ", checkline))
-                return(0)
+        # GSEMatrix file (return 0). Use any() so a chunk with more than one
+        # matching line does not error (condition length > 1).
+        if (length(checkline) > 0 && !any(grepl(" = ", checkline))) {
+            return(0)
         }
     }
     return(0)
@@ -450,7 +466,7 @@ getAndParseGSEMatrices <- function(GEO, destdir, AnnotGPL, getGPL = TRUE, parseC
             downloadFile(url, destfile = destfile, mode = "wb")
         }
         ret[[b[i]]] <- parseGSEMatrix(destfile, destdir = destdir, AnnotGPL = AnnotGPL,
-            getGPL = getGPL)$eset
+            getGPL = getGPL, parseCharacteristics = parseCharacteristics)$eset
     }
     return(ret)
 }

@@ -3,6 +3,7 @@ library(limma)
 context('GEO conversions')
 
 test_that("GDS2eSet works", {
+    skip_if_no_integration()
     gds = getGEO(filename=system.file("extdata/GDS507.soft.gz",package="GEOquery"))
 
     eset = GDS2eSet(gds)
@@ -14,6 +15,7 @@ test_that("GDS2eSet works", {
 })
     
 test_that("GDS2MA works", {
+    skip_if_no_integration()
     gds = getGEO(filename=system.file("extdata/GDS507.soft.gz",package="GEOquery"))
     
     malist = GDS2MA(gds)

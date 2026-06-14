@@ -1,298 +1,77 @@
 ---
-title: "Using the GEOquery Package"
+title: "Getting started with GEOquery"
 author: "Sean Davis"
-date: "2025-08-16"
-last-modified: {{< meta last-modified >}}
+date: "2026-06-13"
 format:
   html:
     toc: true
+execute:
+  eval: false
 vignette: >
-  %\VignetteIndexEntry{Using GEOquery (Quarto)}
+  %\VignetteIndexEntry{Getting started with GEOquery}
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
-  
-```{r setup}
-#| message: false
-#| warning: false
-#| echo: false
+
+GEOquery is the bridge between the NCBI Gene Expression Omnibus (GEO) and
+Bioconductor: it downloads and parses GEO records into Bioconductor objects.
+This page is a short quick-start and an index; the in-depth, narrative
+documentation lives in the **articles** listed below.
+
+## Install
+
+```r
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+BiocManager::install("GEOquery")
+```
+
+## Quick start
+
+```r
 library(GEOquery)
-library(knitr)
-```
 
-# Introduction to GEO and GEOquery
-
-The NCBI Gene Expression Omnibus ([GEO](https://www.ncbi.nlm.nih.gov/geo/)) was established in 2000 as a public repository for high-throughput molecular abundance data, primarily microarray data at the time. Today, GEO hosts a diverse array of data types including gene expression, genomic DNA, and protein abundance measurements from various technologies like microarrays, next-generation sequencing, and mass spectrometry.
-
-GEOquery was created to bridge the gap between this vast resource and Bioconductor's analytical tools. First released in 2007, GEOquery has evolved alongside GEO itself, adapting to new data types and formats over time.
-
-## Why GEOquery?
-
-Before GEOquery, researchers would need to:
-
-1. Manually download data from the GEO website
-2. Parse complex SOFT format files
-3. Construct data structures suitable for analysis
-4. Integrate metadata with expression data
-
-GEOquery automates this entire process, allowing researchers to focus on analysis rather than data acquisition and formatting.
-GEOquery also facilitates automation and reproducibility by incorporating data acquisition into workflows, scripts, or documents.
-
-## GEO Data Organization
-
-Understanding GEO's data organization is essential for effective use of GEOquery:
-  
-1. **Platform (GPL)**: Describes array design, probes, or detectable elements
-2. **Sample (GSM)**: Contains individual experiment measurements
-3. **Series (GSE)**: Groups related samples together, typically representing a complete study
-4. **Dataset (GDS)**: Curated by GEO staff, represents biologically and statistically comparable samples
-
-
-# Getting Started with GEOquery
-
-Before working with GEOquery (or any R or Bioconductor package), one must first install the package.
-Installation is a one-time (or at least not repeated often) operation. 
-To install GEOquery, ensure that you have [installed R and Bioconductor](https://bioconductor.org/install/).
-
-Then, to install GEOquery:
-
-```{r}
-#| eval: false
-BiocManager::install('GEOquery')
-```
-
-Before using GEOquery, we need to load the GEOquery library. 
-Loading the GEOquery library must be done _each time you start a new R session_.
-
-```{r}
-library(GEOquery)
-```
-
-## Downloading a GEO Series
-
-The most common use case is downloading a GEO Series (GSE), which typically represents a complete study:
-  
-```{r}
-# Download GSE2553
+# A GSE via the fast Series Matrix path -> a list of SummarizedExperiment,
+# one per platform. (Pass returnType = "ExpressionSet" for the legacy class.)
 gse <- getGEO("GSE2553")
-class(gse)
+se <- gse[[1]]
+assay(se)      # expression matrix
+colData(se)    # sample metadata
+rowData(se)    # feature annotation
+
+# Other entity types parse to GEOquery's S4 classes:
+getGEO("GSM11805")   # a sample
+getGEO("GPL96")      # a platform
+getGEO("GDS507")     # a curated dataset
+
+# See what supplementary files a study has, without downloading:
+getGEOSuppFiles("GSE63137", fetch_files = FALSE)
 ```
 
-Notice that `getGEO` returns a list. This is because a single GSE can contain experiments from multiple platforms. Each element of the list is an `ExpressionSet` containing data from one platform:
-  
-```{r}
-length(gse)
-gse[[1]]
-```
+## In-depth articles
 
-## Historical Context: SOFT Format vs GSEMatrix Files
+The articles go beyond the *how* to the *why* — the structure of GEO, the file
+formats, and how a GEOquery object connects to downstream Bioconductor
+workflows:
 
-GEO originally provided data in SOFT (Simple Omnibus Format in Text) format, which contained extensive information but was slow to parse for large datasets. In response to community needs, GEO introduced GSEMatrix files—a more efficient, tab-delimited format.
+- [**Understanding GEO data formats**](https://seandavi.github.io/GEOquery/articles/geo-data-formats.html)
+  — the four entity types, SOFT vs. Series Matrix, why `getGEO()` returns
+  different classes, and `ExpressionSet` vs. `SummarizedExperiment`.
+- [**RNA-seq quantifications from GEO**](https://seandavi.github.io/GEOquery/articles/rnaseq.html)
+  — NCBI's uniformly-computed counts and how to retrieve them.
+- [**Single-cell data from GEO**](https://seandavi.github.io/GEOquery/articles/single-cell.html)
+  — why single-cell data lives in supplementary files, and the
+  inspect → decide → load workflow into a `SingleCellExperiment`.
+- [**From GEO to downstream analysis**](https://seandavi.github.io/GEOquery/articles/downstream-analysis.html)
+  — taking a GEOquery object into limma / DESeq2 / edgeR / the single-cell
+  ecosystem, with links to the relevant packages.
 
-GEOquery defaults to using GSEMatrix files (`GSEMatrix=TRUE`) because:
-  1. Parsing is substantially faster (often by 10-100x)
-2. Memory usage is more efficient
-3. The resulting `ExpressionSet` objects are directly usable with Bioconductor tools
+## Getting help
 
-# Searching GEO Programmatically
-
-While GEO's web interface is powerful, programmatic searches enable automated data discovery and retrieval. GEOquery provides direct access to GEO's search capabilities:
-  
-```{r}
-#| tbl-cap: "Available GEO search fields."
-#| label: tbl-search-fields
-# What fields can we search?
-fields <- searchFieldsGEO()
-kable(fields)
-```
-
-GEO uses a specific search syntax with field identifiers in square brackets:
-  
-```{r}
-#| label: tbl-example-search
-#| tbl-cap: "Top search results for studies related to COVID-19 in humans with GEO-calculated RNA-seq counts available."
-# Find RNA-seq studies related to COVID-19 in humans
-results <- searchGEO('covid-19[All Fields] AND "rnaseq counts"[Filter] AND Homo sapiens[ORGN]')
-results |>
-  dplyr::mutate(Summary=paste(strtrim(Summary,120), '...')) |>
-  dplyr::mutate(Title = paste(strtrim(Title, 120), '...')) |>
-  head() |>
-  kable()
-```
-
-The search capabilities mirror GEO's web interface but allow for integration with R workflows.
-
-# RNA-seq Quantifications: NCBI's Solution to Reanalysis Challenges
-
-## The Challenge of RNA-seq Reanalysis
-
-A major barrier to exploiting the massive volume of public RNA-seq data has been the computational cost and expertise required to consistently process raw reads into usable expression values. Different processing pipelines can produce different results, making cross-study comparisons challenging.
-
-## NCBI's RNA-seq Quantification Pipeline
-
-To address this challenge, in 2020-2021, the NCBI SRA and GEO teams developed a standardized pipeline that precomputes RNA-seq gene expression counts for human and mouse datasets. As described in their [documentation](https://www.ncbi.nlm.nih.gov/geo/info/rnaseqcounts.html), this pipeline:
-  
-  1. Processes RNA-seq data from SRA using the HISAT2 aligner
-2. Generates gene expression counts using the featureCounts program
-3. Provides consistent annotation based on current genome builds
-4. Makes counts available in standardized formats
-
-GEOquery provides direct access to these precomputed counts:
-  
-```{r}
-# Check if RNA-seq quantifications are available
-has_quant <- hasRNASeqQuantifications("GSE164073")
-has_quant
-```
-
-```{r}
-#| eval: false
-# Get genome build and species information
-genome_info <- getRNASeqQuantGenomeInfo("GSE164073")
-genome_info
-```
-
-```{r}
-#| eval: false
-# Download and construct a SummarizedExperiment
-se <- getRNASeqData("GSE164073")
-se
-```
-
-This feature saves researchers significant time and computational resources while ensuring standardized processing across datasets.
-
-# Understanding Supplementary Files in GEO
-
-GEO accessions often include supplementary files containing raw data, processing scripts, or additional results not captured in the standard GEO formats. These files are invaluable for:
-  
-  1. Accessing raw data (e.g., CEL files, FASTQ files)
-2. Understanding custom processing pipelines
-3. Retrieving additional metadata or results
-
-GEOquery makes accessing these files straightforward:
-  
-```{r}
-# List available supplementary files without downloading
-supp_files <- getGEOSuppFiles('GSE63137', fetch_files = FALSE)
-head(supp_files)
-```
-
-You can filter files by pattern to find specific file types:
-  
-```{r}
-# Find all text files
-txt_files <- getGEOSuppFiles('GSE63137', fetch_files = FALSE, 
-                             filter_regex = 'txt')
-head(txt_files)
-```
-
-And download specific files or all supplementary files:
-  
-```{r}
-#| eval: false
-# Download all supplementary files for a sample
-getGEOSuppFiles('GSM15789') # Files saved to a new directory
-```
-
-# Navigating Between R and the GEO Web Interface
-
-Sometimes you may want to examine a GEO record in its web interface. GEOquery provides convenience functions for this:
-  
-```{r}
-#| eval: false
-# Get the URL for a GEO accession
-url <- urlForAccession("GSE262484")
-url
-
-# Open a browser to the GEO page
-browseGEOAccession("GSE262484")
-```
-
-For RNA-seq datasets specifically, there's a convenience function to search for RNA-seq counts on the GEO website:
-
-```{r}
-#| eval: false
-browseWebsiteRNASeqSearch()
-```
-
-These functions bridge the programmatic and web interfaces to GEO, allowing seamless transitions between analytical and exploratory modes.
-
-# Working with GDS Datasets
-
-GEO DataSets (GDS) are curated collections of samples, processed and normalized to be directly comparable. While less common in modern workflows, they remain available and GEOquery supports them:
-
-```{r}
-# Download a GDS dataset
-gds <- getGEO("GDS507")
-gds
-```
-
-GDS objects can be converted to Bioconductor data structures:
-
-```{r}
-# Convert to ExpressionSet (with log2 transformation)
-eset <- GDS2eSet(gds, do.log2=TRUE)
-eset
-```
-
-```{r}
-# Or to a limma MAList
-malist <- GDS2MA(gds)
-class(malist)
-```
-
-These conversions are particularly useful for integrating older GEO datasets into modern analytical workflows.
-
-# Advanced Features
-
-## Getting GSE Data Tables
-
-Some GSE records contain data tables with important metadata not captured in the standard GSE structure:
-
-```{r}
-# Get data tables from GSE3494
-dt_list <- getGSEDataTables("GSE3494")
-names(dt_list)
-head(dt_list[[1]])
-```
-
-## Working with GPL Platforms
-
-Platform records (GPL) contain important probe annotations:
-
-```{r}
-# Get a platform record
-gpl <- getGEO("GPL96")
-head(Table(gpl)[, 1:5])
-```
-
-When retrieving GSE records, GEOquery can automatically include GPL annotation:
-
-```{r}
-#| eval: false
-# Get GSE with GPL annotation
-gse_with_gpl <- getGEO("GSE2553", AnnotGPL=TRUE)
-head(fData(gse_with_gpl[[1]]))
-```
-
-# Reporting Bugs and Contributing
-
-As GEO continues to evolve, GEOquery adapts to support new features and data types. If you encounter issues:
-
-1. Check the [Bioconductor Support site](https://support.bioconductor.org/)
-2. Report bugs on [GitHub](https://github.com/seandavi/GEOquery/issues)
-3. Consider contributing via pull requests
-
-# Citing GEOquery
-
-If you use GEOquery in your research, please cite:
-
-```{r}
-citation("GEOquery")
-```
-
-# Session Information
-
-```{r}
-sessionInfo()
-```
+- Usage questions: the
+  [Bioconductor support site](https://support.bioconductor.org/), tagged
+  `geoquery`.
+- Bugs and feature requests: the
+  [issue tracker](https://github.com/seandavi/GEOquery/issues) — please include
+  a GEO accession and `sessionInfo()`.

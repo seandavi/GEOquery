@@ -1,5 +1,13 @@
+# Join a base URL and a path (or vector of paths) with a single slash,
+# preserving the scheme's '//'. Unlike file.path(), this does not collapse
+# 'https://' into 'https:/' and does not produce a double slash when the base
+# already ends in '/' (#131). Vectorized over `path`.
+url_join <- function(base, path) {
+    paste0(sub("/+$", "", base), "/", sub("^/+", "", path))
+}
+
 #' get a directory listing from NCBI GEO
-#' 
+#'
 #' This one makes some assumptions about the structure of the HTML response
 #' returned.
 #'
@@ -8,9 +16,12 @@
 #' 
 #' @importFrom xml2 read_html xml_text xml_find_all 
 getDirListing <- function(url) {
-    # Takes a URL and returns a character vector of filenames
-    a <- xml2::read_html(url)
-    fnames = grep("^G", xml_text(xml_find_all(a, "//a/@href")), value = TRUE)
+    # Fetch the index page through the shared httr2 request (.geo_request) so it
+    # uses the same timeout/retry handling as downloadFile and can be mocked in
+    # tests (#173). Returns a character vector of GEO filenames.
+    resp <- httr2::req_perform(.geo_request(url))
+    a <- xml2::read_html(httr2::resp_body_string(resp))
+    fnames <- grep("^G", xml2::xml_text(xml2::xml_find_all(a, "//a/@href")), value = TRUE)
     return(fnames)
 }
 
@@ -73,6 +84,9 @@ getGEOSuppFileURL <- function(GEO) {
 #'     files. If FALSE, just return the filenames that would have been
 #'     downloaded. Useful for testing and getting a list of files
 #'     without actual download.
+#' @param quiet logical(1). If TRUE, suppress informational messages such as
+#'     "No supplemental files found" and "Using locally cached version".
+#'     Defaults to the `GEOquery.quiet` option, or FALSE.
 #' @return If fetch_files=TRUE, a data frame is returned invisibly with rownames representing the
 #' full path of the resulting downloaded files and the records in the
 #' data.frame the output of file.info for each downloaded file.
@@ -80,6 +94,7 @@ getGEOSuppFileURL <- function(GEO) {
 #' @author Sean Davis <sdavis2@@mail.nih.gov>
 #' @keywords IO database
 #' @examples
+#' \dontrun{
 #' 
 #' a <- getGEOSuppFiles('GSM1137', fetch_files = FALSE)
 #' a
@@ -88,13 +103,15 @@ getGEOSuppFileURL <- function(GEO) {
 #' a <- getGEOSuppFiles('GSE161228', fetch_files = FALSE)
 #' a
 #' 
+#' }
 #' @export
 getGEOSuppFiles <- function(
     GEO,
     makeDirectory = TRUE,
     baseDir = getwd(),
     fetch_files = TRUE,
-    filter_regex = NULL
+    filter_regex = NULL,
+    quiet = getOption("GEOquery.quiet", FALSE)
 ) {
     geotype <- toupper(substr(GEO, 1, 3))
     storedir <- baseDir
@@ -102,9 +119,11 @@ getGEOSuppFiles <- function(
     url <- getGEOSuppFileURL(GEO)
     fnames <- try(getDirListing(url), silent = TRUE)
     if (inherits(fnames, "try-error")) {
-        message("No supplemental files found.")
-        message("Check URL manually if in doubt")
-        message(url)
+        if (!quiet) {
+            message("No supplemental files found.")
+            message("Check URL manually if in doubt")
+            message(url)
+        }
         return(NULL)
     }
     if (makeDirectory) {
@@ -126,8 +145,10 @@ getGEOSuppFiles <- function(
                       httr2::req_perform(path=destfile)
                     res <- 0
                 } else {
-                  message(sprintf("Using locally cached version of supplementary file(s) %s found here:\n%s ",
-                    GEO, destfile))
+                  if (!quiet) {
+                    message(sprintf("Using locally cached version of supplementary file(s) %s found here:\n%s ",
+                      GEO, destfile))
+                  }
                     res <- 0
                 }
             fileinfo[[destfile]] <- file.info(destfile)
@@ -139,7 +160,7 @@ getGEOSuppFiles <- function(
         ret$GEO <- GEO
         return(ret)
     } else {
-        return(data.frame(fname = fnames, url = file.path(url, fnames)))
+        return(data.frame(fname = fnames, url = url_join(url, fnames)))
     }
 }
 
@@ -158,12 +179,14 @@ getGEOSuppFiles <- function(
 #' @param GSE character(1) the GSE accession
 #' 
 #' @examples
+#' \dontrun{
 #' getGEOSeriesFileListing('GSE288770')
 #' 
+#' }
 #' @export
 getGEOSeriesFileListing <- function(GSE) {
   url = getGEOSuppFileURL(GSE)
-  ret <- readr::read_tsv(file.path(url,'filelist.txt'))
+  ret <- readr::read_tsv(url_join(url, 'filelist.txt'))
   ret |> 
     dplyr::rename_with(tolower) |>
     dplyr::rename('archive_or_file'='#archive/file')

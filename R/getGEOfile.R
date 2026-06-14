@@ -131,40 +131,57 @@ getGEORaw <- function(GEO, destdir = tempdir()) {
 }
 
 
-# internal use only
-downloadFile <- function(url, destfile, mode, quiet = TRUE) {
-  timeout_seconds <- max(getOption("timeout"), 120)
+# Build a configured httr2 request for an NCBI GEO URL: a courtesy user-agent,
+# an option-driven timeout (no artificial floor; see #147), and retries on
+# transient failures. Returning the request object (rather than performing it)
+# keeps callers mockable via httr2::with_mocked_responses() (#173).
+.geo_request <- function(url, timeout = getOption("GEOquery.download.timeout", 300)) {
+  httr2::request(url) |>
+    httr2::req_user_agent("GEOquery (https://github.com/seandavi/GEOquery)") |>
+    httr2::req_timeout(timeout) |>
+    httr2::req_retry(
+      max_tries = 3,
+      is_transient = function(resp) httr2::resp_status(resp) %in% c(429, 500, 502, 503, 504)
+    )
+}
 
-  result <- tryCatch(
-    {
-      req <- httr2::request(url) %>%
-        httr2::req_headers(`accept-encoding` = "gzip") %>%
-        httr2::req_timeout(timeout_seconds)
-
-      resp <- httr2::req_perform(req)
-
-      if (httr2::resp_status(resp) == 200) {
-        writeBin(httr2::resp_body_raw(resp), destfile)
-        return(TRUE)
-      } else {
-        stop("Failed to download file: ", httr2::resp_status(resp))
-      }
-    },
+# internal use only. `mode` is accepted for backward compatibility and ignored
+# (the response is streamed to disk in binary). On failure the partial file is
+# removed and a typed `geoquery_download_error` is raised (#170, #173).
+downloadFile <- function(url, destfile, mode = "wb", quiet = TRUE,
+    timeout = getOption("GEOquery.download.timeout", 300)) {
+  use_cache <- isTRUE(getOption("GEOquery.cache", FALSE))
+  # Cache hit: copy the cached file into place and skip the download (#171).
+  if (use_cache) {
+    cached <- tryCatch(.cache_lookup(url), error = function(...) NULL)
+    if (!is.null(cached) && file.exists(cached)) {
+      file.copy(cached, destfile, overwrite = TRUE)
+      if (!quiet) message("Using cached download: ", destfile)
+      return(invisible(TRUE))
+    }
+  }
+  req <- .geo_request(url, timeout) |>
+    httr2::req_headers(`accept-encoding` = "gzip")
+  tryCatch(
+    httr2::req_perform(req, path = destfile),
     error = function(e) {
-      message(e)
-      return(FALSE)
+      if (file.exists(destfile)) {
+        file.remove(destfile)
+      }
+      status <- tryCatch(httr2::resp_status(e$resp), error = function(...) NULL)
+      .abort_download(
+        sprintf("Failed to download '%s'.", url),
+        url = url, status = status, parent = e
+      )
     }
   )
-
-  message("File stored at:")
-  message(destfile)
-
-  ## if the download failed, remove the corrupted file and report the error
-  if (!result) {
-    if (file.exists(destfile)) {
-      file.remove(destfile)
-    }
-    stop(sprintf("Failed to download %s!", destfile))
+  # Cache miss: store the freshly downloaded file for next time (#171). A cache
+  # failure must never break the download.
+  if (use_cache) {
+    tryCatch(.cache_add(url, destfile), error = function(...) NULL)
   }
-  return(0)
+  if (!quiet) {
+    message("File stored at: ", destfile)
+  }
+  invisible(TRUE)
 }

@@ -2,7 +2,8 @@ library(GEOquery)
 context('get records without GPL')
 
 test_that("GSE without GPL works", {
-    gse = getGEO('GSE2553',getGPL=FALSE)[[1]]
+    skip_if_no_integration()
+    gse = getGEO('GSE2553', getGPL = FALSE, returnType = "ExpressionSet")[[1]]
     
     expect_true(validObject(gse))
     expect_equivalent(0,ncol(fData(gse)))
@@ -11,6 +12,7 @@ test_that("GSE without GPL works", {
 
 
 test_that("GDS without GPL works", {
+    skip_if_no_integration()
     gds = getGEO('GDS10')
     
     eset = GDS2eSet(gds,getGPL=FALSE)

@@ -3,7 +3,8 @@ context("GSE")
 
 
 test_that("empty GSE is handled correctly", {
-    gse = getGEO('GSE11413')
+    skip_if_no_integration()
+    gse = getGEO('GSE11413', returnType = "ExpressionSet")
 
     expect_is(gse, 'list')
     expect_is(gse[[1]], 'ExpressionSet')
@@ -12,25 +13,29 @@ test_that("empty GSE is handled correctly", {
 })
 
 test_that("case-mismatched IDs in GSEs handled correctly", {
-    gse = getGEO('GSE35683')
+    skip_if_no_integration()
+    gse = getGEO('GSE35683', returnType = "ExpressionSet")
 
     expect_equivalent(nrow(gse[[1]]), 54675)
 })
 
 test_that("single-sample GSE handled correctly", {
-    gse = getGEO("GSE11595")
+    skip_if_no_integration()
+    gse = getGEO("GSE11595", returnType = "ExpressionSet")
     
     expect_is(gse[[1]], "ExpressionSet")
     expect_equivalent(ncol(gse[[1]]),1)
 })
 
 test_that("short GSE handled correctly", {
-    gse = getGEO("GSE34145")
+    skip_if_no_integration()
+    gse = getGEO("GSE34145", returnType = "ExpressionSet")
 
     expect_equivalent(nrow(gse[[1]]), 15)
 })
 
 test_that("generic SOFT format GSE handled correctly", {
+    skip_if_no_integration()
     gse = getGEO('GSE1563',GSEMatrix=FALSE)
 
     expect_equal(62, length(GSMList(gse)))
@@ -44,7 +49,8 @@ test_that("generic SOFT format GSE handled correctly", {
 })
 
 test_that("GSE with more than one value per characteristic handled", {
-  gse = getGEO("GSE71989")
+    skip_if_no_integration()
+  gse = getGEO("GSE71989", returnType = "ExpressionSet")
   
   expect_equivalent(nrow(gse[[1]]), 54675)
   expect_equivalent(ncol(gse[[1]]), 22)
@@ -52,7 +58,8 @@ test_that("GSE with more than one value per characteristic handled", {
 
 
 test_that("GSE has populated experimentData", {
-  gse = getGEO("GSE53986")
+    skip_if_no_integration()
+  gse = getGEO("GSE53986", returnType = "ExpressionSet")
   
   ed <- experimentData(gse[[1]])
   expect_equal(pubMedIds(ed), "24739962")
@@ -66,7 +73,8 @@ test_that("GSE has populated experimentData", {
 })
 
 test_that("GSE populates experimentData as much as possible", {
-  gse = getGEO("GSE99709")
+    skip_if_no_integration()
+  gse = getGEO("GSE99709", returnType = "ExpressionSet")
   
   ed <- experimentData(gse[[1]])
   expect_equal(pubMedIds(ed), "")
@@ -78,7 +86,7 @@ test_that("GSE populates experimentData as much as possible", {
   expect_equivalent(ei[4], "RNA-Sequencing of Stat3 silenced oligodendrocyte progenitor cells.")
   expect_equivalent(ei[5], "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE99709") #url
   # ----------------------------------------------------------------
-  gse = getGEO("GSE27712")
+  gse = getGEO("GSE27712", returnType = "ExpressionSet")
   
   ed <- experimentData(gse[[1]])
   expect_equal(pubMedIds(ed), "22253802")
@@ -99,20 +107,23 @@ test_that("Empty files produces an error", {
 })
 
 test_that("GSE/GPL with integer64 columns handled correctly", {
-  gse = getGEO("GSE7864")[[1]]
+    skip_if_no_integration()
+  gse = getGEO("GSE7864", returnType = "ExpressionSet")[[1]]
   fdata = fData(gse)
   expect_s3_class(fdata$ID, "integer64")
   expect_is(rownames(fdata), "character")
 })
 
 test_that("Test regression against issue 144", {
-  gse = getGEO("GSE225759")[[1]]
+    skip_if_no_integration()
+  gse = getGEO("GSE225759", returnType = "ExpressionSet")[[1]]
   expect_equivalent(nrow(gse), 442)
   expect_equivalent(ncol(gse), 272)
 })
 
 test_that("GSE425 parsing with malformed sample lines", {
-  gse = getGEO("GSE425")
+    skip_if_no_integration()
+  gse = getGEO("GSE425", returnType = "ExpressionSet")
   expect_is(gse, 'list')
   expect_is(gse[[1]], 'ExpressionSet')
   expect_true(ncol(gse[[1]]) > 0)

@@ -9,12 +9,53 @@
 \alias{GSMList}
 \alias{Meta}
 \alias{Table}
-\title{Generic functions for GEOquery}
+\title{Accessors for GEOquery objects}
+\arguments{
+\item{object}{A GEOquery S4 object (\code{GSE}, \code{GSM}, \code{GPL},
+\code{GDS}, or \code{GEODataTable}).}
+}
+\value{
+\code{Meta()} a list; \code{Accession()} a character string;
+\code{Table()} and \code{Columns()} data.frames; \code{dataTable()} a
+\code{GEODataTable}; \code{GSMList()} and \code{GPLList()} named lists.
+}
 \description{
-The main documentation is in the Class documentation
+Accessor generics for the S4 objects returned by \code{\link{getGEO}} when
+parsing SOFT-format records (\code{GSE}, \code{GSM}, \code{GPL}, \code{GDS}).
+Use these rather than reaching into slots directly.
+}
+\details{
+\describe{
+  \item{\code{Meta(object)}}{The record metadata as a named list (title,
+    submission dates, sample/platform attributes, and so on).}
+  \item{\code{Accession(object)}}{The GEO accession (the
+    \code{geo_accession} metadata field).}
+  \item{\code{Table(object)}}{The data table as a \code{data.frame} -- for
+    example the measurement table of a \code{GSM} or the probe annotation of
+    a \code{GPL}.}
+  \item{\code{Columns(object)}}{A \code{data.frame} describing the columns of
+    \code{Table(object)}.}
+  \item{\code{dataTable(object)}}{The underlying \code{GEODataTable} object,
+    which holds both \code{Table()} and \code{Columns()}.}
+  \item{\code{GSMList(object)}}{For a \code{GSE}, the list of its \code{GSM}
+    sample objects.}
+  \item{\code{GPLList(object)}}{For a \code{GSE}, the list of its \code{GPL}
+    platform objects.}
+}
+}
+\examples{
+\dontrun{
+  gsm <- getGEO("GSM11805")
+  Meta(gsm)$title
+  head(Table(gsm))
+  Columns(gsm)
+
+  gse <- getGEO("GSE781", GSEMatrix = FALSE)
+  names(GSMList(gse))
+}
 }
 \seealso{
-\code{\link{GEOData-class}}
+\code{\link{GEOData-class}}, \code{\link{getGEO}}
 }
 \author{
 Sean Davis
