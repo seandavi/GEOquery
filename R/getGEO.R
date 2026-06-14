@@ -87,16 +87,17 @@
 #' @param parseCharacteristics A boolean defaulting to TRUE as to whether or not
 #' to parse the characteristics information (if available) for a GSE Matrix file.
 #' Set this to FALSE if you experience trouble while parsing the characteristics.
-#' @param returnType One of "ExpressionSet" (default) or "SummarizedExperiment".
-#' For GSE Series Matrix results, controls whether each entity is returned as an
-#' ExpressionSet or coerced to a SummarizedExperiment. SOFT-format results
-#' (GDS/GPL/GSM/GSE S4 objects) are unaffected. The default will change to
-#' "SummarizedExperiment" in a future release.
+#' @param returnType One of "SummarizedExperiment" (default) or
+#' "ExpressionSet". For GSE Series Matrix results, controls whether each entity
+#' is returned as a SummarizedExperiment or an ExpressionSet. SOFT-format
+#' results (GDS/GPL/GSM/GSE S4 objects) are unaffected. As of this release the
+#' default is "SummarizedExperiment"; pass returnType = "ExpressionSet" for the
+#' previous behavior.
 #' @return An object of the appropriate class (GDS, GPL, GSM, or GSE) is
-#' returned.  If the GSEMatrix option is used, then a list of ExpressionSet
-#' objects is returned, one for each SeriesMatrix file associated with the GSE
-#' accesion.  If the filename argument is used in combination with a GSEMatrix
-#' file, then the return value is a single ExpressionSet.
+#' returned.  If the GSEMatrix option is used, then a list of
+#' SummarizedExperiment objects is returned by default (or ExpressionSet
+#' objects if \code{returnType = "ExpressionSet"}), one for each SeriesMatrix
+#' file associated with the GSE accession.
 #' @section Warning : Some of the files that are downloaded, particularly those
 #' associated with GSE entries from GEO are absolutely ENORMOUS and parsing
 #' them can take quite some time and memory.  So, particularly when working
@@ -123,7 +124,7 @@
 #' @export
 getGEO <- function(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits = NULL,
     GSEMatrix = TRUE, AnnotGPL = FALSE, getGPL = TRUE, parseCharacteristics = TRUE,
-    returnType = c("ExpressionSet", "SummarizedExperiment")) {
+    returnType = c("SummarizedExperiment", "ExpressionSet")) {
     returnType_default <- missing(returnType)
     returnType <- match.arg(returnType)
     con <- NULL
@@ -157,12 +158,11 @@ getGEO <- function(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits =
     is_eset <- function(x) methods::is(x, "ExpressionSet")
     contains_eset <- (is.list(ret) && length(ret) > 0 && is_eset(ret[[1]])) || is_eset(ret)
 
-    if (notify_default && returnType == "ExpressionSet" && contains_eset) {
+    if (notify_default && returnType == "SummarizedExperiment" && contains_eset) {
         rlang::inform(
             paste0(
-                "getGEO() returns 'ExpressionSet' objects by default; a future ",
-                "version will default to 'SummarizedExperiment'. Pass ",
-                "returnType= explicitly to silence this message."
+                "getGEO() now returns SummarizedExperiment objects by default. ",
+                "Pass returnType = 'ExpressionSet' for the previous behavior."
             ),
             .frequency = "once", .frequency_id = "geoquery_returnType_default"
         )

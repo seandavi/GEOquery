@@ -13,7 +13,7 @@ getGEO(
   AnnotGPL = FALSE,
   getGPL = TRUE,
   parseCharacteristics = TRUE,
-  returnType = c("ExpressionSet", "SummarizedExperiment")
+  returnType = c("SummarizedExperiment", "ExpressionSet")
 )
 }
 \arguments{
@@ -60,18 +60,19 @@ specifying FALSE.}
 to parse the characteristics information (if available) for a GSE Matrix file.
 Set this to FALSE if you experience trouble while parsing the characteristics.}
 
-\item{returnType}{One of "ExpressionSet" (default) or "SummarizedExperiment".
-For GSE Series Matrix results, controls whether each entity is returned as an
-\code{ExpressionSet} or coerced to a \code{SummarizedExperiment}. SOFT-format
-results (GDS/GPL/GSM/GSE S4 objects) are unaffected. The default will change to
-"SummarizedExperiment" in a future release.}
+\item{returnType}{One of "SummarizedExperiment" (default) or "ExpressionSet".
+For GSE Series Matrix results, controls whether each entity is returned as a
+\code{SummarizedExperiment} or an \code{ExpressionSet}. SOFT-format results
+(GDS/GPL/GSM/GSE S4 objects) are unaffected. As of this release the default is
+"SummarizedExperiment"; pass \code{returnType = "ExpressionSet"} for the
+previous behavior.}
 }
 \value{
 An object of the appropriate class (GDS, GPL, GSM, or GSE) is
-returned.  If the GSEMatrix option is used, then a list of ExpressionSet
-objects is returned, one for each SeriesMatrix file associated with the GSE
-accesion.  If the filename argument is used in combination with a GSEMatrix
-file, then the return value is a single ExpressionSet.
+returned.  If the GSEMatrix option is used, then a list of
+\code{SummarizedExperiment} objects is returned by default (or
+\code{ExpressionSet} objects if \code{returnType = "ExpressionSet"}), one for
+each SeriesMatrix file associated with the GSE accession.
 }
 \description{
 This function is the main user-level function in the GEOquery package.  It

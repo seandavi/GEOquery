@@ -39,3 +39,8 @@ test_that(".applyReturnType coerces ExpressionSets and passes others through (#1
         "soft-object"
     )
 })
+
+test_that("getGEO defaults to SummarizedExperiment (#168)", {
+    # the default of the returnType argument is now SummarizedExperiment
+    expect_equal(eval(formals(getGEO)$returnType)[1], "SummarizedExperiment")
+})
