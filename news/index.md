@@ -20,20 +20,6 @@
 
 ### New features
 
-- Seurat interoperability for single-cell data (optional; `Seurat` in
-  `Suggests`).
-  [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
-  now reads `.rds` supplementary files containing a Seurat or
-  `SingleCellExperiment` object (detected by class, Seurat coerced to
-  `SingleCellExperiment`), and both
-  [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
-  and
-  [`getGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.md)
-  gain `as = "Seurat"` to return Seurat objects. `SingleCellExperiment`
-  remains the internal representation; see ADR-0006
-  ([\#195](https://github.com/seandavi/GEOquery/issues/195),
-  [\#196](https://github.com/seandavi/GEOquery/issues/196),
-  [\#197](https://github.com/seandavi/GEOquery/issues/197)).
 - Optional persistent download cache backed by **BiocFileCache**. Set
   `options(GEOquery.cache = TRUE)` to have downloads keyed on their URL
   and reused across sessions (location defaults to
@@ -54,8 +40,9 @@
   `.h5ad` via **anndataR** (optional `Suggests`).
   [`getGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.md)
   returns a named list of per-sample objects (combine with care) and
-  reports which units it loads and skips. loom, files inside `_RAW.tar`,
-  and idiosyncratic layouts are intentionally out of scope — use
+  reports which units it loads and skips. loom, Seurat `.rds`, files
+  inside `_RAW.tar`, and idiosyncratic layouts are intentionally out of
+  scope — use
   [`geoSingleCellManifest()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md) +
   [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
   for those ([\#158](https://github.com/seandavi/GEOquery/issues/158),

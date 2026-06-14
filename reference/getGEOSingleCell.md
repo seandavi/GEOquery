@@ -17,7 +17,6 @@ getGEOSingleCell(
   samples = NULL,
   format = NULL,
   combine = FALSE,
-  as = c("SingleCellExperiment", "Seurat"),
   destdir = tempdir()
 )
 ```
@@ -34,18 +33,12 @@ getGEOSingleCell(
 
 - format:
 
-  Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad",
-  "rds").
+  Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad").
 
 - combine:
 
   Logical; if TRUE attempt to `cbind` the per-sample objects into one
   (requires matching features). Default FALSE returns a list.
-
-- as:
-
-  Output class, one of "SingleCellExperiment" (default) or "Seurat"
-  (coerced via the Seurat package, an optional dependency).
 
 - destdir:
 
@@ -54,16 +47,15 @@ getGEOSingleCell(
 ## Value
 
 A named list of `SingleCellExperiment` (one per sample), or a single
-combined object if `combine = TRUE`; `Seurat` objects if
-`as = "Seurat"`.
+combined object if `combine = TRUE`.
 
 ## Details
 
-This handles common, well-structured layouts (clean per-sample 10x,
-h5ad, or a saved object in `.rds`). It does NOT handle every GSE: loom
-files, files packaged inside a `_RAW.tar` archive, and idiosyncratic
-layouts (e.g. a single combined matrix for many samples) are out of
-scope – use the manifest plus
+This handles common, well-structured layouts (clean per-sample 10x or
+h5ad). It does NOT handle every GSE: loom and Seurat `.rds` formats,
+files packaged inside a `_RAW.tar` archive, and idiosyncratic layouts
+(e.g. a single combined matrix for many samples) are out of scope – use
+the manifest plus
 [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
 directly for those.
 

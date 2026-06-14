@@ -15,7 +15,7 @@ which units it loads and which it skips."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.22</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.77.21</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,7 +51,7 @@ which units it loads and which it skips."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Download and read the single-cell data of a GEO Series</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/feat/seurat-support/R/singlecell.R" class="external-link"><code>R/singlecell.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/docs/readme/R/singlecell.R" class="external-link"><code>R/singlecell.R</code></a></small>
       <div class="d-none name"><code>getGEOSingleCell.Rd</code></div>
     </div>
 
@@ -70,7 +70,6 @@ which units it loads and which it skips.</p>
 <span>  samples <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  combine <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  as <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SingleCellExperiment"</span>, <span class="st">"Seurat"</span><span class="op">)</span>,</span>
 <span>  destdir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -88,18 +87,12 @@ which units it loads and which it skips.</p>
 
 
 <dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
-<dd><p>Optional format(s) to restrict to ("10x_mtx", "10x_h5",
-"h5ad", "rds").</p></dd>
+<dd><p>Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad").</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
 <dd><p>Logical; if TRUE attempt to <code>cbind</code> the per-sample
 objects into one (requires matching features). Default FALSE returns a list.</p></dd>
-
-
-<dt id="arg-as">as<a class="anchor" aria-label="anchor" href="#arg-as"></a></dt>
-<dd><p>Output class, one of "SingleCellExperiment" (default) or "Seurat"
-(coerced via the Seurat package, an optional dependency).</p></dd>
 
 
 <dt id="arg-destdir">destdir<a class="anchor" aria-label="anchor" href="#arg-destdir"></a></dt>
@@ -109,13 +102,12 @@ objects into one (requires matching features). Default FALSE returns a list.</p>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A named list of <code>SingleCellExperiment</code> (one per sample), or a
-single combined object if <code>combine = TRUE</code>; <code>Seurat</code> objects if
-<code>as = "Seurat"</code>.</p>
+single combined object if <code>combine = TRUE</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This handles common, well-structured layouts (clean per-sample 10x, h5ad, or
-a saved object in <code>.rds</code>). It does NOT handle every GSE: loom files,
+    <p>This handles common, well-structured layouts (clean per-sample 10x or
+h5ad). It does NOT handle every GSE: loom and Seurat <code>.rds</code> formats,
 files packaged inside a <code>_RAW.tar</code> archive, and idiosyncratic layouts
 (e.g. a single combined matrix for many samples) are out of scope – use the
 manifest plus <code><a href="readGEOSingleCell.html">readGEOSingleCell()</a></code> directly for those.</p>
