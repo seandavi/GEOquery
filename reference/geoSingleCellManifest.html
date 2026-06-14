@@ -53,7 +53,7 @@ many gigabytes."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Inventory the single-cell supplementary files of a GEO Series or Sample</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/R/singlecell.R" class="external-link"><code>R/singlecell.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/feat/sc-combine-by/R/singlecell.R" class="external-link"><code>R/singlecell.R</code></a></small>
       <div class="d-none name"><code>geoSingleCellManifest.Rd</code></div>
     </div>
 
@@ -89,7 +89,8 @@ also avoids enumerating the whole series. Ignored when <code>GEO</code> is a GSM
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A data.frame with columns <code>fname</code>, <code>sample</code> (GSM id or NA),
-<code>format</code>, <code>role</code>, and <code>url</code>. Zero rows if nothing is found.</p>
+<code>platform</code> (GPL accession or NA), <code>format</code>, <code>role</code>, and
+<code>url</code>. Zero rows if nothing is found.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -103,6 +104,12 @@ accession to inventory just that one sample.</p>
 <p>No files are downloaded. The result feeds the single-cell readers (see
 ADR-0004); reading itself uses Bioconductor importers (TENxIO, anndataR)
 that are optional dependencies.</p>
+<p>The <code>platform</code> column (GPL accession per sample) is populated when the
+manifest is built from the GSM level – the common single-cell case, and the
+one that matters, since a GSE can span multiple platforms (e.g. GSE132771
+mixes mouse and human). It is the grouping used by
+<code>getGEOSingleCell(by = "platform")</code>. It is <code>NA</code> for a single GSM,
+and for whole-study files attached at the series level (which have no GSM).</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

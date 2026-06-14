@@ -20,19 +20,38 @@
   enumerating the whole Series. Unit files are downloaded by URL, so the
   readers work whether the data lives at the series or sample level
   ([\#190](https://github.com/seandavi/GEOquery/issues/190)).
+- [`getGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.md)
+  gains a `by` argument — one of `"sample"` (default; a named list of
+  one `SingleCellExperiment` per sample), `"platform"` (a named list
+  keyed by platform/GPL, each platform’s samples combined), or `"all"`
+  (a single combined object) — replacing the previous `combine` flag. A
+  GEO Series can span multiple platforms (e.g. GSE132771 mixes mouse and
+  human), and the platform is the natural feature-compatibility
+  boundary, so `by = "platform"` is the right way to combine a
+  multi-platform study; the return shape is determined by the argument,
+  not the data.
+  [`geoSingleCellManifest()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md)
+  now reports a `platform` (GPL) column per sample, and
+  [`geoSingleCellUnits()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellUnits.md)
+  treats each whole-study single file as its own unit so a study’s
+  several `.h5ad` files are no longer merged into one bogus unit.
+  Gzipped single-file formats (`.h5ad.gz`, `.h5.gz`) are recognized and
+  transparently decompressed before reading. loom and Seurat `.rds` are
+  reported but flagged not loadable (no built-in reader)
+  ([\#190](https://github.com/seandavi/GEOquery/issues/190)).
 
 ### Bug Fixes
 
-- `getGEOSingleCell(combine = TRUE)` no longer fails with a cryptic
-  `cbind` error (`'mcols' ... do not match` or
+- Combining single-cell samples
+  (`getGEOSingleCell(by = "platform"|"all")`) no longer fails with a
+  cryptic `cbind` error (`'mcols' ... do not match` or
   `subscript contains invalid names`) when a Series’ samples have
   heterogeneous feature annotation — common in single-cell studies
-  (e.g. GSE132771 mixes mouse and human, and mixes 10x CellRanger v2
-  `genes.tsv` with v3 `features.tsv`, giving different rowData columns).
-  Samples are now restricted to their shared features and given one
-  canonical rowData (the shared columns) before binding; if they share
-  no features (so a single combined object is impossible) a clear,
-  actionable error is raised instead
+  (e.g. GSE132771 mixes 10x CellRanger v2 `genes.tsv` with v3
+  `features.tsv`, giving different rowData columns). Samples are
+  restricted to their shared features and given one canonical rowData
+  before binding; when they share no features (so a single combined
+  object is impossible) a clear, actionable error is raised
   ([\#190](https://github.com/seandavi/GEOquery/issues/190)).
 
 ## GEOquery 2.81.21 (2026-06-13)
