@@ -370,10 +370,14 @@ readGEOSingleCell <- function(x, format = NULL) {
 
 # cbind a list of SingleCellExperiments into one. Samples in a study often come
 # from different references/platforms (e.g. GSE132771 mixes mouse and human) or
-# CellRanger versions, so their feature sets -- and thus rowData -- differ and a
-# naive cbind() errors ("'mcols' ... do not match"). Restrict every object to
-# the features common to all, in one consistent order, so the rows align before
-# binding. Error clearly when there is no shared feature space to combine on.
+# CellRanger versions, so a naive cbind() fails two ways: the feature sets
+# (rownames) differ, and even when they match the rowData *columns* differ (10x
+# v2 genes.tsv -> ID,Symbol vs v3 features.tsv -> ID,Symbol,Type), which trips
+# cbind's "rowData must be identical" check ("subscript contains invalid names").
+# Align every object to the features common to all, in one consistent order, and
+# give them one canonical rowData (the first sample's, restricted to the columns
+# shared by all) so the rows match exactly before binding. Error clearly when
+# there is no shared feature space to combine on.
 .combine_sce <- function(results) {
     common <- Reduce(intersect, lapply(results, rownames))
     if (length(common) == 0) {
@@ -393,6 +397,17 @@ readGEOSingleCell <- function(x, format = NULL) {
         ))
     }
     aligned <- lapply(results, function(x) x[common, ])
+    # Impose one canonical rowData so heterogeneous per-sample feature annotation
+    # (differing columns or values for the same feature) cannot block the cbind.
+    common_cols <- Reduce(
+        intersect,
+        lapply(aligned, function(x) colnames(SummarizedExperiment::rowData(x)))
+    )
+    canon <- SummarizedExperiment::rowData(aligned[[1]])[, common_cols, drop = FALSE]
+    aligned <- lapply(aligned, function(x) {
+        SummarizedExperiment::rowData(x) <- canon
+        x
+    })
     do.call(SummarizedExperiment::cbind, aligned)
 }
 

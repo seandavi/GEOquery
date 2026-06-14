@@ -106,14 +106,24 @@ test_that(".sc_manifest_from_gsms returns an empty manifest for no input", {
     expect_true(all(c("fname", "sample", "format", "role", "url") %in% colnames(m)))
 })
 
-# A minimal SingleCellExperiment with the given feature (row) names.
-.fake_sce <- function(genes, cells) {
+# A minimal SingleCellExperiment with the given feature (row) names. `rowdata`
+# names the rowData columns to attach (each filled from the gene ids), mimicking
+# 10x v2 (genes.tsv -> ID,Symbol) vs v3 (features.tsv -> ID,Symbol,Type).
+.fake_sce <- function(genes, cells, rowdata = NULL) {
     m <- matrix(
         seq_len(length(genes) * length(cells)),
         nrow = length(genes),
         dimnames = list(genes, cells)
     )
-    SingleCellExperiment::SingleCellExperiment(assays = list(counts = m))
+    sce <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = m))
+    if (!is.null(rowdata)) {
+        rd <- S4Vectors::DataFrame(
+            lapply(stats::setNames(rowdata, rowdata), function(col) genes),
+            row.names = genes
+        )
+        SummarizedExperiment::rowData(sce) <- rd
+    }
+    sce
 }
 
 test_that(".combine_sce binds samples that share all features (#190)", {
@@ -146,6 +156,23 @@ test_that(".combine_sce errors when samples share no features (#190)", {
     expect_error(
         GEOquery:::.combine_sce(list(A = a, B = b)),
         "no common features"
+    )
+})
+
+test_that(".combine_sce binds samples with differing rowData columns (#190)", {
+    skip_if_not_installed("SingleCellExperiment")
+    # Same features, but 10x v2 (ID,Symbol) vs v3 (ID,Symbol,Type) rowData -- a
+    # naive cbind() fails with "subscript contains invalid names". The combine
+    # reduces to the shared rowData columns and binds.
+    genes <- c("g1", "g2", "g3")
+    a <- .fake_sce(genes, c("c1", "c2"), rowdata = c("ID", "Symbol"))
+    b <- .fake_sce(genes, c("c3", "c4"), rowdata = c("ID", "Symbol", "Type"))
+    out <- GEOquery:::.combine_sce(list(A = a, B = b))
+    expect_equal(nrow(out), 3L)
+    expect_equal(ncol(out), 4L)
+    expect_equal(
+        colnames(SummarizedExperiment::rowData(out)),
+        c("ID", "Symbol")
     )
 })
 
