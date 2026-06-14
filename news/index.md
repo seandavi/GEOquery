@@ -1,6 +1,6 @@
 # Changelog
 
-## GEOquery (development version)
+## GEOquery 2.81.21 (2026-06-13)
 
 ### Breaking changes
 
@@ -157,7 +157,8 @@
 - Fixed error when parsing GSE matrix files with malformed or empty
   lines between sample metadata (e.g., GSE425). Sample lines are now
   extracted directly using pattern matching to avoid issues with
-  irregular file formatting.
+  irregular file formatting
+  ([\#162](https://github.com/seandavi/GEOquery/issues/162)).
 
 ## GEOquery 2.75.0 (2024-10-01)
 
