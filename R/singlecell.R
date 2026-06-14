@@ -368,6 +368,34 @@ readGEOSingleCell <- function(x, format = NULL) {
     }, character(1))
 }
 
+# cbind a list of SingleCellExperiments into one. Samples in a study often come
+# from different references/platforms (e.g. GSE132771 mixes mouse and human) or
+# CellRanger versions, so their feature sets -- and thus rowData -- differ and a
+# naive cbind() errors ("'mcols' ... do not match"). Restrict every object to
+# the features common to all, in one consistent order, so the rows align before
+# binding. Error clearly when there is no shared feature space to combine on.
+.combine_sce <- function(results) {
+    common <- Reduce(intersect, lapply(results, rownames))
+    if (length(common) == 0) {
+        stop(
+            "Cannot combine: the samples share no common features (rownames). ",
+            "They likely come from different platforms or genome references ",
+            "(e.g. a study mixing organisms). Combine compatible subsets via ",
+            "`samples=`, or use `combine = FALSE` and merge as appropriate.",
+            call. = FALSE
+        )
+    }
+    dropped <- sum(vapply(results, function(x) nrow(x) - length(common), integer(1)))
+    if (dropped > 0) {
+        message(sprintf(
+            "Combining on %d feature(s) shared by all %d samples (dropped %d non-shared feature row(s) across samples).",
+            length(common), length(results), dropped
+        ))
+    }
+    aligned <- lapply(results, function(x) x[common, ])
+    do.call(SummarizedExperiment::cbind, aligned)
+}
+
 #' Download and read the single-cell data of a GEO Series or Sample
 #'
 #' High-level, best-effort convenience wrapper: inventories the GSE (or GSM)
@@ -391,8 +419,11 @@ readGEOSingleCell <- function(x, format = NULL) {
 #' @param samples Optional character vector of GSM ids to restrict to. Ignored
 #'   when \code{GEO} is itself a GSM.
 #' @param format Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad").
-#' @param combine Logical; if TRUE attempt to \code{cbind} the per-sample
-#'   objects into one (requires matching features). Default FALSE returns a list.
+#' @param combine Logical; if TRUE, \code{cbind} the per-sample objects into one,
+#'   restricting to the features (rownames) common to all samples so they align
+#'   even when samples come from different references or platforms. Errors if the
+#'   samples share no common features (e.g. a study mixing organisms). Default
+#'   FALSE returns a named list.
 #' @param destdir Download destination directory.
 #' @return A named list of \code{SingleCellExperiment} (one per sample), or a
 #'   single combined object if \code{combine = TRUE}.
@@ -431,7 +462,7 @@ getGEOSingleCell <- function(GEO, samples = NULL, format = NULL, combine = FALSE
         results[[u$sample]] <- readGEOSingleCell(local, format = u$format)
     }
     if (combine && length(results) > 1) {
-        return(do.call(SummarizedExperiment::cbind, results))
+        return(.combine_sce(results))
     }
     results
 }

@@ -21,8 +21,11 @@ when \code{GEO} is itself a GSM.}
 
 \item{format}{Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad").}
 
-\item{combine}{Logical; if TRUE attempt to \code{cbind} the per-sample
-objects into one (requires matching features). Default FALSE returns a list.}
+\item{combine}{Logical; if TRUE, \code{cbind} the per-sample objects into one,
+restricting to the features (rownames) common to all samples so they align
+even when samples come from different references or platforms. Errors if the
+samples share no common features (e.g. a study mixing organisms). Default
+FALSE returns a named list.}
 
 \item{destdir}{Download destination directory.}
 }

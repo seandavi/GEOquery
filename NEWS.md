@@ -4,6 +4,10 @@
 
 - `geoSingleCellManifest()` and `getGEOSingleCell()` now handle the common case where a Series ships only a `GSE..._RAW.tar` at the series level and the per-sample files live in each sample's own GSM suppl directory (e.g. GSE132771). When the series level has no loadable single-cell units, the manifest falls back to enumerating the Series' samples (via `getGEO()`) and inventorying each GSM suppl directory. Both functions also accept a GSM accession directly (`getGEOSingleCell("GSM3891612")`), and `geoSingleCellManifest()` gains a `samples` argument to restrict to specific GSMs without enumerating the whole Series. Unit files are downloaded by URL, so the readers work whether the data lives at the series or sample level (#190).
 
+## Bug Fixes
+
+- `getGEOSingleCell(combine = TRUE)` no longer fails with a cryptic `cbind` error (`'mcols' ... do not match`) when a Series' samples come from different platforms or genome references — common in single-cell studies (e.g. GSE132771 mixes mouse and human). Samples are now restricted to their shared features before binding; if they share no features (so a single combined object is impossible) a clear, actionable error is raised instead (#190).
+
 # GEOquery 2.81.21 (2026-06-13)
 
 ## Breaking changes

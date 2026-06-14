@@ -6,6 +6,15 @@
 \usage{
 getGEOSuppFileURL(GEO)
 }
+\arguments{
+\item{GEO}{A GEO accession, e.g. a Series ("GSE..."), Sample ("GSM..."), or
+Platform ("GPL...") id. The accession type determines which FTP \verb{suppl/}
+directory URL is returned.}
+}
+\value{
+A character(1) URL of the accession's supplementary-file directory on
+the NCBI GEO FTP site.
+}
 \description{
 Get GEO supplemental file URL for a given GEO accession
 }
