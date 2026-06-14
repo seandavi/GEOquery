@@ -22,6 +22,10 @@ jobs:
       image: bioconductor/bioconductor_docker:devel
     env:
       GEOQUERY_INTEGRATION: "true"
+      # The suite runs under `R CMD check` (--as-cran). skip_if_no_integration()
+      # calls skip_on_cran() first, which skips unless NOT_CRAN=true -- so
+      # without this every live test silently skips, defeating the workflow.
+      NOT_CRAN: "true"
     steps:
       - uses: actions/checkout@v4
 
