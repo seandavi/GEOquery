@@ -43,7 +43,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/fix/sc-combine-rowdata/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
@@ -56,7 +56,7 @@
 <div class="section level3">
 <h3 id="bug-fixes-2-81-22">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-81-22"></a></h3>
 <ul><li>
-<code>getGEOSingleCell(combine = TRUE)</code> no longer fails with a cryptic <code>cbind</code> error (<code>'mcols' ... do not match</code>) when a Series’ samples come from different platforms or genome references — common in single-cell studies (e.g. GSE132771 mixes mouse and human). Samples are now restricted to their shared features before binding; if they share no features (so a single combined object is impossible) a clear, actionable error is raised instead (<a href="https://github.com/seandavi/GEOquery/issues/190" class="external-link">#190</a>).</li>
+<code>getGEOSingleCell(combine = TRUE)</code> no longer fails with a cryptic <code>cbind</code> error (<code>'mcols' ... do not match</code> or <code>subscript contains invalid names</code>) when a Series’ samples have heterogeneous feature annotation — common in single-cell studies (e.g. GSE132771 mixes mouse and human, and mixes 10x CellRanger v2 <code>genes.tsv</code> with v3 <code>features.tsv</code>, giving different rowData columns). Samples are now restricted to their shared features and given one canonical rowData (the shared columns) before binding; if they share no features (so a single combined object is impossible) a clear, actionable error is raised instead (<a href="https://github.com/seandavi/GEOquery/issues/190" class="external-link">#190</a>).</li>
 </ul></div>
 </div>
     <div class="section level2">
