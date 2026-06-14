@@ -1,5 +1,9 @@
 # GEOquery (development version)
 
+## Breaking changes
+
+- **`getGEO()` now returns `SummarizedExperiment` objects by default** for GSE Series Matrix records (previously `ExpressionSet`). Update downstream code from `exprs()`/`pData()`/`fData()` to `assay()`/`colData()`/`rowData()`, or pass `returnType = "ExpressionSet"` to keep the old behavior. Existing results can also be converted with `as_SummarizedExperiment()`. SOFT-format results (GDS/GPL/GSM/GSE S4 objects) are unaffected. See ADR-0002 and ADR-0005 (#168).
+
 ## New features
 
 - Optional persistent download cache backed by **BiocFileCache**. Set `options(GEOquery.cache = TRUE)` to have downloads keyed on their URL and reused across sessions (location defaults to `tools::R_user_dir("GEOquery", "cache")`, overridable via `options(GEOquery.cache.path = ...)`). New `geoCache()` and `clearGEOCache()` expose and clear it. Off by default for now, preserving the historical `destdir` behavior (#171).
