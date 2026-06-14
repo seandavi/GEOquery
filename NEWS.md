@@ -6,7 +6,7 @@
 
 ## Bug Fixes
 
-- `getGEOSingleCell(combine = TRUE)` no longer fails with a cryptic `cbind` error (`'mcols' ... do not match`) when a Series' samples come from different platforms or genome references — common in single-cell studies (e.g. GSE132771 mixes mouse and human). Samples are now restricted to their shared features before binding; if they share no features (so a single combined object is impossible) a clear, actionable error is raised instead (#190).
+- `getGEOSingleCell(combine = TRUE)` no longer fails with a cryptic `cbind` error (`'mcols' ... do not match` or `subscript contains invalid names`) when a Series' samples have heterogeneous feature annotation — common in single-cell studies (e.g. GSE132771 mixes mouse and human, and mixes 10x CellRanger v2 `genes.tsv` with v3 `features.tsv`, giving different rowData columns). Samples are now restricted to their shared features and given one canonical rowData (the shared columns) before binding; if they share no features (so a single combined object is impossible) a clear, actionable error is raised instead (#190).
 
 # GEOquery 2.81.21 (2026-06-13)
 
