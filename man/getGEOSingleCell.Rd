@@ -8,7 +8,7 @@ getGEOSingleCell(
   GEO,
   samples = NULL,
   format = NULL,
-  combine = FALSE,
+  by = c("sample", "platform", "all"),
   destdir = tempdir()
 )
 }
@@ -21,17 +21,17 @@ when \code{GEO} is itself a GSM.}
 
 \item{format}{Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad").}
 
-\item{combine}{Logical; if TRUE, \code{cbind} the per-sample objects into one,
-restricting to the features (rownames) common to all samples so they align
-even when samples come from different references or platforms. Errors if the
-samples share no common features (e.g. a study mixing organisms). Default
-FALSE returns a named list.}
+\item{by}{One of \code{"sample"} (default), \code{"platform"}, or
+\code{"all"} -- how to group the loaded samples into the return value. See
+Details.}
 
 \item{destdir}{Download destination directory.}
 }
 \value{
-A named list of \code{SingleCellExperiment} (one per sample), or a
-single combined object if \code{combine = TRUE}.
+Depends on \code{by}: a named list of \code{SingleCellExperiment} per
+sample (\code{"sample"}); a named list of combined objects per platform
+(\code{"platform"}); or a single combined \code{SingleCellExperiment}
+(\code{"all"}).
 }
 \description{
 High-level, best-effort convenience wrapper: inventories the GSE (or GSM)
@@ -50,13 +50,34 @@ loom and Seurat \code{.rds} formats, files available \emph{only} inside a
 \code{_RAW.tar} archive, and idiosyncratic layouts (e.g. a single combined
 matrix for many samples) are out of scope -- use the manifest plus
 \code{readGEOSingleCell()} directly for those.
+
+\strong{Grouping (\code{by}).} A GEO Series has two natural layers -- it can
+span multiple platforms (GPLs), each holding many samples (GSMs) -- and the
+platform is the feature-compatibility boundary (samples in one platform share
+a feature space; across platforms they generally do not). \code{by} chooses
+the return shape, and the shape is fixed by the argument (not the data):
+\describe{
+\item{\code{"sample"} (default)}{a named list with one
+\code{SingleCellExperiment} per sample (or per whole-study file).}
+\item{\code{"platform"}}{a named list keyed by platform (GPL), each entry
+the samples of that platform combined into one object. The honest answer
+for a multi-platform study; a single-platform study yields a length-1
+list. Samples with unknown platform are returned individually.}
+\item{\code{"all"}}{a single \code{SingleCellExperiment} with every sample
+combined. Errors if the samples share no common features (e.g. a study
+mixing organisms) -- use \code{"platform"} for those.}
+}
+Combining (for \code{"platform"}/\code{"all"}) restricts to the features
+common to the group and reconciles per-sample feature annotation so binding
+succeeds across CellRanger versions; whole-study single-file formats already
+hold one object, so grouping is effectively a no-op for them.
 }
 \examples{
 \dontrun{
-  sce <- getGEOSingleCell("GSM3891612")                  # one sample
-  all <- getGEOSingleCell("GSE132771")                   # whole series
-  two <- getGEOSingleCell("GSE132771",
-                          samples = c("GSM3891612", "GSM3891613"))
+  sce <- getGEOSingleCell("GSM3891612")                   # one sample
+  per_sample <- getGEOSingleCell("GSE132771")             # list by GSM
+  per_platform <- getGEOSingleCell("GSE132771", by = "platform")
+  # -> list(GPL21103 = <mouse SCE>, GPL24676 = <human SCE>)
 }
 }
 \seealso{

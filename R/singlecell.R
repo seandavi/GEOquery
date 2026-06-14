@@ -21,10 +21,10 @@
     if (grepl("matrix\\.mtx(\\.gz)?$", low)) return(c(format = "10x_mtx", role = "matrix"))
     if (grepl("barcodes\\.tsv(\\.gz)?$", low)) return(c(format = "10x_mtx", role = "barcodes"))
     if (grepl("(features|genes)\\.tsv(\\.gz)?$", low)) return(c(format = "10x_mtx", role = "features"))
-    if (grepl("\\.h5ad$", low)) return(c(format = "h5ad", role = "anndata"))
-    if (grepl("\\.h5$", low)) return(c(format = "10x_h5", role = "matrix"))
-    if (grepl("\\.loom$", low)) return(c(format = "loom", role = "matrix"))
-    if (grepl("\\.(rds|rdata)$", low)) return(c(format = "rds", role = "object"))
+    if (grepl("\\.h5ad(\\.gz)?$", low)) return(c(format = "h5ad", role = "anndata"))
+    if (grepl("\\.h5(\\.gz)?$", low)) return(c(format = "10x_h5", role = "matrix"))
+    if (grepl("\\.loom(\\.gz)?$", low)) return(c(format = "loom", role = "matrix"))
+    if (grepl("\\.(rds|rdata)(\\.gz)?$", low)) return(c(format = "rds", role = "object"))
     if (grepl("\\.tar(\\.gz)?$", low)) return(c(format = "tar", role = "archive"))
     c(format = "other", role = NA_character_)
 }
@@ -58,17 +58,37 @@
 # Roles that make a complete 10x Matrix Market unit.
 .mtx_roles <- c("matrix", "barcodes", "features")
 
-# Group a manifest into loadable units (one per sample + format) and assess
-# completeness. Pure logic; used by geoSingleCellUnits().
+# Formats readGEOSingleCell() can actually import. loom and Seurat .rds are
+# classified and reported but have no built-in reader (read with their native
+# packages), so they are never "loadable".
+.sc_readable <- c("10x_mtx", "10x_h5", "h5ad")
+
+# The grouping key that defines a loadable unit. A 10x Matrix Market triplet is
+# one unit per sample (its matrix/barcodes/features load together); every other
+# format is one unit *per file*, because a study may ship several independent
+# single-file objects (e.g. GSE161228's three whole-series .h5ad files) that must
+# not be merged into a single bogus unit.
+.sc_unit_key <- function(manifest) {
+    ifelse(
+        manifest$format == "10x_mtx",
+        paste0("mtx|", manifest$sample),
+        paste0("file|", manifest$fname)
+    )
+}
+
+# Group a manifest into loadable units and assess completeness. Pure logic; used
+# by geoSingleCellUnits().
 .sc_units <- function(manifest) {
-    cols <- c("sample", "format", "n_files", "status", "loadable")
+    cols <- c("unit", "sample", "platform", "format", "n_files", "status", "loadable")
     if (nrow(manifest) == 0) {
         out <- data.frame(matrix(nrow = 0, ncol = length(cols)))
         colnames(out) <- cols
         return(out)
     }
-    key <- paste(manifest$sample, manifest$format, sep = "|")
-    parts <- lapply(split(manifest, key), function(g) {
+    has_plat <- "platform" %in% names(manifest)
+    groups <- split(seq_len(nrow(manifest)), .sc_unit_key(manifest))
+    parts <- Map(function(idx, k) {
+        g <- manifest[idx, , drop = FALSE]
         fmt <- g$format[1]
         if (fmt == "10x_mtx") {
             missing <- setdiff(.mtx_roles, unique(g$role))
@@ -83,11 +103,14 @@
             status <- "unsupported"
         }
         data.frame(
-            sample = g$sample[1], format = fmt, n_files = nrow(g),
-            status = status, loadable = identical(status, "complete"),
+            unit = k,
+            sample = g$sample[1],
+            platform = if (has_plat) g$platform[1] else NA_character_,
+            format = fmt, n_files = nrow(g), status = status,
+            loadable = identical(status, "complete") && fmt %in% .sc_readable,
             stringsAsFactors = FALSE
         )
-    })
+    }, groups, names(groups))
     out <- do.call(rbind, parts)
     rownames(out) <- NULL
     out[order(out$sample, out$format), ]
@@ -95,15 +118,18 @@
 
 #' Group a single-cell manifest into loadable units
 #'
-#' Collapses a \code{\link{geoSingleCellManifest}} into one row per loadable
-#' unit (a sample + format combination) and reports completeness. A 10x Matrix
-#' Market unit is "complete" only when its matrix, barcodes, and features files
-#' are all present; single-file formats (h5ad, 10x h5, loom, rds) are always
-#' complete. The \code{loadable} column flags units a reader can consume.
+#' Collapses a \code{\link{geoSingleCellManifest}} into one row per unit and
+#' reports completeness. A 10x Matrix Market unit groups a sample's matrix,
+#' barcodes, and features files and is "complete" only when all three are
+#' present; every other format is one unit per file. The \code{loadable} column
+#' flags units a built-in reader can consume -- complete 10x Matrix Market, 10x
+#' HDF5, and AnnData h5ad. loom and Seurat \code{.rds} are reported but not
+#' loadable (read them with their native packages).
 #'
 #' @param manifest A data.frame returned by \code{geoSingleCellManifest()}.
-#' @return A data.frame with columns \code{sample}, \code{format},
-#'   \code{n_files}, \code{status}, and \code{loadable}.
+#' @return A data.frame with columns \code{unit} (the grouping key),
+#'   \code{sample}, \code{platform} (GPL, or NA), \code{format}, \code{n_files},
+#'   \code{status}, and \code{loadable}.
 #' @seealso \code{\link{geoSingleCellManifest}}
 #' @examples
 #' \dontrun{
@@ -130,24 +156,46 @@ geoSingleCellUnits <- function(manifest) {
     m
 }
 
-# Enumerate the GSM accessions belonging to a GSE. Uses getGEO() (Series Matrix
-# path, GPL fetch skipped for speed) and reads the sample ids off the returned
-# object column names. Returns character(0) on any failure.
-.gse_gsm_ids <- function(GEO) {
+# Map the GSM accessions of a GSE to their platform (GPL). Uses getGEO() (Series
+# Matrix path, GPL fetch skipped for speed): each returned object is one platform
+# and its colData carries `platform_id` per sample. Returns a named character
+# vector (names = GSM ids, values = GPL), empty on any failure. names() is also
+# the GSM list used by the GSM-level manifest fallback.
+.gse_gsm_platforms <- function(GEO) {
+    empty <- stats::setNames(character(0), character(0))
     es <- tryCatch(
         getGEO(GEO, GSEMatrix = TRUE, getGPL = FALSE),
         error = function(e) NULL
     )
     if (is.null(es)) {
-        return(character(0))
+        return(empty)
     }
     if (!is.list(es)) {
         es <- list(es)
     }
-    ids <- unlist(lapply(es, function(x) {
-        tryCatch(colnames(x), error = function(e) NULL)
-    }), use.names = FALSE)
-    unique(ids[grepl("^GSM", ids)])
+    parts <- lapply(es, function(x) {
+        ids <- tryCatch(colnames(x), error = function(e) NULL)
+        if (is.null(ids)) {
+            return(NULL)
+        }
+        plat <- tryCatch({
+            cd <- SummarizedExperiment::colData(x)
+            if ("platform_id" %in% colnames(cd)) {
+                as.character(cd$platform_id)
+            } else {
+                rep(NA_character_, length(ids))
+            }
+        }, error = function(e) rep(NA_character_, length(ids)))
+        stats::setNames(plat, ids)
+    })
+    # unname() so unlist() keeps the inner GSM-id names rather than prefixing
+    # them with each list element's (file) name.
+    out <- unlist(unname(parts))
+    if (is.null(out)) {
+        return(empty)
+    }
+    out <- out[!is.na(names(out)) & grepl("^GSM", names(out))]
+    out[!duplicated(names(out))]
 }
 
 # Build a single-cell manifest from a set of GSM accessions by inventorying each
@@ -186,13 +234,21 @@ geoSingleCellUnits <- function(manifest) {
 #' ADR-0004); reading itself uses Bioconductor importers (TENxIO, anndataR)
 #' that are optional dependencies.
 #'
+#' The \code{platform} column (GPL accession per sample) is populated when the
+#' manifest is built from the GSM level -- the common single-cell case, and the
+#' one that matters, since a GSE can span multiple platforms (e.g. GSE132771
+#' mixes mouse and human). It is the grouping used by
+#' \code{getGEOSingleCell(by = "platform")}. It is \code{NA} for a single GSM,
+#' and for whole-study files attached at the series level (which have no GSM).
+#'
 #' @param GEO A GEO Series (\code{"GSE..."}) or Sample (\code{"GSM..."})
 #'   accession, e.g. "GSE132771" or "GSM3891612".
 #' @param samples Optional character vector of GSM ids. For a GSE, restricts the
 #'   inventory to these samples; when the series level has no loadable units this
 #'   also avoids enumerating the whole series. Ignored when \code{GEO} is a GSM.
 #' @return A data.frame with columns \code{fname}, \code{sample} (GSM id or NA),
-#'   \code{format}, \code{role}, and \code{url}. Zero rows if nothing is found.
+#'   \code{platform} (GPL accession or NA), \code{format}, \code{role}, and
+#'   \code{url}. Zero rows if nothing is found.
 #' @seealso \code{\link{getGEOSuppFiles}}, \code{\link{getGEOSingleCell}}
 #' @examples
 #' \dontrun{
@@ -203,29 +259,42 @@ geoSingleCellUnits <- function(manifest) {
 geoSingleCellManifest <- function(GEO, samples = NULL) {
     geotype <- toupper(substr(GEO, 1, 3))
     if (geotype == "GSM") {
-        return(.sc_manifest_for_accession(GEO))
+        m <- .sc_manifest_for_accession(GEO)
+        m$platform <- rep(NA_character_, nrow(m))
+        return(m)
     }
     if (geotype != "GSE") {
         stop("geoSingleCellManifest() requires a GSE or GSM accession; got '",
             GEO, "'.", call. = FALSE)
     }
-    # Series-level suppl files first. If they already hold loadable per-sample
-    # single-cell units, use them (optionally restricted to `samples`).
+    # Series-level suppl files first. If they already hold loadable units (e.g.
+    # whole-study .h5ad files), use them as-is; platform is not resolved here
+    # (those files have no GSM, and resolving it would cost an extra download).
     series_m <- .sc_manifest_for_accession(GEO)
     if (any(.sc_units(series_m)$loadable %in% TRUE)) {
         if (!is.null(samples)) {
             series_m <- series_m[series_m$sample %in% samples, , drop = FALSE]
             rownames(series_m) <- NULL
         }
+        series_m$platform <- rep(NA_character_, nrow(series_m))
         return(series_m)
     }
-    # Otherwise fall back to per-sample (GSM) suppl directories.
-    gsms <- if (!is.null(samples)) samples else .gse_gsm_ids(GEO)
+    # Otherwise fall back to per-sample (GSM) suppl directories. The GSM->GPL map
+    # both enumerates the samples and supplies their platform.
+    map <- .gse_gsm_platforms(GEO)
+    gsms <- if (!is.null(samples)) samples else names(map)
     if (length(gsms) == 0) {
+        series_m$platform <- rep(NA_character_, nrow(series_m))
         return(series_m)
     }
     gsm_m <- .sc_manifest_from_gsms(gsms)
-    if (nrow(gsm_m) > 0) gsm_m else series_m
+    if (nrow(gsm_m) == 0) {
+        series_m$platform <- rep(NA_character_, nrow(series_m))
+        return(series_m)
+    }
+    gsm_m$platform <- unname(map[gsm_m$sample])
+    rownames(gsm_m) <- NULL
+    gsm_m
 }
 
 
@@ -269,17 +338,29 @@ geoSingleCellManifest <- function(GEO, samples = NULL) {
     d
 }
 
+# HDF5-based readers need an actual (uncompressed) file. GEO often gzips them
+# (e.g. GSE161228's *.h5ad.gz), so transparently decompress a .gz to a temp file
+# and return that path; non-.gz paths pass through unchanged.
+.maybe_gunzip <- function(path) {
+    if (!grepl("\\.gz$", path)) {
+        return(path)
+    }
+    dest <- tempfile(fileext = sub("^.*?(\\.[^.]+)\\.gz$", "\\1", basename(path)))
+    R.utils::gunzip(path, destname = dest, remove = FALSE, overwrite = TRUE)
+    dest
+}
+
 .read_sc_10x_mtx <- function(x) {
     .require_pkg("TENxIO", "10x Matrix Market data")
     BiocIO::import(TENxIO::TENxFileList(.arrange_10x(x)))
 }
 .read_sc_10x_h5 <- function(path) {
     .require_pkg("TENxIO", "10x HDF5 data")
-    BiocIO::import(TENxIO::TENxH5(path))
+    BiocIO::import(TENxIO::TENxH5(.maybe_gunzip(path)))
 }
 .read_sc_h5ad <- function(path) {
     .require_pkg("anndataR", "AnnData (h5ad) data")
-    anndataR::read_h5ad(path, as = "SingleCellExperiment")
+    anndataR::read_h5ad(.maybe_gunzip(path), as = "SingleCellExperiment")
 }
 
 #' Read a single-cell file (or 10x triplet) into a SingleCellExperiment
@@ -318,27 +399,37 @@ readGEOSingleCell <- function(x, format = NULL) {
     )
 }
 
-# When a sample offers more than one loadable format, keep just one, by
-# preference (richer/standard first).
+# When a (named) sample offers more than one loadable format, keep just one, by
+# preference (richer/standard first). Units with no sample (NA) -- whole-study
+# single files -- are each independent and pass through untouched (never collapse
+# several NA-sample files into one).
 .format_priority <- c("h5ad", "10x_h5", "10x_mtx")
 .prefer_one_format <- function(load) {
     if (nrow(load) == 0) {
         return(load)
     }
-    keep <- lapply(split(load, load$sample), function(g) {
-        if (nrow(g) == 1) {
-            return(g)
-        }
-        ord <- order(match(g$format, .format_priority))
-        g[ord[1], , drop = FALSE]
-    })
-    out <- do.call(rbind, keep)
+    na_rows <- load[is.na(load$sample), , drop = FALSE]
+    named <- load[!is.na(load$sample), , drop = FALSE]
+    keep <- if (nrow(named) == 0) {
+        named
+    } else {
+        do.call(rbind, lapply(split(named, named$sample), function(g) {
+            if (nrow(g) == 1) {
+                return(g)
+            }
+            ord <- order(match(g$format, .format_priority))
+            g[ord[1], , drop = FALSE]
+        }))
+    }
+    out <- rbind(keep, na_rows)
     rownames(out) <- NULL
     out[order(out$sample), , drop = FALSE]
 }
 
 # Pure unit-selection logic: split units into those to load and those skipped,
 # honoring optional `samples` / `format` filters and one-format-per-sample.
+# Units are identified by their `unit` key (so distinct whole-study files of the
+# same format are tracked separately).
 .select_sc_units <- function(units, samples = NULL, format = NULL) {
     load <- units[units$loadable %in% TRUE, , drop = FALSE]
     if (!is.null(samples)) {
@@ -348,8 +439,7 @@ readGEOSingleCell <- function(x, format = NULL) {
         load <- load[load$format %in% format, , drop = FALSE]
     }
     load <- .prefer_one_format(load)
-    loaded_key <- paste(load$sample, load$format)
-    skip <- units[!(paste(units$sample, units$format) %in% loaded_key), , drop = FALSE]
+    skip <- units[!(units$unit %in% load$unit), , drop = FALSE]
     list(load = load, skip = skip)
 }
 
@@ -384,8 +474,9 @@ readGEOSingleCell <- function(x, format = NULL) {
         stop(
             "Cannot combine: the samples share no common features (rownames). ",
             "They likely come from different platforms or genome references ",
-            "(e.g. a study mixing organisms). Combine compatible subsets via ",
-            "`samples=`, or use `combine = FALSE` and merge as appropriate.",
+            "(e.g. a study mixing organisms). Use `by = \"platform\"` to combine ",
+            "within each platform, restrict with `samples=`, or `by = \"sample\"` ",
+            "to keep them separate.",
             call. = FALSE
         )
     }
@@ -429,30 +520,52 @@ readGEOSingleCell <- function(x, format = NULL) {
 #' matrix for many samples) are out of scope -- use the manifest plus
 #' \code{readGEOSingleCell()} directly for those.
 #'
+#' \strong{Grouping (\code{by}).} A GEO Series has two natural layers -- it can
+#' span multiple platforms (GPLs), each holding many samples (GSMs) -- and the
+#' platform is the feature-compatibility boundary (samples in one platform share
+#' a feature space; across platforms they generally do not). \code{by} chooses
+#' the return shape, and the shape is fixed by the argument (not the data):
+#' \describe{
+#'   \item{\code{"sample"} (default)}{a named list with one
+#'     \code{SingleCellExperiment} per sample (or per whole-study file).}
+#'   \item{\code{"platform"}}{a named list keyed by platform (GPL), each entry
+#'     the samples of that platform combined into one object. The honest answer
+#'     for a multi-platform study; a single-platform study yields a length-1
+#'     list. Samples with unknown platform are returned individually.}
+#'   \item{\code{"all"}}{a single \code{SingleCellExperiment} with every sample
+#'     combined. Errors if the samples share no common features (e.g. a study
+#'     mixing organisms) -- use \code{"platform"} for those.}
+#' }
+#' Combining (for \code{"platform"}/\code{"all"}) restricts to the features
+#' common to the group and reconciles per-sample feature annotation so binding
+#' succeeds across CellRanger versions; whole-study single-file formats already
+#' hold one object, so grouping is effectively a no-op for them.
+#'
 #' @param GEO A GEO Series (\code{"GSE..."}) or Sample (\code{"GSM..."})
 #'   accession, e.g. "GSE132771" or "GSM3891612".
 #' @param samples Optional character vector of GSM ids to restrict to. Ignored
 #'   when \code{GEO} is itself a GSM.
 #' @param format Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad").
-#' @param combine Logical; if TRUE, \code{cbind} the per-sample objects into one,
-#'   restricting to the features (rownames) common to all samples so they align
-#'   even when samples come from different references or platforms. Errors if the
-#'   samples share no common features (e.g. a study mixing organisms). Default
-#'   FALSE returns a named list.
+#' @param by One of \code{"sample"} (default), \code{"platform"}, or
+#'   \code{"all"} -- how to group the loaded samples into the return value. See
+#'   Details.
 #' @param destdir Download destination directory.
-#' @return A named list of \code{SingleCellExperiment} (one per sample), or a
-#'   single combined object if \code{combine = TRUE}.
+#' @return Depends on \code{by}: a named list of \code{SingleCellExperiment} per
+#'   sample (\code{"sample"}); a named list of combined objects per platform
+#'   (\code{"platform"}); or a single combined \code{SingleCellExperiment}
+#'   (\code{"all"}).
 #' @seealso \code{\link{geoSingleCellManifest}}, \code{\link{readGEOSingleCell}}
 #' @examples
 #' \dontrun{
-#'   sce <- getGEOSingleCell("GSM3891612")                  # one sample
-#'   all <- getGEOSingleCell("GSE132771")                   # whole series
-#'   two <- getGEOSingleCell("GSE132771",
-#'                           samples = c("GSM3891612", "GSM3891613"))
+#'   sce <- getGEOSingleCell("GSM3891612")                   # one sample
+#'   per_sample <- getGEOSingleCell("GSE132771")             # list by GSM
+#'   per_platform <- getGEOSingleCell("GSE132771", by = "platform")
+#'   # -> list(GPL21103 = <mouse SCE>, GPL24676 = <human SCE>)
 #' }
 #' @export
-getGEOSingleCell <- function(GEO, samples = NULL, format = NULL, combine = FALSE,
-    destdir = tempdir()) {
+getGEOSingleCell <- function(GEO, samples = NULL, format = NULL,
+    by = c("sample", "platform", "all"), destdir = tempdir()) {
+    by <- match.arg(by)
     manifest <- geoSingleCellManifest(GEO, samples = samples)
     units <- geoSingleCellUnits(manifest)
     sel <- .select_sc_units(units, samples, format)
@@ -468,16 +581,37 @@ getGEOSingleCell <- function(GEO, samples = NULL, format = NULL, combine = FALSE
             paste(sprintf("%s [%s]", sel$skip$sample, sel$skip$status), collapse = "; ")
         ))
     }
+    mkey <- .sc_unit_key(manifest)
     results <- list()
     for (i in seq_len(nrow(sel$load))) {
         u <- sel$load[i, ]
-        message(sprintf("Loading %s (%s)...", u$sample, u$format))
-        unit_files <- manifest[manifest$sample %in% u$sample & manifest$format == u$format, ]
+        unit_files <- manifest[mkey == u$unit, , drop = FALSE]
+        label <- if (!is.na(u$sample)) u$sample else .sc_unit_label(unit_files$fname[1])
+        message(sprintf("Loading %s (%s)...", label, u$format))
         local <- .download_sc_unit(unit_files, destdir)
-        results[[u$sample]] <- readGEOSingleCell(local, format = u$format)
+        results[[label]] <- readGEOSingleCell(local, format = u$format)
     }
-    if (combine && length(results) > 1) {
-        return(.combine_sce(results))
+    if (by == "sample") {
+        return(results)
     }
-    results
+    if (by == "all") {
+        return(if (length(results) == 1) results[[1]] else .combine_sce(results))
+    }
+    # by == "platform": combine within each platform; samples of unknown platform
+    # (NA) are kept individual (we cannot assert they share a feature space).
+    plats <- sel$load$platform
+    keys <- ifelse(is.na(plats), paste0("\r", names(results)), plats)
+    groups <- split(seq_along(results), keys)
+    out <- lapply(groups, function(idx) {
+        grp <- results[idx]
+        if (length(grp) == 1) grp[[1]] else .combine_sce(grp)
+    })
+    names(out) <- sub("^\r", "", names(out))
+    out
+}
+
+# A human-readable label for a whole-study (no-GSM) unit: the file name with the
+# single-cell extension (and any .gz) stripped.
+.sc_unit_label <- function(fname) {
+    sub("\\.(mtx|tsv|h5ad|h5|rds|loom|tar)(\\.gz)?$", "", basename(fname))
 }

@@ -70,6 +70,25 @@ test_that("readGEOSingleCell rejects unsupported formats (#158)", {
     expect_error(readGEOSingleCell("x.rds", format = "rds"), "not supported")
 })
 
+test_that("each whole-study single file is its own unit (#190)", {
+    # Two independent whole-study .h5ad (no GSM) must not collapse into one unit.
+    manifest <- GEOquery:::.classify_sc_files(c(
+        "GSE1_partA.h5ad", "GSE1_partB.h5ad"
+    ))
+    expect_true(all(is.na(manifest$sample)))
+    u <- geoSingleCellUnits(manifest)
+    expect_equal(nrow(u), 2L)
+    expect_equal(u$n_files, c(1L, 1L))
+    expect_true(all(u$loadable))
+})
+
+test_that("loom and Seurat rds are reported but not loadable (#190)", {
+    manifest <- GEOquery:::.classify_sc_files(c("GSM1_cells.loom", "GSM2_obj.rds"))
+    u <- geoSingleCellUnits(manifest)
+    expect_setequal(u$format, c("loom", "rds"))
+    expect_false(any(u$loadable))
+})
+
 test_that(".select_sc_units picks loadable units, one format per sample (#158)", {
     manifest <- GEOquery:::.classify_sc_files(c(
         "GSM1_data.h5ad",
@@ -229,28 +248,77 @@ test_that("getGEOSingleCell(GSE, samples=) reads selected samples (#190)", {
     expect_s4_class(res[[1]], "SingleCellExperiment")
 })
 
-test_that("getGEOSingleCell(combine=TRUE) binds same-platform samples (#190)", {
+test_that("getGEOSingleCell(by='all') binds same-platform samples (#190)", {
     skip_if_no_integration()
     skip_if_not_installed("TENxIO")
     skip_if_not_installed("SingleCellExperiment")
     # GSM3891614/615 are both mouse (GPL21103) -> identical features.
     out <- getGEOSingleCell("GSE132771",
         samples = c("GSM3891614", "GSM3891615"), destdir = tempfile("sc_"),
-        combine = TRUE)
+        by = "all")
     expect_s4_class(out, "SingleCellExperiment")
     expect_gt(ncol(out), 0L)
 })
 
-test_that("getGEOSingleCell(combine=TRUE) errors on incompatible platforms (#190)", {
+test_that("getGEOSingleCell(by='all') errors on incompatible platforms (#190)", {
     skip_if_no_integration()
     skip_if_not_installed("TENxIO")
     skip_if_not_installed("SingleCellExperiment")
     # GSM3891612 is mouse (GPL21103), GSM3891620 is human (GPL24676): no shared
-    # features, so a combined object is impossible -- expect a clear error.
+    # features, so a single combined object is impossible -- expect a clear error.
     expect_error(
         getGEOSingleCell("GSE132771",
             samples = c("GSM3891612", "GSM3891620"), destdir = tempfile("sc_"),
-            combine = TRUE),
+            by = "all"),
         "no common features"
     )
+})
+
+test_that("getGEOSingleCell(by='platform') groups across platforms (#190)", {
+    skip_if_no_integration()
+    skip_if_not_installed("TENxIO")
+    skip_if_not_installed("SingleCellExperiment")
+    # One mouse (GPL21103) + one human (GPL24676) sample -> two platform groups,
+    # each a SingleCellExperiment. by='platform' is the right way to "combine" a
+    # multi-platform study.
+    out <- getGEOSingleCell("GSE132771",
+        samples = c("GSM3891612", "GSM3891620"), destdir = tempfile("sc_"),
+        by = "platform")
+    expect_type(out, "list")
+    expect_setequal(names(out), c("GPL21103", "GPL24676"))
+    expect_s4_class(out[["GPL21103"]], "SingleCellExperiment")
+    expect_s4_class(out[["GPL24676"]], "SingleCellExperiment")
+})
+
+test_that("geoSingleCellManifest(GSE) reports per-sample platform (#190)", {
+    skip_if_no_integration()
+    m <- geoSingleCellManifest("GSE132771",
+        samples = c("GSM3891612", "GSM3891620"))
+    expect_true("platform" %in% colnames(m))
+    expect_equal(unique(m$platform[m$sample == "GSM3891612"]), "GPL21103")
+    expect_equal(unique(m$platform[m$sample == "GSM3891620"]), "GPL24676")
+})
+
+test_that("getGEOSingleCell reads a 10x HDF5 (.h5) sample (#190)", {
+    skip_if_no_integration()
+    skip_if_not_installed("TENxIO")
+    skip_if_not_installed("SingleCellExperiment")
+    # GSE145926 ships per-sample CellRanger filtered_feature_bc_matrix.h5.
+    res <- getGEOSingleCell("GSM4339769", destdir = tempfile("h5_"))
+    expect_named(res, "GSM4339769")
+    expect_s4_class(res[[1]], "SingleCellExperiment")
+    expect_gt(ncol(res[[1]]), 0L)
+})
+
+test_that("whole-study .h5ad.gz files are one unit each (#190)", {
+    skip_if_no_integration()
+    # GSE161228 ships three independent whole-study .h5ad.gz files at the series
+    # level (no GSM). Each must be its own unit, not merged into one bogus unit.
+    # (Reading is not asserted here: these particular files were written with
+    # anndata < 0.8.0, which anndataR cannot import -- see dev/ notes.)
+    m <- geoSingleCellManifest("GSE161228")
+    expect_true(all(m$format == "h5ad"))
+    u <- geoSingleCellUnits(m)
+    expect_equal(nrow(u), 3L)
+    expect_true(all(u$loadable))
 })
