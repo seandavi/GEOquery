@@ -9,6 +9,7 @@ getGEOSingleCell(
   samples = NULL,
   format = NULL,
   combine = FALSE,
+  as = c("SingleCellExperiment", "Seurat"),
   destdir = tempdir()
 )
 }
@@ -17,16 +18,21 @@ getGEOSingleCell(
 
 \item{samples}{Optional character vector of GSM ids to restrict to.}
 
-\item{format}{Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad").}
+\item{format}{Optional format(s) to restrict to ("10x_mtx", "10x_h5",
+"h5ad", "rds").}
 
 \item{combine}{Logical; if TRUE attempt to \code{cbind} the per-sample
 objects into one (requires matching features). Default FALSE returns a list.}
+
+\item{as}{Output class, one of "SingleCellExperiment" (default) or "Seurat"
+(coerced via the Seurat package, an optional dependency).}
 
 \item{destdir}{Download destination directory.}
 }
 \value{
 A named list of \code{SingleCellExperiment} (one per sample), or a
-single combined object if \code{combine = TRUE}.
+single combined object if \code{combine = TRUE}; \code{Seurat} objects if
+\code{as = "Seurat"}.
 }
 \description{
 High-level, best-effort convenience wrapper: inventories the GSE
@@ -36,8 +42,8 @@ with \code{\link{readGEOSingleCell}}, and returns the results. It reports
 which units it loads and which it skips.
 }
 \details{
-This handles common, well-structured layouts (clean per-sample 10x or
-h5ad). It does NOT handle every GSE: loom and Seurat \code{.rds} formats,
+This handles common, well-structured layouts (clean per-sample 10x, h5ad, or
+a saved object in \code{.rds}). It does NOT handle every GSE: loom files,
 files packaged inside a \code{_RAW.tar} archive, and idiosyncratic layouts
 (e.g. a single combined matrix for many samples) are out of scope -- use the
 manifest plus \code{readGEOSingleCell()} directly for those.

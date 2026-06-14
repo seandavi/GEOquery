@@ -94,3 +94,48 @@ test_that(".select_sc_units honors samples and format filters (#158)", {
     expect_equal(GEOquery:::.select_sc_units(units, samples = "GSM2")$load$sample, "GSM2")
     expect_equal(nrow(GEOquery:::.select_sc_units(units, format = "10x_mtx")$load), 0L)
 })
+
+test_that("readGEOSingleCell reads a .rds SingleCellExperiment by class (#197)", {
+    skip_if_not_installed("SingleCellExperiment")
+    sce <- SingleCellExperiment::SingleCellExperiment(
+        assays = list(counts = matrix(as.double(1:6), nrow = 3))
+    )
+    f <- tempfile(fileext = ".rds")
+    saveRDS(sce, f)
+
+    out <- readGEOSingleCell(f)
+    expect_s4_class(out, "SingleCellExperiment")
+    expect_equal(dim(out), c(3L, 2L))
+})
+
+test_that("readGEOSingleCell rejects .rds with unsupported contents (#197)", {
+    f <- tempfile(fileext = ".rds")
+    saveRDS(matrix(1:4, 2), f)
+    expect_error(readGEOSingleCell(f), "Unsupported .rds")
+})
+
+test_that("readGEOSingleCell still rejects loom; rds is now supported (#197)", {
+    expect_error(readGEOSingleCell("x.loom", format = "loom"), "not supported")
+    # the message no longer claims rds is unsupported
+    err <- tryCatch(readGEOSingleCell("x.loom", format = "loom"), error = conditionMessage)
+    expect_false(grepl("\\brds\\b.*not handled|Seurat .rds are not", err))
+})
+
+test_that(".as_sc_output passes SingleCellExperiment through (#196)", {
+    skip_if_not_installed("SingleCellExperiment")
+    sce <- SingleCellExperiment::SingleCellExperiment(
+        assays = list(counts = matrix(as.double(1:4), nrow = 2))
+    )
+    expect_identical(GEOquery:::.as_sc_output(sce, "SingleCellExperiment"), sce)
+})
+
+test_that(".as_sc_output coerces to Seurat when requested (#196)", {
+    skip_if_not_installed("SingleCellExperiment")
+    skip_if_not_installed("Seurat")
+    sce <- SingleCellExperiment::SingleCellExperiment(
+        assays = list(counts = matrix(as.double(1:6), nrow = 3,
+            dimnames = list(c("g1", "g2", "g3"), c("c1", "c2"))))
+    )
+    obj <- GEOquery:::.as_sc_output(sce, "Seurat")
+    expect_s4_class(obj, "Seurat")
+})

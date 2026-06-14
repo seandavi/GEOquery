@@ -192,40 +192,81 @@ geoSingleCellManifest <- function(GEO) {
     anndataR::read_h5ad(path, as = "SingleCellExperiment")
 }
 
+# Read a `.rds` supplementary file. Its contents are opaque from the filename,
+# so detect by class: a saved SingleCellExperiment is returned as-is; a saved
+# Seurat object is coerced to SingleCellExperiment (the package lingua franca)
+# via Seurat; anything else is an error (#197).
+.read_sc_rds <- function(path) {
+    obj <- readRDS(path)
+    if (methods::is(obj, "SingleCellExperiment")) {
+        return(obj)
+    }
+    if (inherits(obj, "Seurat")) {
+        .require_pkg("Seurat", "Seurat .rds files")
+        return(Seurat::as.SingleCellExperiment(obj))
+    }
+    stop(sprintf(
+        paste0("Unsupported .rds contents (class: %s). readGEOSingleCell() ",
+            "reads .rds files containing a Seurat or SingleCellExperiment object."),
+        paste(class(obj), collapse = "/")
+    ), call. = FALSE)
+}
+
+# Coerce a SingleCellExperiment to the requested output class (#196). Seurat
+# output is produced by coercion and requires the Seurat package.
+.as_sc_output <- function(sce, as = c("SingleCellExperiment", "Seurat")) {
+    as <- match.arg(as)
+    if (as == "Seurat") {
+        .require_pkg("Seurat", "Seurat output")
+        return(Seurat::as.Seurat(sce))
+    }
+    sce
+}
+
 #' Read a single-cell file (or 10x triplet) into a SingleCellExperiment
 #'
 #' Low-level reader: given already-downloaded local file(s), dispatch on format
 #' to the appropriate Bioconductor importer and return a
-#' \code{SingleCellExperiment}. Use this for full control; see
+#' \code{SingleCellExperiment} (or a \code{Seurat} object with
+#' \code{as = "Seurat"}). Use this for full control; see
 #' \code{\link{getGEOSingleCell}} for the high-level convenience wrapper.
 #'
 #' Supported formats: \code{"10x_mtx"} (a directory, or the matrix/barcodes/
 #' features files, read via TENxIO), \code{"10x_h5"} (CellRanger HDF5, TENxIO),
-#' and \code{"h5ad"} (AnnData, anndataR). loom and Seurat \code{.rds} are not
-#' supported here -- read them with their native packages.
+#' \code{"h5ad"} (AnnData, anndataR), and \code{"rds"} (a saved
+#' \code{SingleCellExperiment} or \code{Seurat} object; detected by class).
+#' loom is not supported -- read it with \code{LoomExperiment} directly.
 #'
-#' @param x A path to a single file (\code{.h5}/\code{.h5ad}), a directory
-#'   containing a 10x triplet, or a character vector of the triplet files.
-#' @param format One of "10x_mtx", "10x_h5", "h5ad". If NULL (default), guessed
-#'   from \code{x}.
-#' @return A \code{SingleCellExperiment}.
+#' @param x A path to a single file (\code{.h5}/\code{.h5ad}/\code{.rds}), a
+#'   directory containing a 10x triplet, or a character vector of the triplet
+#'   files.
+#' @param format One of "10x_mtx", "10x_h5", "h5ad", "rds". If NULL (default),
+#'   guessed from \code{x}.
+#' @param as Output class, one of "SingleCellExperiment" (default) or "Seurat"
+#'   (coerced via the Seurat package, an optional dependency).
+#' @return A \code{SingleCellExperiment}, or a \code{Seurat} object if
+#'   \code{as = "Seurat"}.
 #' @seealso \code{\link{getGEOSingleCell}}, \code{\link{geoSingleCellManifest}}
 #' @export
-readGEOSingleCell <- function(x, format = NULL) {
+readGEOSingleCell <- function(x, format = NULL,
+    as = c("SingleCellExperiment", "Seurat")) {
+    as <- match.arg(as)
     if (is.null(format)) {
         format <- .classify_sc_file(x[1])[["format"]]
     }
-    switch(format,
+    sce <- switch(format,
         "10x_mtx" = .read_sc_10x_mtx(x),
         "10x_h5" = .read_sc_10x_h5(x),
         "h5ad" = .read_sc_h5ad(x),
+        "rds" = .read_sc_rds(x),
         stop(sprintf(
             paste0("Single-cell format '%s' is not supported by readGEOSingleCell(). ",
-                "Supported: 10x_mtx, 10x_h5, h5ad. loom and Seurat .rds are not ",
-                "handled; read them with their native packages."),
+                "Supported: 10x_mtx, 10x_h5, h5ad, rds. loom is not handled; ",
+                "read it with LoomExperiment directly."),
             format
         ), call. = FALSE)
     )
+    .as_sc_output(sce, as)
 }
 
 # When a sample offers more than one loadable format, keep just one, by
@@ -271,24 +312,29 @@ readGEOSingleCell <- function(x, format = NULL) {
 #' with \code{\link{readGEOSingleCell}}, and returns the results. It reports
 #' which units it loads and which it skips.
 #'
-#' This handles common, well-structured layouts (clean per-sample 10x or
-#' h5ad). It does NOT handle every GSE: loom and Seurat \code{.rds} formats,
+#' This handles common, well-structured layouts (clean per-sample 10x, h5ad, or
+#' a saved object in \code{.rds}). It does NOT handle every GSE: loom files,
 #' files packaged inside a \code{_RAW.tar} archive, and idiosyncratic layouts
 #' (e.g. a single combined matrix for many samples) are out of scope -- use the
 #' manifest plus \code{readGEOSingleCell()} directly for those.
 #'
 #' @param GEO A GEO Series accession, e.g. "GSE161228".
 #' @param samples Optional character vector of GSM ids to restrict to.
-#' @param format Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad").
+#' @param format Optional format(s) to restrict to ("10x_mtx", "10x_h5",
+#'   "h5ad", "rds").
 #' @param combine Logical; if TRUE attempt to \code{cbind} the per-sample
 #'   objects into one (requires matching features). Default FALSE returns a list.
+#' @param as Output class, one of "SingleCellExperiment" (default) or "Seurat"
+#'   (coerced via the Seurat package, an optional dependency).
 #' @param destdir Download destination directory.
 #' @return A named list of \code{SingleCellExperiment} (one per sample), or a
-#'   single combined object if \code{combine = TRUE}.
+#'   single combined object if \code{combine = TRUE}; \code{Seurat} objects if
+#'   \code{as = "Seurat"}.
 #' @seealso \code{\link{geoSingleCellManifest}}, \code{\link{readGEOSingleCell}}
 #' @export
 getGEOSingleCell <- function(GEO, samples = NULL, format = NULL, combine = FALSE,
-    destdir = tempdir()) {
+    as = c("SingleCellExperiment", "Seurat"), destdir = tempdir()) {
+    as <- match.arg(as)
     manifest <- geoSingleCellManifest(GEO)
     units <- geoSingleCellUnits(manifest)
     sel <- .select_sc_units(units, samples, format)
@@ -312,10 +358,11 @@ getGEOSingleCell <- function(GEO, samples = NULL, format = NULL, combine = FALSE
         dl <- getGEOSuppFiles(GEO, fetch_files = TRUE, baseDir = destdir,
             filter_regex = u$sample, quiet = TRUE)
         local <- dl$filepath[basename(dl$filepath) %in% unit_files$fname]
+        # read as SingleCellExperiment (the lingua franca); coerce on output
         results[[u$sample]] <- readGEOSingleCell(local, format = u$format)
     }
     if (combine && length(results) > 1) {
-        return(do.call(SummarizedExperiment::cbind, results))
+        return(.as_sc_output(do.call(SummarizedExperiment::cbind, results), as))
     }
-    results
+    lapply(results, .as_sc_output, as = as)
 }
