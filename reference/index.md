@@ -55,7 +55,8 @@
 - [`geoCache()`](http://seandavi.github.io/GEOquery/reference/geoCache.md)
   : GEOquery download cache
 - [`geoSingleCellManifest()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md)
-  : Inventory the single-cell supplementary files of a GEO Series
+  : Inventory the single-cell supplementary files of a GEO Series or
+  Sample
 - [`geoSingleCellUnits()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellUnits.md)
   : Group a single-cell manifest into loadable units
 - [`getDirListing()`](http://seandavi.github.io/GEOquery/reference/getDirListing.md)
@@ -65,7 +66,7 @@
 - [`getGEOSeriesFileListing()`](http://seandavi.github.io/GEOquery/reference/getGEOSeriesFileListing.md)
   : GSE Supplemental file listing
 - [`getGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.md)
-  : Download and read the single-cell data of a GEO Series
+  : Download and read the single-cell data of a GEO Series or Sample
 - [`getGEOSuppFileURL()`](http://seandavi.github.io/GEOquery/reference/getGEOSuppFileURL.md)
   : Get GEO supplemental file URL for a given GEO accession
 - [`getGEOSuppFiles()`](http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.md)

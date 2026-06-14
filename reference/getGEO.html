@@ -13,7 +13,7 @@ each of the important parts of the GEO SOFT format easily accessible."></head><b
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.21</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.22</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -139,11 +139,11 @@ Set this to FALSE if you experience trouble while parsing the characteristics.</
 
 
 <dt id="arg-returntype">returnType<a class="anchor" aria-label="anchor" href="#arg-returntype"></a></dt>
-<dd><p>One of "SummarizedExperiment" (default) or "ExpressionSet".
-For GSE Series Matrix results, controls whether each entity is returned as a
-<code>SummarizedExperiment</code> or an <code>ExpressionSet</code>. SOFT-format results
-(GDS/GPL/GSM/GSE S4 objects) are unaffected. As of this release the default is
-"SummarizedExperiment"; pass <code>returnType = "ExpressionSet"</code> for the
+<dd><p>One of "SummarizedExperiment" (default) or
+"ExpressionSet". For GSE Series Matrix results, controls whether each entity
+is returned as a SummarizedExperiment or an ExpressionSet. SOFT-format
+results (GDS/GPL/GSM/GSE S4 objects) are unaffected. As of this release the
+default is "SummarizedExperiment"; pass returnType = "ExpressionSet" for the
 previous behavior.</p></dd>
 
 </dl></div>
@@ -151,9 +151,9 @@ previous behavior.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>An object of the appropriate class (GDS, GPL, GSM, or GSE) is
 returned.  If the GSEMatrix option is used, then a list of
-<code>SummarizedExperiment</code> objects is returned by default (or
-<code>ExpressionSet</code> objects if <code>returnType = "ExpressionSet"</code>), one for
-each SeriesMatrix file associated with the GSE accession.</p>
+SummarizedExperiment objects is returned by default (or ExpressionSet
+objects if <code>returnType = "ExpressionSet"</code>), one for each SeriesMatrix
+file associated with the GSE accession.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>

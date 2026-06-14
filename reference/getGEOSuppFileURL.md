@@ -8,10 +8,6 @@ Get GEO supplemental file URL for a given GEO accession
 getGEOSuppFileURL(GEO)
 ```
 
-## Arguments
-
-- GEO:
-
 ## Examples
 
 ``` r

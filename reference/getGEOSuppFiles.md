@@ -52,7 +52,7 @@ getGEOSuppFiles(
 
   logical(1). If TRUE, suppress informational messages such as "No
   supplemental files found" and "Using locally cached version". Defaults
-  to the \`GEOquery.quiet\` option, or FALSE.
+  to the `GEOquery.quiet` option, or FALSE.
 
 ## Value
 

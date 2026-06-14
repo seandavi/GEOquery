@@ -18,11 +18,54 @@ R package — no build step for editing; reload and test via
 ``` r
 
 devtools::load_all(".")        # reload package after edits
-devtools::document()           # regenerate man/ and NAMESPACE from roxygen2 (RoxygenNote 7.3.2)
+devtools::document()           # regenerate man/ and NAMESPACE from roxygen2 (Config/roxygen2/version: 8.0.0)
 devtools::test()               # run full testthat suite
 devtools::test(filter = "GSE") # run one test file (tests/testthat/test_GSE.R)
 testthat::test_file("tests/testthat/test_GSE.R")  # run a single file directly
 ```
+
+If `devtools` is unavailable, `pkgload::load_all(".")`,
+`roxygen2::roxygenize(".")`, and `testthat::test_dir("tests/testthat")`
+cover load/document/test without it.
+
+### Local R environment setup (from a bare R)
+
+On a fresh machine R may have **no** GEOquery dependencies (only
+base/recommended packages). Setup that works here:
+
+- **Library location:** use R’s *default* user library
+  (`~/R/<platform>-library/<ver>`). Do **not** set `R_LIBS_USER` to a
+  custom path — just create the default dir if missing
+  (`dir.create(Sys.getenv("R_LIBS_USER"), recursive=TRUE)`); R auto-adds
+  it to [`.libPaths()`](https://rdrr.io/r/base/libPaths.html) for every
+  session. The system lib (`/usr/lib64/R/library`) is not writable.
+- **System dev libraries** are needed before some R packages build (this
+  is RHEL/el9; passwordless `sudo dnf` is available): `libxml2-devel`
+  (for `xml2`, a hard dep), plus
+  `fontconfig-devel freetype-devel harfbuzz-devel fribidi-devel libpng-devel`
+  (for the `ragg`/`textshaping` doc-tooling chain), and
+  `libcurl-devel openssl-devel`. `pak` will also auto-run `dnf` for a
+  package’s declared SystemRequirements.
+- **Installer:** prefer `pak::pkg_install(...)` — fast, parallel, robust
+  locking, resolves Bioconductor automatically, and installs
+  SystemRequirements. Bootstrap it with `install.packages("pak")`.
+  `BiocManager::install()` with `Ncpus>1` was prone to `00LOCK-*` lock
+  cascades here; if you hit one, `rm -rf <lib>/00LOCK-*` and retry (pak
+  avoids this).
+- **Skip the doc-website tooling** (`devtools` → `pkgdown`/`ragg`)
+  unless building the site: `pkgload` (load_all), `roxygen2` (document),
+  and `testthat` (test) are enough and avoid the font stack.
+- **Match the roxygen version:** docs are generated with the version in
+  `DESCRIPTION`’s `Config/roxygen2/version` (currently 8.0.0). A
+  mismatched roxygen2 reformats every `man/*.Rd`, creating churn —
+  install the pinned version (`pak::pkg_install("roxygen2@8.0.0")`)
+  before `roxygenize()`. **Never hand-edit `man/*.Rd` or `NAMESPACE`** —
+  they are generated.
+- **Running integration tests locally:** the network tests are gated by
+  `skip_if_no_integration()` *and* `skip_on_cran()`. Set both
+  `NOT_CRAN=true` and `GEOQUERY_INTEGRATION=true` to actually run them
+  (devtools::test sets `NOT_CRAN` for you; raw `testthat::test_*` does
+  not).
 
 Full checks (match CI in `.github/workflows/R-CMD-check.yaml`):
 

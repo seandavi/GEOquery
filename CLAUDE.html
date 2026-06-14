@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.21</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.22</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,16 +58,33 @@
 <p>R package — no build step for editing; reload and test via <code>devtools</code>/<code>testthat</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span>        <span class="co"># reload package after edits</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="op">)</span>           <span class="co"># regenerate man/ and NAMESPACE from roxygen2 (RoxygenNote 7.3.2)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="op">)</span>           <span class="co"># regenerate man/ and NAMESPACE from roxygen2 (Config/roxygen2/version: 8.0.0)</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="op">)</span>               <span class="co"># run full testthat suite</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span>filter <span class="op">=</span> <span class="st">"GSE"</span><span class="op">)</span> <span class="co"># run one test file (tests/testthat/test_GSE.R)</span></span>
 <span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_file.html" class="external-link">test_file</a></span><span class="op">(</span><span class="st">"tests/testthat/test_GSE.R"</span><span class="op">)</span>  <span class="co"># run a single file directly</span></span></code></pre></div>
-<p>Full checks (match CI in <code>.github/workflows/R-CMD-check.yaml</code>):</p>
+<p>If <code>devtools</code> is unavailable, <code>pkgload::load_all(".")</code>, <code>roxygen2::roxygenize(".")</code>, and <code>testthat::test_dir("tests/testthat")</code> cover load/document/test without it.</p>
+<div class="section level3">
+<h3 id="local-r-environment-setup-from-a-bare-r">Local R environment setup (from a bare R)<a class="anchor" aria-label="anchor" href="#local-r-environment-setup-from-a-bare-r"></a></h3>
+<p>On a fresh machine R may have <strong>no</strong> GEOquery dependencies (only base/recommended packages). Setup that works here:</p>
+<ul><li>
+<strong>Library location:</strong> use R’s <em>default</em> user library (<code>~/R/&lt;platform&gt;-library/&lt;ver&gt;</code>). Do <strong>not</strong> set <code>R_LIBS_USER</code> to a custom path — just create the default dir if missing (<code>dir.create(Sys.getenv("R_LIBS_USER"), recursive=TRUE)</code>); R auto-adds it to <code><a href="https://rdrr.io/r/base/libPaths.html" class="external-link">.libPaths()</a></code> for every session. The system lib (<code>/usr/lib64/R/library</code>) is not writable.</li>
+<li>
+<strong>System dev libraries</strong> are needed before some R packages build (this is RHEL/el9; passwordless <code>sudo dnf</code> is available): <code>libxml2-devel</code> (for <code>xml2</code>, a hard dep), plus <code>fontconfig-devel freetype-devel harfbuzz-devel fribidi-devel libpng-devel</code> (for the <code>ragg</code>/<code>textshaping</code> doc-tooling chain), and <code>libcurl-devel openssl-devel</code>. <code>pak</code> will also auto-run <code>dnf</code> for a package’s declared SystemRequirements.</li>
+<li>
+<strong>Installer:</strong> prefer <code>pak::pkg_install(...)</code> — fast, parallel, robust locking, resolves Bioconductor automatically, and installs SystemRequirements. Bootstrap it with <code>install.packages("pak")</code>. <code>BiocManager::install()</code> with <code>Ncpus&gt;1</code> was prone to <code>00LOCK-*</code> lock cascades here; if you hit one, <code>rm -rf &lt;lib&gt;/00LOCK-*</code> and retry (pak avoids this).</li>
+<li>
+<strong>Skip the doc-website tooling</strong> (<code>devtools</code> → <code>pkgdown</code>/<code>ragg</code>) unless building the site: <code>pkgload</code> (load_all), <code>roxygen2</code> (document), and <code>testthat</code> (test) are enough and avoid the font stack.</li>
+<li>
+<strong>Match the roxygen version:</strong> docs are generated with the version in <code>DESCRIPTION</code>’s <code>Config/roxygen2/version</code> (currently 8.0.0). A mismatched roxygen2 reformats every <code>man/*.Rd</code>, creating churn — install the pinned version (<code>pak::pkg_install("roxygen2@8.0.0")</code>) before <code>roxygenize()</code>. <strong>Never hand-edit <code>man/*.Rd</code> or <code>NAMESPACE</code></strong> — they are generated.</li>
+<li>
+<strong>Running integration tests locally:</strong> the network tests are gated by <code>skip_if_no_integration()</code> <em>and</em> <code>skip_on_cran()</code>. Set both <code>NOT_CRAN=true</code> and <code>GEOQUERY_INTEGRATION=true</code> to actually run them (devtools::test sets <code>NOT_CRAN</code> for you; raw <code>testthat::test_*</code> does not).</li>
+</ul><p>Full checks (match CI in <code>.github/workflows/R-CMD-check.yaml</code>):</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">R</span> CMD build .</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="ex">R</span> CMD check GEOquery_<span class="pp">*</span>.tar.gz</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'BiocCheck::BiocCheck()'</span>   <span class="co"># Bioconductor-specific checks</span></span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'lintr::lint_package()'</span>    <span class="co"># config in .lintr</span></span></code></pre></div>
 <p>Docker dev environment: <code>Dockerfile</code> builds on <code>bioconductor/bioconductor_docker:devel</code>.</p>
+</div>
 <div class="section level3">
 <h3 id="important-tests-hit-the-live-network">Important: tests hit the live network<a class="anchor" aria-label="anchor" href="#important-tests-hit-the-live-network"></a></h3>
 <p>The testthat suite makes real HTTP calls to NCBI GEO FTP/CGI endpoints — there are no recorded fixtures. Tests download specific accessions (e.g. GSE/GSM/GPL/GDS IDs) and assert on parsed structure. Failures may reflect NCBI outages or GEO-side format changes, not code regressions. When a parsing bug is reported it is usually tied to a specific accession; reproduce with <code>getGEO("GSExxxxx")</code> against the real record.</p>

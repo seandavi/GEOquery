@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.21</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.22</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,6 +46,14 @@
       <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.81.22" id="geoquery-28122-2026-06-14">GEOquery 2.81.22 (2026-06-14)<a class="anchor" aria-label="anchor" href="#geoquery-28122-2026-06-14"></a></h2>
+<div class="section level3">
+<h3 id="new-features-2-81-22">New features<a class="anchor" aria-label="anchor" href="#new-features-2-81-22"></a></h3>
+<ul><li>
+<code><a href="../reference/geoSingleCellManifest.html">geoSingleCellManifest()</a></code> and <code><a href="../reference/getGEOSingleCell.html">getGEOSingleCell()</a></code> now handle the common case where a Series ships only a <code>GSE..._RAW.tar</code> at the series level and the per-sample files live in each sample’s own GSM suppl directory (e.g. GSE132771). When the series level has no loadable single-cell units, the manifest falls back to enumerating the Series’ samples (via <code><a href="../reference/getGEO.html">getGEO()</a></code>) and inventorying each GSM suppl directory. Both functions also accept a GSM accession directly (<code>getGEOSingleCell("GSM3891612")</code>), and <code><a href="../reference/geoSingleCellManifest.html">geoSingleCellManifest()</a></code> gains a <code>samples</code> argument to restrict to specific GSMs without enumerating the whole Series. Unit files are downloaded by URL, so the readers work whether the data lives at the series or sample level (<a href="https://github.com/seandavi/GEOquery/issues/190" class="external-link">#190</a>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.81.21" id="geoquery-28121-2026-06-13">GEOquery 2.81.21 (2026-06-13)<a class="anchor" aria-label="anchor" href="#geoquery-28121-2026-06-13"></a></h2>
 <div class="section level3">

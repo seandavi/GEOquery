@@ -1,6 +1,7 @@
-# Download and read the single-cell data of a GEO Series
+# Download and read the single-cell data of a GEO Series or Sample
 
-High-level, best-effort convenience wrapper: inventories the GSE
+High-level, best-effort convenience wrapper: inventories the GSE (or
+GSM)
 ([`geoSingleCellManifest`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md)),
 groups files into loadable units
 ([`geoSingleCellUnits`](http://seandavi.github.io/GEOquery/reference/geoSingleCellUnits.md)),
@@ -25,11 +26,13 @@ getGEOSingleCell(
 
 - GEO:
 
-  A GEO Series accession, e.g. "GSE161228".
+  A GEO Series (`"GSE..."`) or Sample (`"GSM..."`) accession, e.g.
+  "GSE132771" or "GSM3891612".
 
 - samples:
 
-  Optional character vector of GSM ids to restrict to.
+  Optional character vector of GSM ids to restrict to. Ignored when
+  `GEO` is itself a GSM.
 
 - format:
 
@@ -52,10 +55,13 @@ combined object if `combine = TRUE`.
 ## Details
 
 This handles common, well-structured layouts (clean per-sample 10x or
-h5ad). It does NOT handle every GSE: loom and Seurat `.rds` formats,
-files packaged inside a `_RAW.tar` archive, and idiosyncratic layouts
-(e.g. a single combined matrix for many samples) are out of scope – use
-the manifest plus
+h5ad), including the very common case where the series ships only a
+`_RAW.tar` and the per-sample files live in each GSM suppl directory
+(the manifest falls back to the GSM level automatically). You may also
+pass a single GSM accession to load just that sample. It does NOT handle
+every GSE: loom and Seurat `.rds` formats, files available *only* inside
+a `_RAW.tar` archive, and idiosyncratic layouts (e.g. a single combined
+matrix for many samples) are out of scope – use the manifest plus
 [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
 directly for those.
 
@@ -63,3 +69,14 @@ directly for those.
 
 [`geoSingleCellManifest`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md),
 [`readGEOSingleCell`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+  sce <- getGEOSingleCell("GSM3891612")                  # one sample
+  all <- getGEOSingleCell("GSE132771")                   # whole series
+  two <- getGEOSingleCell("GSE132771",
+                          samples = c("GSM3891612", "GSM3891613"))
+} # }
+```
