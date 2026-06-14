@@ -10,8 +10,8 @@ geoSingleCellUnits(manifest)
 \item{manifest}{A data.frame returned by \code{geoSingleCellManifest()}.}
 }
 \value{
-A data.frame with columns \code{sample}, \code{format}, \code{n_files},
-\code{status}, and \code{loadable}.
+A data.frame with columns \code{sample}, \code{format},
+\code{n_files}, \code{status}, and \code{loadable}.
 }
 \description{
 Collapses a \code{\link{geoSingleCellManifest}} into one row per loadable

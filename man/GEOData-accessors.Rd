@@ -26,21 +26,21 @@ Use these rather than reaching into slots directly.
 }
 \details{
 \describe{
-  \item{\code{Meta(object)}}{The record metadata as a named list (title,
-    submission dates, sample/platform attributes, and so on).}
-  \item{\code{Accession(object)}}{The GEO accession (the
-    \code{geo_accession} metadata field).}
-  \item{\code{Table(object)}}{The data table as a \code{data.frame} -- for
-    example the measurement table of a \code{GSM} or the probe annotation of
-    a \code{GPL}.}
-  \item{\code{Columns(object)}}{A \code{data.frame} describing the columns of
-    \code{Table(object)}.}
-  \item{\code{dataTable(object)}}{The underlying \code{GEODataTable} object,
-    which holds both \code{Table()} and \code{Columns()}.}
-  \item{\code{GSMList(object)}}{For a \code{GSE}, the list of its \code{GSM}
-    sample objects.}
-  \item{\code{GPLList(object)}}{For a \code{GSE}, the list of its \code{GPL}
-    platform objects.}
+\item{\code{Meta(object)}}{The record metadata as a named list (title,
+submission dates, sample/platform attributes, and so on).}
+\item{\code{Accession(object)}}{The GEO accession (the
+\code{geo_accession} metadata field).}
+\item{\code{Table(object)}}{The data table as a \code{data.frame} -- for
+example the measurement table of a \code{GSM} or the probe annotation of
+a \code{GPL}.}
+\item{\code{Columns(object)}}{A \code{data.frame} describing the columns of
+\code{Table(object)}.}
+\item{\code{dataTable(object)}}{The underlying \code{GEODataTable} object,
+which holds both \code{Table()} and \code{Columns()}.}
+\item{\code{GSMList(object)}}{For a \code{GSE}, the list of its \code{GSM}
+sample objects.}
+\item{\code{GPLList(object)}}{For a \code{GSE}, the list of its \code{GPL}
+platform objects.}
 }
 }
 \examples{

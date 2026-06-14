@@ -31,7 +31,6 @@ lapply(dfl,head)
 
 }
 }
-
 \seealso{
 \code{\link{getGEO}}
 }

@@ -6,9 +6,6 @@
 \usage{
 getGEOSuppFileURL(GEO)
 }
-\arguments{
-\item{GEO}{}
-}
 \description{
 Get GEO supplemental file URL for a given GEO accession
 }
