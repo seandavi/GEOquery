@@ -21,6 +21,17 @@
   readers work whether the data lives at the series or sample level
   ([\#190](https://github.com/seandavi/GEOquery/issues/190)).
 
+### Bug Fixes
+
+- `getGEOSingleCell(combine = TRUE)` no longer fails with a cryptic
+  `cbind` error (`'mcols' ... do not match`) when a Series’ samples come
+  from different platforms or genome references — common in single-cell
+  studies (e.g. GSE132771 mixes mouse and human). Samples are now
+  restricted to their shared features before binding; if they share no
+  features (so a single combined object is impossible) a clear,
+  actionable error is raised instead
+  ([\#190](https://github.com/seandavi/GEOquery/issues/190)).
+
 ## GEOquery 2.81.21 (2026-06-13)
 
 ### Breaking changes

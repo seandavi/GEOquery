@@ -51,7 +51,7 @@ which units it loads and which it skips."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Download and read the single-cell data of a GEO Series or Sample</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/R/singlecell.R" class="external-link"><code>R/singlecell.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/fix/sc-combine-features/R/singlecell.R" class="external-link"><code>R/singlecell.R</code></a></small>
       <div class="d-none name"><code>getGEOSingleCell.Rd</code></div>
     </div>
 
@@ -93,8 +93,11 @@ when <code>GEO</code> is itself a GSM.</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Logical; if TRUE attempt to <code>cbind</code> the per-sample
-objects into one (requires matching features). Default FALSE returns a list.</p></dd>
+<dd><p>Logical; if TRUE, <code>cbind</code> the per-sample objects into one,
+restricting to the features (rownames) common to all samples so they align
+even when samples come from different references or platforms. Errors if the
+samples share no common features (e.g. a study mixing organisms). Default
+FALSE returns a named list.</p></dd>
 
 
 <dt id="arg-destdir">destdir<a class="anchor" aria-label="anchor" href="#arg-destdir"></a></dt>

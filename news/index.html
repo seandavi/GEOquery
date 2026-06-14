@@ -43,7 +43,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/fix/sc-combine-features/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
@@ -52,6 +52,11 @@
 <h3 id="new-features-2-81-22">New features<a class="anchor" aria-label="anchor" href="#new-features-2-81-22"></a></h3>
 <ul><li>
 <code><a href="../reference/geoSingleCellManifest.html">geoSingleCellManifest()</a></code> and <code><a href="../reference/getGEOSingleCell.html">getGEOSingleCell()</a></code> now handle the common case where a Series ships only a <code>GSE..._RAW.tar</code> at the series level and the per-sample files live in each sample’s own GSM suppl directory (e.g. GSE132771). When the series level has no loadable single-cell units, the manifest falls back to enumerating the Series’ samples (via <code><a href="../reference/getGEO.html">getGEO()</a></code>) and inventorying each GSM suppl directory. Both functions also accept a GSM accession directly (<code>getGEOSingleCell("GSM3891612")</code>), and <code><a href="../reference/geoSingleCellManifest.html">geoSingleCellManifest()</a></code> gains a <code>samples</code> argument to restrict to specific GSMs without enumerating the whole Series. Unit files are downloaded by URL, so the readers work whether the data lives at the series or sample level (<a href="https://github.com/seandavi/GEOquery/issues/190" class="external-link">#190</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-2-81-22">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-81-22"></a></h3>
+<ul><li>
+<code>getGEOSingleCell(combine = TRUE)</code> no longer fails with a cryptic <code>cbind</code> error (<code>'mcols' ... do not match</code>) when a Series’ samples come from different platforms or genome references — common in single-cell studies (e.g. GSE132771 mixes mouse and human). Samples are now restricted to their shared features before binding; if they share no features (so a single combined object is impossible) a clear, actionable error is raised instead (<a href="https://github.com/seandavi/GEOquery/issues/190" class="external-link">#190</a>).</li>
 </ul></div>
 </div>
     <div class="section level2">

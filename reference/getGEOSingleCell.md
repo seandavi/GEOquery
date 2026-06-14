@@ -40,8 +40,11 @@ getGEOSingleCell(
 
 - combine:
 
-  Logical; if TRUE attempt to `cbind` the per-sample objects into one
-  (requires matching features). Default FALSE returns a list.
+  Logical; if TRUE, `cbind` the per-sample objects into one, restricting
+  to the features (rownames) common to all samples so they align even
+  when samples come from different references or platforms. Errors if
+  the samples share no common features (e.g. a study mixing organisms).
+  Default FALSE returns a named list.
 
 - destdir:
 
