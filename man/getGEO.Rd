@@ -60,19 +60,19 @@ specifying FALSE.}
 to parse the characteristics information (if available) for a GSE Matrix file.
 Set this to FALSE if you experience trouble while parsing the characteristics.}
 
-\item{returnType}{One of "SummarizedExperiment" (default) or "ExpressionSet".
-For GSE Series Matrix results, controls whether each entity is returned as a
-\code{SummarizedExperiment} or an \code{ExpressionSet}. SOFT-format results
-(GDS/GPL/GSM/GSE S4 objects) are unaffected. As of this release the default is
-"SummarizedExperiment"; pass \code{returnType = "ExpressionSet"} for the
+\item{returnType}{One of "SummarizedExperiment" (default) or
+"ExpressionSet". For GSE Series Matrix results, controls whether each entity
+is returned as a SummarizedExperiment or an ExpressionSet. SOFT-format
+results (GDS/GPL/GSM/GSE S4 objects) are unaffected. As of this release the
+default is "SummarizedExperiment"; pass returnType = "ExpressionSet" for the
 previous behavior.}
 }
 \value{
 An object of the appropriate class (GDS, GPL, GSM, or GSE) is
 returned.  If the GSEMatrix option is used, then a list of
-\code{SummarizedExperiment} objects is returned by default (or
-\code{ExpressionSet} objects if \code{returnType = "ExpressionSet"}), one for
-each SeriesMatrix file associated with the GSE accession.
+SummarizedExperiment objects is returned by default (or ExpressionSet
+objects if \code{returnType = "ExpressionSet"}), one for each SeriesMatrix
+file associated with the GSE accession.
 }
 \description{
 This function is the main user-level function in the GEOquery package.  It
@@ -149,7 +149,6 @@ gse[[1]]
 
 }
 }
-
 \seealso{
 \code{\link{getGEOfile}}
 }

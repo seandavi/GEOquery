@@ -2,40 +2,45 @@
 % Please edit documentation in R/singlecell.R
 \name{getGEOSingleCell}
 \alias{getGEOSingleCell}
-\title{Download and read the single-cell data of a GEO Series}
+\title{Download and read the single-cell data of a GEO Series or Sample}
 \usage{
 getGEOSingleCell(
   GEO,
   samples = NULL,
   format = NULL,
-  combine = FALSE,
+  by = c("sample", "platform", "all"),
   as = c("SingleCellExperiment", "Seurat"),
   destdir = tempdir()
 )
 }
 \arguments{
-\item{GEO}{A GEO Series accession, e.g. "GSE161228".}
+\item{GEO}{A GEO Series (\code{"GSE..."}) or Sample (\code{"GSM..."})
+accession, e.g. "GSE132771" or "GSM3891612".}
 
-\item{samples}{Optional character vector of GSM ids to restrict to.}
+\item{samples}{Optional character vector of GSM ids to restrict to. Ignored
+when \code{GEO} is itself a GSM.}
 
 \item{format}{Optional format(s) to restrict to ("10x_mtx", "10x_h5",
 "h5ad", "rds").}
 
-\item{combine}{Logical; if TRUE attempt to \code{cbind} the per-sample
-objects into one (requires matching features). Default FALSE returns a list.}
+\item{by}{One of \code{"sample"} (default), \code{"platform"}, or
+\code{"all"} -- how to group the loaded samples into the return value. See
+Details.}
 
 \item{as}{Output class, one of "SingleCellExperiment" (default) or "Seurat"
-(coerced via the Seurat package, an optional dependency).}
+(coerced at the boundary via the Seurat package, an optional dependency).}
 
 \item{destdir}{Download destination directory.}
 }
 \value{
-A named list of \code{SingleCellExperiment} (one per sample), or a
-single combined object if \code{combine = TRUE}; \code{Seurat} objects if
+Depends on \code{by}: a named list of objects per sample
+(\code{"sample"}); a named list of combined objects per platform
+(\code{"platform"}); or a single combined object (\code{"all"}). Each
+object is a \code{SingleCellExperiment}, or a \code{Seurat} object when
 \code{as = "Seurat"}.
 }
 \description{
-High-level, best-effort convenience wrapper: inventories the GSE
+High-level, best-effort convenience wrapper: inventories the GSE (or GSM)
 (\code{\link{geoSingleCellManifest}}), groups files into loadable units
 (\code{\link{geoSingleCellUnits}}), downloads each loadable unit, reads it
 with \code{\link{readGEOSingleCell}}, and returns the results. It reports
@@ -43,10 +48,43 @@ which units it loads and which it skips.
 }
 \details{
 This handles common, well-structured layouts (clean per-sample 10x, h5ad, or
-a saved object in \code{.rds}). It does NOT handle every GSE: loom files,
-files packaged inside a \code{_RAW.tar} archive, and idiosyncratic layouts
-(e.g. a single combined matrix for many samples) are out of scope -- use the
-manifest plus \code{readGEOSingleCell()} directly for those.
+a saved object in \code{.rds}), including the very common case where the
+series ships only a \code{_RAW.tar} and the per-sample files live in each GSM
+suppl directory (the manifest falls back to the GSM level automatically). You
+may also pass a single GSM accession to load just that sample. It does NOT
+handle every GSE: loom files, files available \emph{only} inside a
+\code{_RAW.tar} archive, and idiosyncratic layouts (e.g. a single combined
+matrix for many samples) are out of scope -- use the manifest plus
+\code{readGEOSingleCell()} directly for those.
+
+\strong{Grouping (\code{by}).} A GEO Series has two natural layers -- it can
+span multiple platforms (GPLs), each holding many samples (GSMs) -- and the
+platform is the feature-compatibility boundary (samples in one platform share
+a feature space; across platforms they generally do not). \code{by} chooses
+the return shape, and the shape is fixed by the argument (not the data):
+\describe{
+\item{\code{"sample"} (default)}{a named list with one object per sample
+(or per whole-study file).}
+\item{\code{"platform"}}{a named list keyed by platform (GPL), each entry
+the samples of that platform combined into one object. The honest answer
+for a multi-platform study; a single-platform study yields a length-1
+list. Samples with unknown platform are returned individually.}
+\item{\code{"all"}}{a single object with every sample combined. Errors if
+the samples share no common features (e.g. a study mixing organisms) --
+use \code{"platform"} for those.}
+}
+Combining (for \code{"platform"}/\code{"all"}) restricts to the features
+common to the group and reconciles per-sample feature annotation so binding
+succeeds across CellRanger versions; whole-study single-file formats already
+hold one object, so grouping is effectively a no-op for them.
+}
+\examples{
+\dontrun{
+  sce <- getGEOSingleCell("GSM3891612")                   # one sample
+  per_sample <- getGEOSingleCell("GSE132771")             # list by GSM
+  per_platform <- getGEOSingleCell("GSE132771", by = "platform")
+  # -> list(GPL21103 = <mouse SCE>, GPL24676 = <human SCE>)
+}
 }
 \seealso{
 \code{\link{geoSingleCellManifest}}, \code{\link{readGEOSingleCell}}

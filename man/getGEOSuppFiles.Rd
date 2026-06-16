@@ -35,7 +35,7 @@ bed files only.}
 
 \item{quiet}{logical(1). If TRUE, suppress informational messages such as
 "No supplemental files found" and "Using locally cached version".
-Defaults to the `GEOquery.quiet` option, or FALSE.}
+Defaults to the \code{GEOquery.quiet} option, or FALSE.}
 }
 \value{
 If fetch_files=TRUE, a data frame is returned invisibly with rownames representing the
@@ -65,7 +65,6 @@ a
 
 }
 }
-
 \author{
 Sean Davis \href{mailto:sdavis2@mail.nih.gov}{sdavis2@mail.nih.gov}
 }
