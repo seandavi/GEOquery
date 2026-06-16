@@ -58,10 +58,11 @@
 # Roles that make a complete 10x Matrix Market unit.
 .mtx_roles <- c("matrix", "barcodes", "features")
 
-# Formats readGEOSingleCell() can actually import. loom and Seurat .rds are
-# classified and reported but have no built-in reader (read with their native
-# packages), so they are never "loadable".
-.sc_readable <- c("10x_mtx", "10x_h5", "h5ad")
+# Formats readGEOSingleCell() can actually import: 10x Matrix Market, 10x HDF5,
+# AnnData h5ad, and .rds holding a SingleCellExperiment or Seurat object
+# (ADR-0006). loom is classified and reported but has no built-in reader (read
+# it with its native package), so it is never "loadable".
+.sc_readable <- c("10x_mtx", "10x_h5", "h5ad", "rds")
 
 # The grouping key that defines a loadable unit. A 10x Matrix Market triplet is
 # one unit per sample (its matrix/barcodes/features load together); every other
@@ -363,40 +364,89 @@ geoSingleCellManifest <- function(GEO, samples = NULL) {
     anndataR::read_h5ad(.maybe_gunzip(path), as = "SingleCellExperiment")
 }
 
+# Read a `.rds` supplementary file. Its contents are opaque from the filename,
+# so detect by class: a saved SingleCellExperiment is returned as-is; a saved
+# Seurat object is coerced to SingleCellExperiment (the package lingua franca)
+# via Seurat; anything else is an error (#197).
+.read_sc_rds <- function(path) {
+    obj <- readRDS(path)
+    if (methods::is(obj, "SingleCellExperiment")) {
+        return(obj)
+    }
+    if (inherits(obj, "Seurat")) {
+        .require_pkg("Seurat", "Seurat .rds files")
+        return(Seurat::as.SingleCellExperiment(obj))
+    }
+    stop(sprintf(
+        paste0("Unsupported .rds contents (class: %s). readGEOSingleCell() ",
+            "reads .rds files containing a Seurat or SingleCellExperiment object."),
+        paste(class(obj), collapse = "/")
+    ), call. = FALSE)
+}
+
+# Coerce a SingleCellExperiment to the requested output class (#196). Seurat
+# output is produced by coercion and requires the Seurat package.
+#
+# Seurat::as.Seurat() defaults to data = "logcounts" and errors if that assay is
+# absent -- but single-cell data from GEO is typically counts-only. Map the
+# assays explicitly: use "counts" (or the first assay) as counts, and only pass
+# a data layer when a "logcounts" assay actually exists.
+.as_sc_output <- function(sce, as = c("SingleCellExperiment", "Seurat")) {
+    as <- match.arg(as)
+    if (as == "Seurat") {
+        .require_pkg("Seurat", "Seurat output")
+        assays <- SummarizedExperiment::assayNames(sce)
+        counts_name <- if ("counts" %in% assays) "counts" else assays[1]
+        data_name <- if ("logcounts" %in% assays) "logcounts" else NULL
+        return(Seurat::as.Seurat(sce, counts = counts_name, data = data_name))
+    }
+    sce
+}
+
 #' Read a single-cell file (or 10x triplet) into a SingleCellExperiment
 #'
 #' Low-level reader: given already-downloaded local file(s), dispatch on format
 #' to the appropriate Bioconductor importer and return a
-#' \code{SingleCellExperiment}. Use this for full control; see
+#' \code{SingleCellExperiment} (or a \code{Seurat} object with
+#' \code{as = "Seurat"}). Use this for full control; see
 #' \code{\link{getGEOSingleCell}} for the high-level convenience wrapper.
 #'
 #' Supported formats: \code{"10x_mtx"} (a directory, or the matrix/barcodes/
 #' features files, read via TENxIO), \code{"10x_h5"} (CellRanger HDF5, TENxIO),
-#' and \code{"h5ad"} (AnnData, anndataR). loom and Seurat \code{.rds} are not
-#' supported here -- read them with their native packages.
+#' \code{"h5ad"} (AnnData, anndataR), and \code{"rds"} (a saved
+#' \code{SingleCellExperiment} or \code{Seurat} object; detected by class).
+#' loom is not supported -- read it with \code{LoomExperiment} directly.
 #'
-#' @param x A path to a single file (\code{.h5}/\code{.h5ad}), a directory
-#'   containing a 10x triplet, or a character vector of the triplet files.
-#' @param format One of "10x_mtx", "10x_h5", "h5ad". If NULL (default), guessed
-#'   from \code{x}.
-#' @return A \code{SingleCellExperiment}.
+#' @param x A path to a single file (\code{.h5}/\code{.h5ad}/\code{.rds}), a
+#'   directory containing a 10x triplet, or a character vector of the triplet
+#'   files.
+#' @param format One of "10x_mtx", "10x_h5", "h5ad", "rds". If NULL (default),
+#'   guessed from \code{x}.
+#' @param as Output class, one of "SingleCellExperiment" (default) or "Seurat"
+#'   (coerced via the Seurat package, an optional dependency).
+#' @return A \code{SingleCellExperiment}, or a \code{Seurat} object if
+#'   \code{as = "Seurat"}.
 #' @seealso \code{\link{getGEOSingleCell}}, \code{\link{geoSingleCellManifest}}
 #' @export
-readGEOSingleCell <- function(x, format = NULL) {
+readGEOSingleCell <- function(x, format = NULL,
+    as = c("SingleCellExperiment", "Seurat")) {
+    as <- match.arg(as)
     if (is.null(format)) {
         format <- .classify_sc_file(x[1])[["format"]]
     }
-    switch(format,
+    sce <- switch(format,
         "10x_mtx" = .read_sc_10x_mtx(x),
         "10x_h5" = .read_sc_10x_h5(x),
         "h5ad" = .read_sc_h5ad(x),
+        "rds" = .read_sc_rds(x),
         stop(sprintf(
             paste0("Single-cell format '%s' is not supported by readGEOSingleCell(). ",
-                "Supported: 10x_mtx, 10x_h5, h5ad. loom and Seurat .rds are not ",
-                "handled; read them with their native packages."),
+                "Supported: 10x_mtx, 10x_h5, h5ad, rds. loom is not handled; ",
+                "read it with LoomExperiment directly."),
             format
         ), call. = FALSE)
     )
+    .as_sc_output(sce, as)
 }
 
 # When a (named) sample offers more than one loadable format, keep just one, by
@@ -510,12 +560,12 @@ readGEOSingleCell <- function(x, format = NULL) {
 #' with \code{\link{readGEOSingleCell}}, and returns the results. It reports
 #' which units it loads and which it skips.
 #'
-#' This handles common, well-structured layouts (clean per-sample 10x or
-#' h5ad), including the very common case where the series ships only a
-#' \code{_RAW.tar} and the per-sample files live in each GSM suppl directory
-#' (the manifest falls back to the GSM level automatically). You may also pass a
-#' single GSM accession to load just that sample. It does NOT handle every GSE:
-#' loom and Seurat \code{.rds} formats, files available \emph{only} inside a
+#' This handles common, well-structured layouts (clean per-sample 10x, h5ad, or
+#' a saved object in \code{.rds}), including the very common case where the
+#' series ships only a \code{_RAW.tar} and the per-sample files live in each GSM
+#' suppl directory (the manifest falls back to the GSM level automatically). You
+#' may also pass a single GSM accession to load just that sample. It does NOT
+#' handle every GSE: loom files, files available \emph{only} inside a
 #' \code{_RAW.tar} archive, and idiosyncratic layouts (e.g. a single combined
 #' matrix for many samples) are out of scope -- use the manifest plus
 #' \code{readGEOSingleCell()} directly for those.
@@ -526,15 +576,15 @@ readGEOSingleCell <- function(x, format = NULL) {
 #' a feature space; across platforms they generally do not). \code{by} chooses
 #' the return shape, and the shape is fixed by the argument (not the data):
 #' \describe{
-#'   \item{\code{"sample"} (default)}{a named list with one
-#'     \code{SingleCellExperiment} per sample (or per whole-study file).}
+#'   \item{\code{"sample"} (default)}{a named list with one object per sample
+#'     (or per whole-study file).}
 #'   \item{\code{"platform"}}{a named list keyed by platform (GPL), each entry
 #'     the samples of that platform combined into one object. The honest answer
 #'     for a multi-platform study; a single-platform study yields a length-1
 #'     list. Samples with unknown platform are returned individually.}
-#'   \item{\code{"all"}}{a single \code{SingleCellExperiment} with every sample
-#'     combined. Errors if the samples share no common features (e.g. a study
-#'     mixing organisms) -- use \code{"platform"} for those.}
+#'   \item{\code{"all"}}{a single object with every sample combined. Errors if
+#'     the samples share no common features (e.g. a study mixing organisms) --
+#'     use \code{"platform"} for those.}
 #' }
 #' Combining (for \code{"platform"}/\code{"all"}) restricts to the features
 #' common to the group and reconciles per-sample feature annotation so binding
@@ -545,15 +595,19 @@ readGEOSingleCell <- function(x, format = NULL) {
 #'   accession, e.g. "GSE132771" or "GSM3891612".
 #' @param samples Optional character vector of GSM ids to restrict to. Ignored
 #'   when \code{GEO} is itself a GSM.
-#' @param format Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad").
+#' @param format Optional format(s) to restrict to ("10x_mtx", "10x_h5",
+#'   "h5ad", "rds").
 #' @param by One of \code{"sample"} (default), \code{"platform"}, or
 #'   \code{"all"} -- how to group the loaded samples into the return value. See
 #'   Details.
+#' @param as Output class, one of "SingleCellExperiment" (default) or "Seurat"
+#'   (coerced at the boundary via the Seurat package, an optional dependency).
 #' @param destdir Download destination directory.
-#' @return Depends on \code{by}: a named list of \code{SingleCellExperiment} per
-#'   sample (\code{"sample"}); a named list of combined objects per platform
-#'   (\code{"platform"}); or a single combined \code{SingleCellExperiment}
-#'   (\code{"all"}).
+#' @return Depends on \code{by}: a named list of objects per sample
+#'   (\code{"sample"}); a named list of combined objects per platform
+#'   (\code{"platform"}); or a single combined object (\code{"all"}). Each
+#'   object is a \code{SingleCellExperiment}, or a \code{Seurat} object when
+#'   \code{as = "Seurat"}.
 #' @seealso \code{\link{geoSingleCellManifest}}, \code{\link{readGEOSingleCell}}
 #' @examples
 #' \dontrun{
@@ -564,8 +618,10 @@ readGEOSingleCell <- function(x, format = NULL) {
 #' }
 #' @export
 getGEOSingleCell <- function(GEO, samples = NULL, format = NULL,
-    by = c("sample", "platform", "all"), destdir = tempdir()) {
+    by = c("sample", "platform", "all"),
+    as = c("SingleCellExperiment", "Seurat"), destdir = tempdir()) {
     by <- match.arg(by)
+    as <- match.arg(as)
     manifest <- geoSingleCellManifest(GEO, samples = samples)
     units <- geoSingleCellUnits(manifest)
     sel <- .select_sc_units(units, samples, format)
@@ -592,10 +648,11 @@ getGEOSingleCell <- function(GEO, samples = NULL, format = NULL,
         results[[label]] <- readGEOSingleCell(local, format = u$format)
     }
     if (by == "sample") {
-        return(results)
+        return(lapply(results, .as_sc_output, as = as))
     }
     if (by == "all") {
-        return(if (length(results) == 1) results[[1]] else .combine_sce(results))
+        combined <- if (length(results) == 1) results[[1]] else .combine_sce(results)
+        return(.as_sc_output(combined, as))
     }
     # by == "platform": combine within each platform; samples of unknown platform
     # (NA) are kept individual (we cannot assert they share a feature space).
@@ -607,7 +664,7 @@ getGEOSingleCell <- function(GEO, samples = NULL, format = NULL,
         if (length(grp) == 1) grp[[1]] else .combine_sce(grp)
     })
     names(out) <- sub("^\r", "", names(out))
-    out
+    lapply(out, .as_sc_output, as = as)
 }
 
 # A human-readable label for a whole-study (no-GSM) unit: the file name with the

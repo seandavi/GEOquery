@@ -4,29 +4,36 @@
 \alias{readGEOSingleCell}
 \title{Read a single-cell file (or 10x triplet) into a SingleCellExperiment}
 \usage{
-readGEOSingleCell(x, format = NULL)
+readGEOSingleCell(x, format = NULL, as = c("SingleCellExperiment", "Seurat"))
 }
 \arguments{
-\item{x}{A path to a single file (\code{.h5}/\code{.h5ad}), a directory
-containing a 10x triplet, or a character vector of the triplet files.}
+\item{x}{A path to a single file (\code{.h5}/\code{.h5ad}/\code{.rds}), a
+directory containing a 10x triplet, or a character vector of the triplet
+files.}
 
-\item{format}{One of "10x_mtx", "10x_h5", "h5ad". If NULL (default), guessed
-from \code{x}.}
+\item{format}{One of "10x_mtx", "10x_h5", "h5ad", "rds". If NULL (default),
+guessed from \code{x}.}
+
+\item{as}{Output class, one of "SingleCellExperiment" (default) or "Seurat"
+(coerced via the Seurat package, an optional dependency).}
 }
 \value{
-A \code{SingleCellExperiment}.
+A \code{SingleCellExperiment}, or a \code{Seurat} object if
+\code{as = "Seurat"}.
 }
 \description{
 Low-level reader: given already-downloaded local file(s), dispatch on format
 to the appropriate Bioconductor importer and return a
-\code{SingleCellExperiment}. Use this for full control; see
+\code{SingleCellExperiment} (or a \code{Seurat} object with
+\code{as = "Seurat"}). Use this for full control; see
 \code{\link{getGEOSingleCell}} for the high-level convenience wrapper.
 }
 \details{
 Supported formats: \code{"10x_mtx"} (a directory, or the matrix/barcodes/
 features files, read via TENxIO), \code{"10x_h5"} (CellRanger HDF5, TENxIO),
-and \code{"h5ad"} (AnnData, anndataR). loom and Seurat \code{.rds} are not
-supported here -- read them with their native packages.
+\code{"h5ad"} (AnnData, anndataR), and \code{"rds"} (a saved
+\code{SingleCellExperiment} or \code{Seurat} object; detected by class).
+loom is not supported -- read it with \code{LoomExperiment} directly.
 }
 \seealso{
 \code{\link{getGEOSingleCell}}, \code{\link{geoSingleCellManifest}}

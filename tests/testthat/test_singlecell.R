@@ -65,9 +65,12 @@ test_that("geoSingleCellUnits handles an empty manifest", {
     expect_true(all(c("sample", "format", "status", "loadable") %in% colnames(u)))
 })
 
-test_that("readGEOSingleCell rejects unsupported formats (#158)", {
+test_that("readGEOSingleCell rejects loom; rds is supported (#158, #197)", {
     expect_error(readGEOSingleCell("x.loom", format = "loom"), "not supported")
-    expect_error(readGEOSingleCell("x.rds", format = "rds"), "not supported")
+    # rds is now supported (Seurat/SCE); the message should list it as supported.
+    err <- tryCatch(readGEOSingleCell("x.loom", format = "loom"),
+        error = conditionMessage)
+    expect_match(err, "Supported:[^.]*\\brds\\b")
 })
 
 test_that("each whole-study single file is its own unit (#190)", {
@@ -82,11 +85,48 @@ test_that("each whole-study single file is its own unit (#190)", {
     expect_true(all(u$loadable))
 })
 
-test_that("loom and Seurat rds are reported but not loadable (#190)", {
+test_that("rds is loadable (Seurat/SCE) but loom is not (#190, #197)", {
     manifest <- GEOquery:::.classify_sc_files(c("GSM1_cells.loom", "GSM2_obj.rds"))
     u <- geoSingleCellUnits(manifest)
-    expect_setequal(u$format, c("loom", "rds"))
-    expect_false(any(u$loadable))
+    expect_false(u$loadable[u$format == "loom"])
+    expect_true(u$loadable[u$format == "rds"])
+})
+
+test_that("readGEOSingleCell reads a .rds SingleCellExperiment by class (#197)", {
+    skip_if_not_installed("SingleCellExperiment")
+    sce <- SingleCellExperiment::SingleCellExperiment(
+        assays = list(counts = matrix(as.double(1:6), nrow = 3))
+    )
+    f <- tempfile(fileext = ".rds")
+    saveRDS(sce, f)
+    out <- readGEOSingleCell(f)
+    expect_s4_class(out, "SingleCellExperiment")
+    expect_equal(dim(out), c(3L, 2L))
+})
+
+test_that("readGEOSingleCell rejects .rds with unsupported contents (#197)", {
+    f <- tempfile(fileext = ".rds")
+    saveRDS(matrix(1:4, 2), f)
+    expect_error(readGEOSingleCell(f), "Unsupported .rds")
+})
+
+test_that(".as_sc_output passes SingleCellExperiment through (#196)", {
+    skip_if_not_installed("SingleCellExperiment")
+    sce <- SingleCellExperiment::SingleCellExperiment(
+        assays = list(counts = matrix(as.double(1:4), nrow = 2))
+    )
+    expect_identical(GEOquery:::.as_sc_output(sce, "SingleCellExperiment"), sce)
+})
+
+test_that(".as_sc_output coerces to Seurat when requested (#196)", {
+    skip_if_not_installed("SingleCellExperiment")
+    skip_if_not_installed("Seurat")
+    sce <- SingleCellExperiment::SingleCellExperiment(
+        assays = list(counts = matrix(as.double(1:6), nrow = 3,
+            dimnames = list(c("g1", "g2", "g3"), c("c1", "c2"))))
+    )
+    obj <- GEOquery:::.as_sc_output(sce, "Seurat")
+    expect_s4_class(obj, "Seurat")
 })
 
 test_that(".select_sc_units picks loadable units, one format per sample (#158)", {
