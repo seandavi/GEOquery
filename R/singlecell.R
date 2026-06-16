@@ -386,11 +386,19 @@ geoSingleCellManifest <- function(GEO, samples = NULL) {
 
 # Coerce a SingleCellExperiment to the requested output class (#196). Seurat
 # output is produced by coercion and requires the Seurat package.
+#
+# Seurat::as.Seurat() defaults to data = "logcounts" and errors if that assay is
+# absent -- but single-cell data from GEO is typically counts-only. Map the
+# assays explicitly: use "counts" (or the first assay) as counts, and only pass
+# a data layer when a "logcounts" assay actually exists.
 .as_sc_output <- function(sce, as = c("SingleCellExperiment", "Seurat")) {
     as <- match.arg(as)
     if (as == "Seurat") {
         .require_pkg("Seurat", "Seurat output")
-        return(Seurat::as.Seurat(sce))
+        assays <- SummarizedExperiment::assayNames(sce)
+        counts_name <- if ("counts" %in% assays) "counts" else assays[1]
+        data_name <- if ("logcounts" %in% assays) "logcounts" else NULL
+        return(Seurat::as.Seurat(sce, counts = counts_name, data = data_name))
     }
     sce
 }
