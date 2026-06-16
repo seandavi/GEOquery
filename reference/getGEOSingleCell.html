@@ -15,7 +15,7 @@ which units it loads and which it skips."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.22</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.23</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,7 +51,7 @@ which units it loads and which it skips."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Download and read the single-cell data of a GEO Series or Sample</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/R/singlecell.R" class="external-link"><code>R/singlecell.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/feat/seurat-support/R/singlecell.R" class="external-link"><code>R/singlecell.R</code></a></small>
       <div class="d-none name"><code>getGEOSingleCell.Rd</code></div>
     </div>
 
@@ -70,6 +70,7 @@ which units it loads and which it skips.</p>
 <span>  samples <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample"</span>, <span class="st">"platform"</span>, <span class="st">"all"</span><span class="op">)</span>,</span>
+<span>  as <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SingleCellExperiment"</span>, <span class="st">"Seurat"</span><span class="op">)</span>,</span>
 <span>  destdir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -89,7 +90,8 @@ when <code>GEO</code> is itself a GSM.</p></dd>
 
 
 <dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
-<dd><p>Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad").</p></dd>
+<dd><p>Optional format(s) to restrict to ("10x_mtx", "10x_h5",
+"h5ad", "rds").</p></dd>
 
 
 <dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
@@ -98,25 +100,31 @@ when <code>GEO</code> is itself a GSM.</p></dd>
 Details.</p></dd>
 
 
+<dt id="arg-as">as<a class="anchor" aria-label="anchor" href="#arg-as"></a></dt>
+<dd><p>Output class, one of "SingleCellExperiment" (default) or "Seurat"
+(coerced at the boundary via the Seurat package, an optional dependency).</p></dd>
+
+
 <dt id="arg-destdir">destdir<a class="anchor" aria-label="anchor" href="#arg-destdir"></a></dt>
 <dd><p>Download destination directory.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Depends on <code>by</code>: a named list of <code>SingleCellExperiment</code> per
-sample (<code>"sample"</code>); a named list of combined objects per platform
-(<code>"platform"</code>); or a single combined <code>SingleCellExperiment</code>
-(<code>"all"</code>).</p>
+    <p>Depends on <code>by</code>: a named list of objects per sample
+(<code>"sample"</code>); a named list of combined objects per platform
+(<code>"platform"</code>); or a single combined object (<code>"all"</code>). Each
+object is a <code>SingleCellExperiment</code>, or a <code>Seurat</code> object when
+<code>as = "Seurat"</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This handles common, well-structured layouts (clean per-sample 10x or
-h5ad), including the very common case where the series ships only a
-<code>_RAW.tar</code> and the per-sample files live in each GSM suppl directory
-(the manifest falls back to the GSM level automatically). You may also pass a
-single GSM accession to load just that sample. It does NOT handle every GSE:
-loom and Seurat <code>.rds</code> formats, files available <em>only</em> inside a
+    <p>This handles common, well-structured layouts (clean per-sample 10x, h5ad, or
+a saved object in <code>.rds</code>), including the very common case where the
+series ships only a <code>_RAW.tar</code> and the per-sample files live in each GSM
+suppl directory (the manifest falls back to the GSM level automatically). You
+may also pass a single GSM accession to load just that sample. It does NOT
+handle every GSE: loom files, files available <em>only</em> inside a
 <code>_RAW.tar</code> archive, and idiosyncratic layouts (e.g. a single combined
 matrix for many samples) are out of scope – use the manifest plus
 <code><a href="readGEOSingleCell.html">readGEOSingleCell()</a></code> directly for those.</p>
@@ -125,8 +133,8 @@ span multiple platforms (GPLs), each holding many samples (GSMs) – and the
 platform is the feature-compatibility boundary (samples in one platform share
 a feature space; across platforms they generally do not). <code>by</code> chooses
 the return shape, and the shape is fixed by the argument (not the data):</p><dl><dt><code>"sample"</code> (default)</dt>
-<dd><p>a named list with one
-<code>SingleCellExperiment</code> per sample (or per whole-study file).</p></dd>
+<dd><p>a named list with one object per sample
+(or per whole-study file).</p></dd>
 
 <dt><code>"platform"</code></dt>
 <dd><p>a named list keyed by platform (GPL), each entry
@@ -135,9 +143,9 @@ for a multi-platform study; a single-platform study yields a length-1
 list. Samples with unknown platform are returned individually.</p></dd>
 
 <dt><code>"all"</code></dt>
-<dd><p>a single <code>SingleCellExperiment</code> with every sample
-combined. Errors if the samples share no common features (e.g. a study
-mixing organisms) – use <code>"platform"</code> for those.</p></dd>
+<dd><p>a single object with every sample combined. Errors if
+the samples share no common features (e.g. a study mixing organisms) –
+use <code>"platform"</code> for those.</p></dd>
 
 
 </dl><p>Combining (for <code>"platform"</code>/<code>"all"</code>) restricts to the features

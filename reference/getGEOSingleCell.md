@@ -18,6 +18,7 @@ getGEOSingleCell(
   samples = NULL,
   format = NULL,
   by = c("sample", "platform", "all"),
+  as = c("SingleCellExperiment", "Seurat"),
   destdir = tempdir()
 )
 ```
@@ -36,12 +37,19 @@ getGEOSingleCell(
 
 - format:
 
-  Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad").
+  Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad",
+  "rds").
 
 - by:
 
   One of `"sample"` (default), `"platform"`, or `"all"` – how to group
   the loaded samples into the return value. See Details.
+
+- as:
+
+  Output class, one of "SingleCellExperiment" (default) or "Seurat"
+  (coerced at the boundary via the Seurat package, an optional
+  dependency).
 
 - destdir:
 
@@ -49,20 +57,22 @@ getGEOSingleCell(
 
 ## Value
 
-Depends on `by`: a named list of `SingleCellExperiment` per sample
-(`"sample"`); a named list of combined objects per platform
-(`"platform"`); or a single combined `SingleCellExperiment` (`"all"`).
+Depends on `by`: a named list of objects per sample (`"sample"`); a
+named list of combined objects per platform (`"platform"`); or a single
+combined object (`"all"`). Each object is a `SingleCellExperiment`, or a
+`Seurat` object when `as = "Seurat"`.
 
 ## Details
 
-This handles common, well-structured layouts (clean per-sample 10x or
-h5ad), including the very common case where the series ships only a
-`_RAW.tar` and the per-sample files live in each GSM suppl directory
-(the manifest falls back to the GSM level automatically). You may also
-pass a single GSM accession to load just that sample. It does NOT handle
-every GSE: loom and Seurat `.rds` formats, files available *only* inside
-a `_RAW.tar` archive, and idiosyncratic layouts (e.g. a single combined
-matrix for many samples) are out of scope – use the manifest plus
+This handles common, well-structured layouts (clean per-sample 10x,
+h5ad, or a saved object in `.rds`), including the very common case where
+the series ships only a `_RAW.tar` and the per-sample files live in each
+GSM suppl directory (the manifest falls back to the GSM level
+automatically). You may also pass a single GSM accession to load just
+that sample. It does NOT handle every GSE: loom files, files available
+*only* inside a `_RAW.tar` archive, and idiosyncratic layouts (e.g. a
+single combined matrix for many samples) are out of scope – use the
+manifest plus
 [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
 directly for those.
 
@@ -75,8 +85,7 @@ the data):
 
 - `"sample"` (default):
 
-  a named list with one `SingleCellExperiment` per sample (or per
-  whole-study file).
+  a named list with one object per sample (or per whole-study file).
 
 - `"platform"`:
 
@@ -87,9 +96,9 @@ the data):
 
 - `"all"`:
 
-  a single `SingleCellExperiment` with every sample combined. Errors if
-  the samples share no common features (e.g. a study mixing organisms) –
-  use `"platform"` for those.
+  a single object with every sample combined. Errors if the samples
+  share no common features (e.g. a study mixing organisms) – use
+  `"platform"` for those.
 
 Combining (for `"platform"`/`"all"`) restricts to the features common to
 the group and reconciles per-sample feature annotation so binding

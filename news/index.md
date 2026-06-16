@@ -1,5 +1,26 @@
 # Changelog
 
+## GEOquery 2.81.23 (2026-06-16)
+
+### New features
+
+- Seurat interoperability for single-cell data (optional; `Seurat` in
+  `Suggests`).
+  [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
+  now reads `.rds` supplementary files containing a Seurat or
+  `SingleCellExperiment` object (detected by class; Seurat coerced to
+  `SingleCellExperiment`), so `.rds` is now a loadable single-cell
+  format. Both
+  [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
+  and
+  [`getGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.md)
+  gain `as = "Seurat"` to return Seurat objects (coerced at the output
+  boundary). `SingleCellExperiment` remains the internal representation;
+  see ADR-0006
+  ([\#195](https://github.com/seandavi/GEOquery/issues/195),
+  [\#196](https://github.com/seandavi/GEOquery/issues/196),
+  [\#197](https://github.com/seandavi/GEOquery/issues/197)).
+
 ## GEOquery 2.81.22 (2026-06-14)
 
 ### New features
@@ -36,8 +57,9 @@
   treats each whole-study single file as its own unit so a study’s
   several `.h5ad` files are no longer merged into one bogus unit.
   Gzipped single-file formats (`.h5ad.gz`, `.h5.gz`) are recognized and
-  transparently decompressed before reading. loom and Seurat `.rds` are
-  reported but flagged not loadable (no built-in reader)
+  transparently decompressed before reading. loom is reported but
+  flagged not loadable, no built-in reader (`.rds`/Seurat support
+  follows in 2.81.23)
   ([\#190](https://github.com/seandavi/GEOquery/issues/190)).
 
 ### Bug Fixes
@@ -94,9 +116,8 @@
   `.h5ad` via **anndataR** (optional `Suggests`).
   [`getGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.md)
   returns a named list of per-sample objects (combine with care) and
-  reports which units it loads and skips. loom, Seurat `.rds`, files
-  inside `_RAW.tar`, and idiosyncratic layouts are intentionally out of
-  scope — use
+  reports which units it loads and skips. loom, files inside `_RAW.tar`,
+  and idiosyncratic layouts are intentionally out of scope — use
   [`geoSingleCellManifest()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md) +
   [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
   for those ([\#158](https://github.com/seandavi/GEOquery/issues/158),
