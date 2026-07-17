@@ -8,7 +8,8 @@ getGEOfile(
   GEO,
   destdir = tempdir(),
   AnnotGPL = FALSE,
-  amount = c("full", "brief", "quick", "data")
+  amount = c("full", "brief", "quick", "data"),
+  token = NULL
 )
 }
 \arguments{
@@ -26,6 +27,11 @@ for GPLs referenced by a GDS}
 
 \item{amount}{Amount of information to pull from GEO.  Only applies to GSE,
 GPL, or GSM.  See details...}
+
+\item{token}{Optional NCBI GEO reviewer access token (character(1)) for a
+private/embargoed record. Private records are not published to the GEO FTP
+tree, so a token forces the CGI (\code{acc.cgi}) SOFT path and appends the
+token to the request. See \code{\link{getGEO}}.}
 }
 \value{
 Invisibly returns the full path of the downloaded file.

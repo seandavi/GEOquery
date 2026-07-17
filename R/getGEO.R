@@ -99,6 +99,13 @@
 #' are otherwise mis-decoded; set \code{encoding = "Latin-1"} for those. Applies
 #' for the duration of the call only. Equivalent to setting
 #' \code{options(GEOquery.encoding = ...)} globally.
+#' @param token Optional NCBI GEO reviewer access token (character(1)) for
+#' fetching a private/embargoed record. Obtain it from the "Reviewer access"
+#' link on the private GSE's GEO page. Because private records are not published
+#' to the GEO FTP tree, supplying a token forces the SOFT (\code{acc.cgi}) path:
+#' for a GSE this returns a \code{GSE} S4 object (as with
+#' \code{GSEMatrix = FALSE}), not a \code{SummarizedExperiment} /
+#' \code{ExpressionSet}. See ADR-0007.
 #' @return An object of the appropriate class (GDS, GPL, GSM, or GSE) is
 #' returned.  If the GSEMatrix option is used, then a list of
 #' SummarizedExperiment objects is returned by default (or ExpressionSet
@@ -130,9 +137,13 @@
 #' @export
 getGEO <- function(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits = NULL,
     GSEMatrix = TRUE, AnnotGPL = FALSE, getGPL = TRUE, parseCharacteristics = TRUE,
-    returnType = c("SummarizedExperiment", "ExpressionSet"), encoding = NULL) {
+    returnType = c("SummarizedExperiment", "ExpressionSet"), encoding = NULL,
+    token = NULL) {
     returnType_default <- missing(returnType)
     returnType <- match.arg(returnType)
+    if (!is.null(token) && (!is.character(token) || length(token) != 1L)) {
+        stop("'token' must be a single character string (an NCBI GEO reviewer access token)")
+    }
     # Optional per-call character encoding for the underlying GEO file reads
     # (data.table::fread). Sets the GEOquery.encoding option for the duration of
     # this call only, restoring the previous value on exit. Useful for the
@@ -155,12 +166,15 @@ getGEO <- function(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits =
     if (is.null(filename)) {
         GEO <- toupper(GEO)
         geotype <- toupper(substr(GEO, 1, 3))
-        if (GSEMatrix & geotype == "GSE") {
+        # A reviewer token means a private record, which has no Series Matrix on
+        # the FTP tree; fall through to the SOFT (acc.cgi) path, which returns a
+        # GSE S4 object rather than an ExpressionSet/SummarizedExperiment (#154).
+        if (GSEMatrix & geotype == "GSE" & is.null(token)) {
             ret <- getAndParseGSEMatrices(GEO, destdir, AnnotGPL = AnnotGPL, getGPL = getGPL,
                 parseCharacteristics = parseCharacteristics)
             return(.applyReturnType(ret, returnType, returnType_default))
         }
-        filename <- getGEOfile(GEO, destdir = destdir, AnnotGPL = AnnotGPL)
+        filename <- getGEOfile(GEO, destdir = destdir, AnnotGPL = AnnotGPL, token = token)
     }
     ret <- parseGEO(filename, GSElimits, destdir, AnnotGPL = AnnotGPL, getGPL = getGPL,
         parseCharacteristics = parseCharacteristics)
