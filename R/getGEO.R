@@ -93,6 +93,12 @@
 #' results (GDS/GPL/GSM/GSE S4 objects) are unaffected. As of this release the
 #' default is "SummarizedExperiment"; pass returnType = "ExpressionSet" for the
 #' previous behavior.
+#' @param encoding Optional character encoding for reading the downloaded GEO
+#' file, one of "unknown" (the default; let the reader auto-detect), "UTF-8", or
+#' "Latin-1". Most GEO files are UTF-8/ASCII, but a few carry Latin-1 bytes that
+#' are otherwise mis-decoded; set \code{encoding = "Latin-1"} for those. Applies
+#' for the duration of the call only. Equivalent to setting
+#' \code{options(GEOquery.encoding = ...)} globally.
 #' @return An object of the appropriate class (GDS, GPL, GSM, or GSE) is
 #' returned.  If the GSEMatrix option is used, then a list of
 #' SummarizedExperiment objects is returned by default (or ExpressionSet
@@ -124,9 +130,19 @@
 #' @export
 getGEO <- function(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits = NULL,
     GSEMatrix = TRUE, AnnotGPL = FALSE, getGPL = TRUE, parseCharacteristics = TRUE,
-    returnType = c("SummarizedExperiment", "ExpressionSet")) {
+    returnType = c("SummarizedExperiment", "ExpressionSet"), encoding = NULL) {
     returnType_default <- missing(returnType)
     returnType <- match.arg(returnType)
+    # Optional per-call character encoding for the underlying GEO file reads
+    # (data.table::fread). Sets the GEOquery.encoding option for the duration of
+    # this call only, restoring the previous value on exit. Useful for the
+    # occasional non-UTF-8 GEO record (#148).
+    if (!is.null(encoding)) {
+        encoding <- match.arg(encoding, c("unknown", "UTF-8", "Latin-1"))
+        old_encoding <- getOption("GEOquery.encoding")
+        options(GEOquery.encoding = encoding)
+        on.exit(options(GEOquery.encoding = old_encoding), add = TRUE)
+    }
     con <- NULL
     if (!is.null(GSElimits)) {
         if (length(GSElimits) != 2) {
