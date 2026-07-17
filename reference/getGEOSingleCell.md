@@ -17,7 +17,8 @@ getGEOSingleCell(
   GEO,
   samples = NULL,
   format = NULL,
-  combine = FALSE,
+  by = c("sample", "platform", "all"),
+  as = c("SingleCellExperiment", "Seurat"),
   destdir = tempdir()
 )
 ```
@@ -36,15 +37,19 @@ getGEOSingleCell(
 
 - format:
 
-  Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad").
+  Optional format(s) to restrict to ("10x_mtx", "10x_h5", "h5ad",
+  "rds").
 
-- combine:
+- by:
 
-  Logical; if TRUE, `cbind` the per-sample objects into one, restricting
-  to the features (rownames) common to all samples so they align even
-  when samples come from different references or platforms. Errors if
-  the samples share no common features (e.g. a study mixing organisms).
-  Default FALSE returns a named list.
+  One of `"sample"` (default), `"platform"`, or `"all"` – how to group
+  the loaded samples into the return value. See Details.
+
+- as:
+
+  Output class, one of "SingleCellExperiment" (default) or "Seurat"
+  (coerced at the boundary via the Seurat package, an optional
+  dependency).
 
 - destdir:
 
@@ -52,21 +57,53 @@ getGEOSingleCell(
 
 ## Value
 
-A named list of `SingleCellExperiment` (one per sample), or a single
-combined object if `combine = TRUE`.
+Depends on `by`: a named list of objects per sample (`"sample"`); a
+named list of combined objects per platform (`"platform"`); or a single
+combined object (`"all"`). Each object is a `SingleCellExperiment`, or a
+`Seurat` object when `as = "Seurat"`.
 
 ## Details
 
-This handles common, well-structured layouts (clean per-sample 10x or
-h5ad), including the very common case where the series ships only a
-`_RAW.tar` and the per-sample files live in each GSM suppl directory
-(the manifest falls back to the GSM level automatically). You may also
-pass a single GSM accession to load just that sample. It does NOT handle
-every GSE: loom and Seurat `.rds` formats, files available *only* inside
-a `_RAW.tar` archive, and idiosyncratic layouts (e.g. a single combined
-matrix for many samples) are out of scope – use the manifest plus
+This handles common, well-structured layouts (clean per-sample 10x,
+h5ad, or a saved object in `.rds`), including the very common case where
+the series ships only a `_RAW.tar` and the per-sample files live in each
+GSM suppl directory (the manifest falls back to the GSM level
+automatically). You may also pass a single GSM accession to load just
+that sample. It does NOT handle every GSE: loom files, files available
+*only* inside a `_RAW.tar` archive, and idiosyncratic layouts (e.g. a
+single combined matrix for many samples) are out of scope – use the
+manifest plus
 [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
 directly for those.
+
+**Grouping (`by`).** A GEO Series has two natural layers – it can span
+multiple platforms (GPLs), each holding many samples (GSMs) – and the
+platform is the feature-compatibility boundary (samples in one platform
+share a feature space; across platforms they generally do not). `by`
+chooses the return shape, and the shape is fixed by the argument (not
+the data):
+
+- `"sample"` (default):
+
+  a named list with one object per sample (or per whole-study file).
+
+- `"platform"`:
+
+  a named list keyed by platform (GPL), each entry the samples of that
+  platform combined into one object. The honest answer for a
+  multi-platform study; a single-platform study yields a length-1 list.
+  Samples with unknown platform are returned individually.
+
+- `"all"`:
+
+  a single object with every sample combined. Errors if the samples
+  share no common features (e.g. a study mixing organisms) – use
+  `"platform"` for those.
+
+Combining (for `"platform"`/`"all"`) restricts to the features common to
+the group and reconciles per-sample feature annotation so binding
+succeeds across CellRanger versions; whole-study single-file formats
+already hold one object, so grouping is effectively a no-op for them.
 
 ## See also
 
@@ -77,9 +114,9 @@ directly for those.
 
 ``` r
 if (FALSE) { # \dontrun{
-  sce <- getGEOSingleCell("GSM3891612")                  # one sample
-  all <- getGEOSingleCell("GSE132771")                   # whole series
-  two <- getGEOSingleCell("GSE132771",
-                          samples = c("GSM3891612", "GSM3891613"))
+  sce <- getGEOSingleCell("GSM3891612")                   # one sample
+  per_sample <- getGEOSingleCell("GSE132771")             # list by GSM
+  per_platform <- getGEOSingleCell("GSE132771", by = "platform")
+  # -> list(GPL21103 = <mouse SCE>, GPL24676 = <human SCE>)
 } # }
 ```
