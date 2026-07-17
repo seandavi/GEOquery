@@ -1,4 +1,4 @@
-# GEOquery 2.81.23 (2026-07-17)
+# GEOquery 2.81.24 (2026-07-17)
 
 ## Bug fixes
 
@@ -9,15 +9,22 @@
 - Added deterministic, network-free unit tests for the pure helper functions in the RNA-seq (`R/rnaseq.R`), Entrez-search (`R/searchGEO.R`), SOFT-parsing (`R/parseGEO.R`), supplemental-file, GDS-conversion, and file-open code paths, raising baseline coverage (#207).
 - New `skip_if_geo_offline()` test helper (mirroring BiocPkgTools' `skip_if_bioc_offline()`) probes NCBI GEO reachability so network-dependent tests run when the host is up and skip cleanly when it is not (#207, #169).
 
+# GEOquery 2.81.23 (2026-06-16)
+
+## New features
+
+- Seurat interoperability for single-cell data (optional; `Seurat` in `Suggests`). `readGEOSingleCell()` now reads `.rds` supplementary files containing a Seurat or `SingleCellExperiment` object (detected by class; Seurat coerced to `SingleCellExperiment`), so `.rds` is now a loadable single-cell format. Both `readGEOSingleCell()` and `getGEOSingleCell()` gain `as = "Seurat"` to return Seurat objects (coerced at the output boundary). `SingleCellExperiment` remains the internal representation; see ADR-0006 (#195, #196, #197).
+
 # GEOquery 2.81.22 (2026-06-14)
 
 ## New features
 
 - `geoSingleCellManifest()` and `getGEOSingleCell()` now handle the common case where a Series ships only a `GSE..._RAW.tar` at the series level and the per-sample files live in each sample's own GSM suppl directory (e.g. GSE132771). When the series level has no loadable single-cell units, the manifest falls back to enumerating the Series' samples (via `getGEO()`) and inventorying each GSM suppl directory. Both functions also accept a GSM accession directly (`getGEOSingleCell("GSM3891612")`), and `geoSingleCellManifest()` gains a `samples` argument to restrict to specific GSMs without enumerating the whole Series. Unit files are downloaded by URL, so the readers work whether the data lives at the series or sample level (#190).
+- `getGEOSingleCell()` gains a `by` argument — one of `"sample"` (default; a named list of one `SingleCellExperiment` per sample), `"platform"` (a named list keyed by platform/GPL, each platform's samples combined), or `"all"` (a single combined object) — replacing the previous `combine` flag. A GEO Series can span multiple platforms (e.g. GSE132771 mixes mouse and human), and the platform is the natural feature-compatibility boundary, so `by = "platform"` is the right way to combine a multi-platform study; the return shape is determined by the argument, not the data. `geoSingleCellManifest()` now reports a `platform` (GPL) column per sample, and `geoSingleCellUnits()` treats each whole-study single file as its own unit so a study's several `.h5ad` files are no longer merged into one bogus unit. Gzipped single-file formats (`.h5ad.gz`, `.h5.gz`) are recognized and transparently decompressed before reading. loom is reported but flagged not loadable, no built-in reader (`.rds`/Seurat support follows in 2.81.23) (#190).
 
 ## Bug Fixes
 
-- `getGEOSingleCell(combine = TRUE)` no longer fails with a cryptic `cbind` error (`'mcols' ... do not match`) when a Series' samples come from different platforms or genome references — common in single-cell studies (e.g. GSE132771 mixes mouse and human). Samples are now restricted to their shared features before binding; if they share no features (so a single combined object is impossible) a clear, actionable error is raised instead (#190).
+- Combining single-cell samples (`getGEOSingleCell(by = "platform"|"all")`) no longer fails with a cryptic `cbind` error (`'mcols' ... do not match` or `subscript contains invalid names`) when a Series' samples have heterogeneous feature annotation — common in single-cell studies (e.g. GSE132771 mixes 10x CellRanger v2 `genes.tsv` with v3 `features.tsv`, giving different rowData columns). Samples are restricted to their shared features and given one canonical rowData before binding; when they share no features (so a single combined object is impossible) a clear, actionable error is raised (#190).
 
 # GEOquery 2.81.21 (2026-06-13)
 
@@ -28,7 +35,7 @@
 ## New features
 
 - Optional persistent download cache backed by **BiocFileCache**. Set `options(GEOquery.cache = TRUE)` to have downloads keyed on their URL and reused across sessions (location defaults to `tools::R_user_dir("GEOquery", "cache")`, overridable via `options(GEOquery.cache.path = ...)`). New `geoCache()` and `clearGEOCache()` expose and clear it. Off by default for now, preserving the historical `destdir` behavior (#171).
-- New `readGEOSingleCell()` and `getGEOSingleCell()` read GEO single-cell supplementary data into `SingleCellExperiment` objects: 10x Matrix Market and 10x HDF5 via **TENxIO**, AnnData `.h5ad` via **anndataR** (optional `Suggests`). `getGEOSingleCell()` returns a named list of per-sample objects (combine with care) and reports which units it loads and skips. loom, Seurat `.rds`, files inside `_RAW.tar`, and idiosyncratic layouts are intentionally out of scope — use `geoSingleCellManifest()` + `readGEOSingleCell()` for those (#158, #190).
+- New `readGEOSingleCell()` and `getGEOSingleCell()` read GEO single-cell supplementary data into `SingleCellExperiment` objects: 10x Matrix Market and 10x HDF5 via **TENxIO**, AnnData `.h5ad` via **anndataR** (optional `Suggests`). `getGEOSingleCell()` returns a named list of per-sample objects (combine with care) and reports which units it loads and skips. loom, files inside `_RAW.tar`, and idiosyncratic layouts are intentionally out of scope — use `geoSingleCellManifest()` + `readGEOSingleCell()` for those (#158, #190).
 - New `geoSingleCellManifest()` inventories a GSE's supplementary files and classifies them by single-cell format (10x Matrix Market triplet, 10x HDF5, AnnData h5ad, loom, Seurat rds, tar), grouping by GSM sample — so you can see what a single-cell study contains before downloading. `geoSingleCellUnits()` collapses the manifest into loadable units (per sample + format) and flags completeness (e.g. an incomplete 10x triplet). Steps toward single-cell readers (ADR-0004) (#158, #188, #189).
 - `getGEO()` gains a `returnType` argument. With `returnType = "SummarizedExperiment"`, GSE Series Matrix results are returned as `SummarizedExperiment` objects instead of `ExpressionSet`. The default remains `"ExpressionSet"` for now (with a one-time notice) and will switch to `"SummarizedExperiment"` in a future release. A new exported `as_SummarizedExperiment()` coerces an existing `ExpressionSet` result without re-downloading. See ADR-0002 (#168).
 - Downloads now stream to disk instead of buffering the entire response in memory, retry on transient HTTP errors, and honor a configurable `GEOquery.download.timeout` option (default 300 seconds) — replacing the previous enforced 120-second floor that ignored lower user timeouts. Failures raise a typed `geoquery_download_error` carrying the URL and HTTP status. `getDirListing()` now uses the same httr2 layer (#147, #173).

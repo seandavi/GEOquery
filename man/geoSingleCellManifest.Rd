@@ -16,7 +16,8 @@ also avoids enumerating the whole series. Ignored when \code{GEO} is a GSM.}
 }
 \value{
 A data.frame with columns \code{fname}, \code{sample} (GSM id or NA),
-\code{format}, \code{role}, and \code{url}. Zero rows if nothing is found.
+\code{platform} (GPL accession or NA), \code{format}, \code{role}, and
+\code{url}. Zero rows if nothing is found.
 }
 \description{
 Lists the supplementary files attached to a GSE (or a single GSM) and
@@ -38,6 +39,13 @@ accession to inventory just that one sample.
 No files are downloaded. The result feeds the single-cell readers (see
 ADR-0004); reading itself uses Bioconductor importers (TENxIO, anndataR)
 that are optional dependencies.
+
+The \code{platform} column (GPL accession per sample) is populated when the
+manifest is built from the GSM level -- the common single-cell case, and the
+one that matters, since a GSE can span multiple platforms (e.g. GSE132771
+mixes mouse and human). It is the grouping used by
+\code{getGEOSingleCell(by = "platform")}. It is \code{NA} for a single GSM,
+and for whole-study files attached at the series level (which have no GSM).
 }
 \examples{
 \dontrun{
