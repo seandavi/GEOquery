@@ -84,6 +84,12 @@ extractFilenameFromDownloadURL <- function(url) {
 
   # example URL: https://www.ncbi.nlm.nih.gov/geo/download/\
   # ?format=file&type=rnaseq_counts&file=Human.GRCh38.p13.annot.tsv.gz
+
+  # httr2::url_parse() requires a single, non-empty string; guard against
+  # zero-length / NA / empty input so callers get NULL instead of an error
+  if (length(url) != 1L || is.na(url) || !nzchar(url)) {
+    return(NULL)
+  }
   parsed <- httr2::url_parse(url)
   fname <- NULL
   if ("query" %in% names(parsed)) {
