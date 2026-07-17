@@ -13,7 +13,7 @@ each of the important parts of the GEO SOFT format easily accessible."></head><b
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.25</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.26</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,7 +49,7 @@ each of the important parts of the GEO SOFT format easily accessible."></head><b
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Get a GEO object from NCBI or file</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/R/getGEO.R" class="external-link"><code>R/getGEO.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/feat-private-token/R/getGEO.R" class="external-link"><code>R/getGEO.R</code></a></small>
       <div class="d-none name"><code>getGEO.Rd</code></div>
     </div>
 
@@ -72,7 +72,8 @@ each of the important parts of the GEO SOFT format easily accessible.</p>
 <span>  getGPL <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  parseCharacteristics <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  returnType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SummarizedExperiment"</span>, <span class="st">"ExpressionSet"</span><span class="op">)</span>,</span>
-<span>  encoding <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  encoding <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  token <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -155,6 +156,16 @@ file, one of "unknown" (the default; let the reader auto-detect), "UTF-8", or
 are otherwise mis-decoded; set <code>encoding = "Latin-1"</code> for those. Applies
 for the duration of the call only. Equivalent to setting
 <code>options(GEOquery.encoding = ...)</code> globally.</p></dd>
+
+
+<dt id="arg-token">token<a class="anchor" aria-label="anchor" href="#arg-token"></a></dt>
+<dd><p>Optional NCBI GEO reviewer access token (character(1)) for
+fetching a private/embargoed record. Obtain it from the "Reviewer access"
+link on the private GSE's GEO page. Because private records are not published
+to the GEO FTP tree, supplying a token forces the SOFT (<code>acc.cgi</code>) path:
+for a GSE this returns a <code>GSE</code> S4 object (as with
+<code>GSEMatrix = FALSE</code>), not a <code>SummarizedExperiment</code> /
+<code>ExpressionSet</code>. See ADR-0007.</p></dd>
 
 </dl></div>
     <div class="section level2">

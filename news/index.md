@@ -1,5 +1,21 @@
 # Changelog
 
+## GEOquery 2.81.26 (2026-07-17)
+
+### New features
+
+- [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
+  and
+  [`getGEOfile()`](http://seandavi.github.io/GEOquery/reference/getGEOfile.md)
+  gain a `token` argument for fetching **private/embargoed** GEO records
+  with an NCBI GEO reviewer access token (obtained from the “Reviewer
+  access” link on the private GSE’s page). Because private records are
+  not published to the GEO FTP tree, a token forces the SOFT (`acc.cgi`)
+  download path and appends the token to the request; for a GSE this
+  returns a `GSE` S4 object (as with `GSEMatrix = FALSE`) rather than a
+  `SummarizedExperiment`. See ADR-0007
+  ([\#154](https://github.com/seandavi/GEOquery/issues/154)).
+
 ## GEOquery 2.81.25 (2026-07-17)
 
 ### Bug fixes

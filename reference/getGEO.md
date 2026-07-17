@@ -19,7 +19,8 @@ getGEO(
   getGPL = TRUE,
   parseCharacteristics = TRUE,
   returnType = c("SummarizedExperiment", "ExpressionSet"),
-  encoding = NULL
+  encoding = NULL,
+  token = NULL
 )
 ```
 
@@ -104,6 +105,16 @@ getGEO(
   bytes that are otherwise mis-decoded; set `encoding = "Latin-1"` for
   those. Applies for the duration of the call only. Equivalent to
   setting `options(GEOquery.encoding = ...)` globally.
+
+- token:
+
+  Optional NCBI GEO reviewer access token (character(1)) for fetching a
+  private/embargoed record. Obtain it from the "Reviewer access" link on
+  the private GSE's GEO page. Because private records are not published
+  to the GEO FTP tree, supplying a token forces the SOFT (`acc.cgi`)
+  path: for a GSE this returns a `GSE` S4 object (as with
+  `GSEMatrix = FALSE`), not a `SummarizedExperiment` / `ExpressionSet`.
+  See ADR-0007.
 
 ## Value
 

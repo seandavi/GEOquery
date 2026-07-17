@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.25</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.26</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,9 +43,17 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/feat-private-token/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.81.26" id="geoquery-28126-2026-07-17">GEOquery 2.81.26 (2026-07-17)<a class="anchor" aria-label="anchor" href="#geoquery-28126-2026-07-17"></a></h2>
+<div class="section level3">
+<h3 id="new-features-2-81-26">New features<a class="anchor" aria-label="anchor" href="#new-features-2-81-26"></a></h3>
+<ul><li>
+<code><a href="../reference/getGEO.html">getGEO()</a></code> and <code><a href="../reference/getGEOfile.html">getGEOfile()</a></code> gain a <code>token</code> argument for fetching <strong>private/embargoed</strong> GEO records with an NCBI GEO reviewer access token (obtained from the “Reviewer access” link on the private GSE’s page). Because private records are not published to the GEO FTP tree, a token forces the SOFT (<code>acc.cgi</code>) download path and appends the token to the request; for a GSE this returns a <code>GSE</code> S4 object (as with <code>GSEMatrix = FALSE</code>) rather than a <code>SummarizedExperiment</code>. See ADR-0007 (<a href="https://github.com/seandavi/GEOquery/issues/154" class="external-link">#154</a>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.81.25" id="geoquery-28125-2026-07-17">GEOquery 2.81.25 (2026-07-17)<a class="anchor" aria-label="anchor" href="#geoquery-28125-2026-07-17"></a></h2>
 <div class="section level3">
