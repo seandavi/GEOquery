@@ -36,11 +36,9 @@ GEO single-cell submissions are heterogeneous. The common formats:
   matrix in a single HDF5 file.
 - **AnnData** (`.h5ad`) — the scverse/Python standard; increasingly
   common on recent GEO submissions.
-- **Seurat `.rds`** — a saved Seurat object. GEOquery reads these
-  (detected by class) and coerces them to a `SingleCellExperiment`; see
-  *Working with Seurat* below.
-- **loom** — less common, and intentionally *not* handled by GEOquery
-  (read it with `LoomExperiment` directly).
+- **loom**, **Seurat `.rds`** — less common, and intentionally *not*
+  handled by GEOquery (read them with `LoomExperiment` / `Seurat`
+  directly).
 
 A further wrinkle: files are frequently bundled inside a single
 `GSE_RAW.tar` archive, and naming conventions vary wildly between
@@ -138,38 +136,6 @@ dependencies so a basic GEOquery install stays light:
 
 GEOquery will prompt you to install the relevant one if it is missing.
 
-## Working with Seurat
-
-GEOquery speaks `SingleCellExperiment` internally, but Seurat is one
-coercion away and supported at both edges (Seurat is an optional
-dependency).
-
-Get Seurat objects directly:
-
-``` r
-
-seurat_list <- getGEOSingleCell("GSE161228", as = "Seurat")
-# or one object:
-seu <- readGEOSingleCell(path, as = "Seurat")
-```
-
-Read a Seurat object that a submitter saved as a `.rds` supplementary
-file (its contents are detected by class and coerced to a
-`SingleCellExperiment`):
-
-``` r
-
-sce <- readGEOSingleCell(path_to_rds)        # Seurat .rds -> SingleCellExperiment
-```
-
-Or coerce by hand, in either direction:
-
-``` r
-
-seurat_obj <- Seurat::as.Seurat(sce)
-sce <- Seurat::as.SingleCellExperiment(seurat_obj)
-```
-
 ## Downstream: the single-cell ecosystem
 
 Once you have a `SingleCellExperiment`, you are in the heart of
@@ -189,8 +155,9 @@ Bioconductor’s single-cell stack. Natural next steps:
 ## What is intentionally out of scope
 
 GEOquery’s single-cell support targets the discovery-and-load problem,
-not everything. It does **not** handle loom files, files packaged inside
-`_RAW.tar`, or idiosyncratic combined-matrix layouts. The manifest plus
+not everything. It does **not** handle loom or Seurat `.rds` files,
+files packaged inside `_RAW.tar`, or idiosyncratic combined-matrix
+layouts. The manifest plus
 [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
 is the escape hatch for those, and the design notes are in the project’s
 `adr/0004-single-cell-architecture.md`.

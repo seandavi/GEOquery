@@ -71,7 +71,7 @@
       <p class="author">Sean Davis</p>
 
 
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/vignettes/articles/single-cell.qmd" class="external-link"><code>vignettes/articles/single-cell.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/test-coverage-improvements/vignettes/articles/single-cell.qmd" class="external-link"><code>vignettes/articles/single-cell.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -96,9 +96,7 @@
 <li>
 <strong>AnnData</strong> (<code>.h5ad</code>) — the scverse/Python standard; increasingly common on recent GEO submissions.</li>
 <li>
-<strong>Seurat <code>.rds</code></strong> — a saved Seurat object. GEOquery reads these (detected by class) and coerces them to a <code>SingleCellExperiment</code>; see <em>Working with Seurat</em> below.</li>
-<li>
-<strong>loom</strong> — less common, and intentionally <em>not</em> handled by GEOquery (read it with <code>LoomExperiment</code> directly).</li>
+<strong>loom</strong>, <strong>Seurat <code>.rds</code></strong> — less common, and intentionally <em>not</em> handled by GEOquery (read them with <code>LoomExperiment</code> / <code>Seurat</code> directly).</li>
 </ul>
 <p>A further wrinkle: files are frequently bundled inside a single <code>GSE_RAW.tar</code> archive, and naming conventions vary wildly between submitters. This is why the first step is always inspection, not download.</p>
 </section><section class="level2"><h2 id="step-1-inspect-the-manifest">Step 1 — inspect: the manifest<a class="anchor" aria-label="anchor" href="#step-1-inspect-the-manifest"></a>
@@ -152,21 +150,6 @@
 <strong>h5ad</strong> → <a href="https://bioconductor.org/packages/anndataR" class="external-link">anndataR</a>, which reads AnnData natively in R with no Python dependency.</li>
 </ul>
 <p>GEOquery will prompt you to install the relevant one if it is missing.</p>
-</section><section class="level2"><h2 id="working-with-seurat">Working with Seurat<a class="anchor" aria-label="anchor" href="#working-with-seurat"></a>
-</h2>
-<p>GEOquery speaks <code>SingleCellExperiment</code> internally, but Seurat is one coercion away and supported at both edges (Seurat is an optional dependency).</p>
-<p>Get Seurat objects directly:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">seurat_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEOSingleCell.html">getGEOSingleCell</a></span><span class="op">(</span><span class="st">"GSE161228"</span>, as <span class="op">=</span> <span class="st">"Seurat"</span><span class="op">)</span></span>
-<span><span class="co"># or one object:</span></span>
-<span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readGEOSingleCell.html">readGEOSingleCell</a></span><span class="op">(</span><span class="va">path</span>, as <span class="op">=</span> <span class="st">"Seurat"</span><span class="op">)</span></span></code></pre></div>
-<p>Read a Seurat object that a submitter saved as a <code>.rds</code> supplementary file (its contents are detected by class and coerced to a <code>SingleCellExperiment</code>):</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readGEOSingleCell.html">readGEOSingleCell</a></span><span class="op">(</span><span class="va">path_to_rds</span><span class="op">)</span>        <span class="co"># Seurat .rds -&gt; SingleCellExperiment</span></span></code></pre></div>
-<p>Or coerce by hand, in either direction:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">seurat_obj</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/as.Seurat.html" class="external-link">as.Seurat</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span></span>
-<span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/as.SingleCellExperiment.html" class="external-link">as.SingleCellExperiment</a></span><span class="op">(</span><span class="va">seurat_obj</span><span class="op">)</span></span></code></pre></div>
 </section><section class="level2"><h2 id="downstream-the-single-cell-ecosystem">Downstream: the single-cell ecosystem<a class="anchor" aria-label="anchor" href="#downstream-the-single-cell-ecosystem"></a>
 </h2>
 <p>Once you have a <code>SingleCellExperiment</code>, you are in the heart of Bioconductor’s single-cell stack. Natural next steps:</p>
@@ -176,7 +159,7 @@
 <li>On-disk / out-of-memory handling of large matrices with <a href="https://bioconductor.org/packages/HDF5Array" class="external-link">HDF5Array</a> and <a href="https://bioconductor.org/packages/DelayedArray" class="external-link">DelayedArray</a>.</li>
 </ul></section><section class="level2"><h2 id="what-is-intentionally-out-of-scope">What is intentionally out of scope<a class="anchor" aria-label="anchor" href="#what-is-intentionally-out-of-scope"></a>
 </h2>
-<p>GEOquery’s single-cell support targets the discovery-and-load problem, not everything. It does <strong>not</strong> handle loom files, files packaged inside <code>_RAW.tar</code>, or idiosyncratic combined-matrix layouts. The manifest plus <code><a href="../reference/readGEOSingleCell.html">readGEOSingleCell()</a></code> is the escape hatch for those, and the design notes are in the project’s <code>adr/0004-single-cell-architecture.md</code>.</p>
+<p>GEOquery’s single-cell support targets the discovery-and-load problem, not everything. It does <strong>not</strong> handle loom or Seurat <code>.rds</code> files, files packaged inside <code>_RAW.tar</code>, or idiosyncratic combined-matrix layouts. The manifest plus <code><a href="../reference/readGEOSingleCell.html">readGEOSingleCell()</a></code> is the escape hatch for those, and the design notes are in the project’s <code>adr/0004-single-cell-architecture.md</code>.</p>
 </section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
@@ -270,7 +253,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

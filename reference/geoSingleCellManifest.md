@@ -29,9 +29,8 @@ geoSingleCellManifest(GEO, samples = NULL)
 
 ## Value
 
-A data.frame with columns `fname`, `sample` (GSM id or NA), `platform`
-(GPL accession or NA), `format`, `role`, and `url`. Zero rows if nothing
-is found.
+A data.frame with columns `fname`, `sample` (GSM id or NA), `format`,
+`role`, and `url`. Zero rows if nothing is found.
 
 ## Details
 
@@ -48,13 +47,6 @@ just that one sample.
 No files are downloaded. The result feeds the single-cell readers (see
 ADR-0004); reading itself uses Bioconductor importers (TENxIO, anndataR)
 that are optional dependencies.
-
-The `platform` column (GPL accession per sample) is populated when the
-manifest is built from the GSM level – the common single-cell case, and
-the one that matters, since a GSE can span multiple platforms (e.g.
-GSE132771 mixes mouse and human). It is the grouping used by
-`getGEOSingleCell(by = "platform")`. It is `NA` for a single GSM, and
-for whole-study files attached at the series level (which have no GSM).
 
 ## See also
 
