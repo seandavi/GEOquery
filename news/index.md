@@ -1,5 +1,43 @@
 # Changelog
 
+## GEOquery 2.81.25 (2026-07-17)
+
+### Bug fixes
+
+- Series Matrix records whose `ID_REF` repeats a feature identifier
+  (common when the IDs are gene symbols, e.g. GSE136400 with `CXXC1`
+  twice) no longer fail with
+  `duplicate row.names: ... AnnotatedDataFrame 'initialize' could not update varMetadata`.
+  Duplicate feature IDs are now made unique with
+  [`make.unique()`](https://rdrr.io/r/base/make.unique.html), mirroring
+  the existing guard in
+  [`GDS2eSet()`](http://seandavi.github.io/GEOquery/reference/coercion.md)
+  ([\#98](https://github.com/seandavi/GEOquery/issues/98)).
+- `getGEO(filename=)` on a metadata-only SOFT file — such as the
+  truncated output of `getGEOfile(amount = "quick")` or `"brief"`, which
+  contains no `^SAMPLE`/`^PLATFORM` entities — now returns a `GSE`
+  object with empty sample/platform lists instead of erroring with
+  `invalid 'n' argument` / `NA/NaN argument`
+  ([\#14](https://github.com/seandavi/GEOquery/issues/14)).
+- [`getGSEDataTables()`](http://seandavi.github.io/GEOquery/reference/getGSEDataTables.md)
+  now always returns a list of data.frames, including when a Series
+  carries exactly one `<Data-Table>` (previously a single-table Series
+  such as GSE98638 was mis-simplified into a character matrix). This
+  makes series-level annotation tables — e.g. a single-cell study’s
+  per-cell “Listing of Individual Cells” table — reliably accessible
+  ([\#80](https://github.com/seandavi/GEOquery/issues/80)).
+
+### New features
+
+- [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
+  gains an `encoding` argument (`"unknown"` (default), `"UTF-8"`, or
+  `"Latin-1"`) for the occasional non-UTF-8 GEO record. It sets the
+  character encoding used by the underlying
+  [`data.table::fread()`](https://rdrr.io/pkg/data.table/man/fread.html)
+  reads for the duration of the call; the same override is available
+  globally via `options(GEOquery.encoding = ...)`
+  ([\#148](https://github.com/seandavi/GEOquery/issues/148)).
+
 ## GEOquery 2.81.24 (2026-07-17)
 
 ### Bug fixes

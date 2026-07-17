@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.24</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.25</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,9 +43,25 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/issue-triage-fixes/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.81.25" id="geoquery-28125-2026-07-17">GEOquery 2.81.25 (2026-07-17)<a class="anchor" aria-label="anchor" href="#geoquery-28125-2026-07-17"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-2-81-25">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-81-25"></a></h3>
+<ul><li>Series Matrix records whose <code>ID_REF</code> repeats a feature identifier (common when the IDs are gene symbols, e.g. GSE136400 with <code>CXXC1</code> twice) no longer fail with <code>duplicate row.names: ... AnnotatedDataFrame 'initialize' could not update varMetadata</code>. Duplicate feature IDs are now made unique with <code><a href="https://rdrr.io/r/base/make.unique.html" class="external-link">make.unique()</a></code>, mirroring the existing guard in <code><a href="../reference/coercion.html">GDS2eSet()</a></code> (<a href="https://github.com/seandavi/GEOquery/issues/98" class="external-link">#98</a>).</li>
+<li>
+<code>getGEO(filename=)</code> on a metadata-only SOFT file — such as the truncated output of <code>getGEOfile(amount = "quick")</code> or <code>"brief"</code>, which contains no <code>^SAMPLE</code>/<code>^PLATFORM</code> entities — now returns a <code>GSE</code> object with empty sample/platform lists instead of erroring with <code>invalid 'n' argument</code> / <code>NA/NaN argument</code> (<a href="https://github.com/seandavi/GEOquery/issues/14" class="external-link">#14</a>).</li>
+<li>
+<code><a href="../reference/getGSEDataTables.html">getGSEDataTables()</a></code> now always returns a list of data.frames, including when a Series carries exactly one <code>&lt;Data-Table&gt;</code> (previously a single-table Series such as GSE98638 was mis-simplified into a character matrix). This makes series-level annotation tables — e.g. a single-cell study’s per-cell “Listing of Individual Cells” table — reliably accessible (<a href="https://github.com/seandavi/GEOquery/issues/80" class="external-link">#80</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-2-81-25">New features<a class="anchor" aria-label="anchor" href="#new-features-2-81-25"></a></h3>
+<ul><li>
+<code><a href="../reference/getGEO.html">getGEO()</a></code> gains an <code>encoding</code> argument (<code>"unknown"</code> (default), <code>"UTF-8"</code>, or <code>"Latin-1"</code>) for the occasional non-UTF-8 GEO record. It sets the character encoding used by the underlying <code><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">data.table::fread()</a></code> reads for the duration of the call; the same override is available globally via <code>options(GEOquery.encoding = ...)</code> (<a href="https://github.com/seandavi/GEOquery/issues/148" class="external-link">#148</a>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.81.24" id="geoquery-28124-2026-07-17">GEOquery 2.81.24 (2026-07-17)<a class="anchor" aria-label="anchor" href="#geoquery-28124-2026-07-17"></a></h2>
 <div class="section level3">
