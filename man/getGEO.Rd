@@ -13,7 +13,8 @@ getGEO(
   AnnotGPL = FALSE,
   getGPL = TRUE,
   parseCharacteristics = TRUE,
-  returnType = c("SummarizedExperiment", "ExpressionSet")
+  returnType = c("SummarizedExperiment", "ExpressionSet"),
+  encoding = NULL
 )
 }
 \arguments{
@@ -66,6 +67,13 @@ is returned as a SummarizedExperiment or an ExpressionSet. SOFT-format
 results (GDS/GPL/GSM/GSE S4 objects) are unaffected. As of this release the
 default is "SummarizedExperiment"; pass returnType = "ExpressionSet" for the
 previous behavior.}
+
+\item{encoding}{Optional character encoding for reading the downloaded GEO
+file, one of "unknown" (the default; let the reader auto-detect), "UTF-8", or
+"Latin-1". Most GEO files are UTF-8/ASCII, but a few carry Latin-1 bytes that
+are otherwise mis-decoded; set \code{encoding = "Latin-1"} for those. Applies
+for the duration of the call only. Equivalent to setting
+\code{options(GEOquery.encoding = ...)} globally.}
 }
 \value{
 An object of the appropriate class (GDS, GPL, GSM, or GSE) is

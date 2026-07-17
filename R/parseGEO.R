@@ -1,9 +1,18 @@
 .na_strings = c("NA", "null", "NULL", "Null")
 
+# Encoding passed to data.table::fread() at every GEO read site. GEO files are
+# usually UTF-8/ASCII and fread's default ("unknown") is fine, but some records
+# carry Latin-1 bytes that are then mis-decoded. Users can override with
+# options(GEOquery.encoding = "Latin-1") (or "UTF-8"); getGEO(encoding=) sets it
+# for the scope of a single call (#148). Accepted values are fread's:
+# "unknown", "UTF-8", "Latin-1".
+.geo_encoding <- function() {
+    getOption("GEOquery.encoding", "unknown")
+}
 
 #' @importFrom data.table fread
 .read_lines <- function(...) {
-    data.table::fread(..., sep = "", header = FALSE)[[1]]
+    data.table::fread(..., sep = "", header = FALSE, encoding = .geo_encoding())[[1]]
 }
 
 #' Parse GEO text
@@ -194,6 +203,14 @@ parseGSE <- function(fname, GSElimits = NULL) {
     message("Parsing....")
     lineCounts <- grep("\\^(SAMPLE|PLATFORM)", lines)
     message(sprintf("Found %d entities...", length(lineCounts)))
+    ## A metadata-only SOFT file -- e.g. the truncated output of
+    ## getGEOfile(amount = "quick") or "brief" -- carries only the Series header
+    ## and has no ^SAMPLE/^PLATFORM entities. Return a GSE with empty sample and
+    ## platform lists rather than erroring on the entity-offset arithmetic that
+    ## follows (which indexes lineCounts[1], NA when there are no entities) (#14).
+    if (length(lineCounts) == 0) {
+        return(new("GSE", header = parseGeoMeta(lines), gsms = list(), gpls = list()))
+    }
     ## I close and reopen the file because on Windows, the seek function is
     ## pretty much guaranteed to NOT work This gets the header information for
     ## the GSE
@@ -328,7 +345,7 @@ fastTabRead <- function(con, sep = "\t", header = TRUE, sampleRows = 100, colCla
 
 #' @importFrom data.table fread
 parseGDS <- function(fname) {
-    txt = data.table::fread(fname, sep = "")[[1]]
+    txt = data.table::fread(fname, sep = "", encoding = .geo_encoding())[[1]]
 
     parser_results = .genericGEOTableParser(txt)
 
@@ -390,7 +407,7 @@ parseGDS <- function(fname) {
 
 #' @importFrom data.table fread
 parseGSM <- function(fname) {
-    txt = data.table::fread(fname, sep = "")[[1]]
+    txt = data.table::fread(fname, sep = "", encoding = .geo_encoding())[[1]]
     # read_lines reads separate blank lines on windows, so remove them before
     # proceeding. NOT doing so results in the Table header being repeated as the
     # first line of the Table and test failures galore.
@@ -428,7 +445,7 @@ parseGPL <- function(fname) {
             return(cache$gpl)
         }
     }
-    txt = data.table::fread(fname, sep = "")[[1]]
+    txt = data.table::fread(fname, sep = "", encoding = .geo_encoding())[[1]]
     # read_lines reads separate blank lines on windows, so remove them before
     # proceeding. NOT doing so results in the Table header being repeated as the
     # first line of the Table and test failures galore.
@@ -494,7 +511,7 @@ parseGSEMatrix <- function(fname, AnnotGPL = FALSE, destdir = tempdir(), getGPL 
     # Convenient VERY fast line reader based on data.table See:
     # https://stackoverflow.com/a/32924981/459633 data read into single character
     # column, so subset to get just text.
-    dat <- data.table::fread(fname, sep = "")[[1]]
+    dat <- data.table::fread(fname, sep = "", encoding = .geo_encoding())[[1]]
 
     ## get the number of !Series lines for header reading
     series_header_row_count <- sum(grepl("^!Series_", dat))
@@ -504,10 +521,12 @@ parseGSEMatrix <- function(fname, AnnotGPL = FALSE, destdir = tempdir(), getGPL 
         stop("parsing failed--expected only one '!series_data_table_begin'")
     }
     # Read the !Series_ and !Sample_ lines
-    header <- data.table::fread(fname, header = FALSE, nrows = series_header_row_count)
+    header <- data.table::fread(fname, header = FALSE, nrows = series_header_row_count,
+        encoding = .geo_encoding())
     # Extract only the actual !Sample_ lines to avoid issues with malformed/empty lines
     sample_lines <- dat[grepl("^!Sample_", dat)]
-    tmpdat <- data.table::fread(text = sample_lines, header = FALSE, sep = "\t")
+    tmpdat <- data.table::fread(text = sample_lines, header = FALSE, sep = "\t",
+        encoding = .geo_encoding())
 
     headertmp <- t(header)
     headerdata <- rbind(data.frame(), headertmp[-1, ])
@@ -584,13 +603,18 @@ parseGSEMatrix <- function(fname, AnnotGPL = FALSE, destdir = tempdir(), getGPL 
             1)]), header = TRUE, sep = "\t")
     } else {
         datamat <- data.table::fread(text = dat[(series_table_begin_line + 1):(series_table_end_line -
-            1)], quote = "\"", na.strings = c("NA", "null", "NULL", "Null"))
+            1)], quote = "\"", na.strings = c("NA", "null", "NULL", "Null"),
+            encoding = .geo_encoding())
     }
     ## kip = series_table_begin_line) comment.char = '!series_matrix_table_end')
     tmprownames = as.character(datamat[[1]])
     # need the as.matrix for single-sample or empty GSE
     datamat <- as.matrix(datamat[!is.na(tmprownames), -1])
-    rownames(datamat) <- tmprownames[!is.na(tmprownames)]
+    # Some series matrices repeat a feature ID in ID_REF (e.g. gene symbols in
+    # GSE136400: CXXC1 appears twice). Duplicate rownames are silently tolerated
+    # by matrices but break AnnotatedDataFrame/ExpressionSet construction below.
+    # make.unique() mirrors the guard already used in GDS2eSet (#98).
+    rownames(datamat) <- make.unique(tmprownames[!is.na(tmprownames)])
     datamat <- as.matrix(datamat)
     rownames(sampledat) <- colnames(datamat)
     GPL = as.character(sampledat[1, grep("^platform_id", colnames(sampledat), ignore.case = TRUE)])
