@@ -24,6 +24,10 @@
 #' for GPLs referenced by a GDS
 #' @param amount Amount of information to pull from GEO.  Only applies to GSE,
 #' GPL, or GSM.  See details...
+#' @param token Optional NCBI GEO reviewer access token (character(1)) for a
+#'   private/embargoed record. Private records are not published to the GEO FTP
+#'   tree, so a token forces the CGI (\code{acc.cgi}) SOFT path and appends the
+#'   token to the request. See \code{\link{getGEO}}.
 #' @return Invisibly returns the full path of the downloaded file.
 #'
 #' @importFrom utils download.file
@@ -41,7 +45,7 @@
 getGEOfile <- function(GEO, destdir = tempdir(), AnnotGPL = FALSE, amount = c(
                          "full",
                          "brief", "quick", "data"
-                       )) {
+                       ), token = NULL) {
   amount <- match.arg(amount)
   geotype <- toupper(substr(GEO, 1, 3))
   mode <- "wb"
@@ -53,15 +57,24 @@ getGEOfile <- function(GEO, destdir = tempdir(), AnnotGPL = FALSE, amount = c(
     destfile <- file.path(destdir, paste0(GEO, ".soft.gz"))
   }
   if (geotype == "GSE" & amount == "full") {
-    gseurl <- "https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/soft/%s"
-    myurl <- sprintf(gseurl, stub, GEO, paste0(GEO, "_family.soft.gz"))
-    destfile <- file.path(destdir, paste(GEO, ".soft.gz", sep = ""))
+    if (!is.null(token)) {
+      # Private/embargoed Series are absent from the FTP tree; fetch the full
+      # family SOFT through acc.cgi with the reviewer token instead (#154).
+      gseurl <- "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
+      myurl <- .append_token(paste0(gseurl, "?targ=all&acc=", GEO, "&form=text&view=full"), token)
+      destfile <- file.path(destdir, paste0(GEO, ".soft"))
+      mode <- "w"
+    } else {
+      gseurl <- "https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/soft/%s"
+      myurl <- sprintf(gseurl, stub, GEO, paste0(GEO, "_family.soft.gz"))
+      destfile <- file.path(destdir, paste(GEO, ".soft.gz", sep = ""))
+    }
   }
   if (geotype == "GSE" & amount != "full" & amount != "table") {
     gseurl <- "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
-    myurl <- paste(gseurl, "?targ=self&acc=", GEO, "&form=text&view=", amount,
+    myurl <- .append_token(paste(gseurl, "?targ=self&acc=", GEO, "&form=text&view=", amount,
       sep = ""
-    )
+    ), token)
     destfile <- file.path(destdir, paste(GEO, ".soft", sep = ""))
     mode <- "w"
   }
@@ -92,9 +105,9 @@ getGEOfile <- function(GEO, destdir = tempdir(), AnnotGPL = FALSE, amount = c(
       }
     }
     gseurl <- "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
-    myurl <- paste(gseurl, "?targ=self&acc=", GEO, "&form=text&view=", amount,
+    myurl <- .append_token(paste(gseurl, "?targ=self&acc=", GEO, "&form=text&view=", amount,
       sep = ""
-    )
+    ), token)
     destfile <- file.path(destdir, paste(GEO, ".soft.gz", sep = ""))
     mode <- "w"
     if (!file.exists(destfile)) {
@@ -109,9 +122,9 @@ getGEOfile <- function(GEO, destdir = tempdir(), AnnotGPL = FALSE, amount = c(
   }
   if (geotype == "GSM") {
     gseurl <- "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
-    myurl <- paste(gseurl, "?targ=self&acc=", GEO, "&form=text&view=", amount,
+    myurl <- .append_token(paste(gseurl, "?targ=self&acc=", GEO, "&form=text&view=", amount,
       sep = ""
-    )
+    ), token)
     destfile <- file.path(destdir, paste(GEO, ".soft", sep = ""))
     mode <- "w"
   }
@@ -128,6 +141,18 @@ getGEOfile <- function(GEO, destdir = tempdir(), AnnotGPL = FALSE, amount = c(
 
 getGEORaw <- function(GEO, destdir = tempdir()) {
   return(getGEOSuppFiles(GEO, baseDir = destdir))
+}
+
+# Append an NCBI GEO reviewer access token to an acc.cgi URL as a `token=` query
+# parameter, if one is supplied. Private/embargoed GEO records are reachable
+# only through acc.cgi with such a token (not via the FTP tree); see #154 and
+# ADR-0007. Returns the URL unchanged when token is NULL.
+.append_token <- function(url, token = NULL) {
+  if (is.null(token)) {
+    return(url)
+  }
+  sep <- if (grepl("?", url, fixed = TRUE)) "&" else "?"
+  paste0(url, sep, "token=", token)
 }
 
 

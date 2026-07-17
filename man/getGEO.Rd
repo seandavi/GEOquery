@@ -14,7 +14,8 @@ getGEO(
   getGPL = TRUE,
   parseCharacteristics = TRUE,
   returnType = c("SummarizedExperiment", "ExpressionSet"),
-  encoding = NULL
+  encoding = NULL,
+  token = NULL
 )
 }
 \arguments{
@@ -74,6 +75,14 @@ file, one of "unknown" (the default; let the reader auto-detect), "UTF-8", or
 are otherwise mis-decoded; set \code{encoding = "Latin-1"} for those. Applies
 for the duration of the call only. Equivalent to setting
 \code{options(GEOquery.encoding = ...)} globally.}
+
+\item{token}{Optional NCBI GEO reviewer access token (character(1)) for
+fetching a private/embargoed record. Obtain it from the "Reviewer access"
+link on the private GSE's GEO page. Because private records are not published
+to the GEO FTP tree, supplying a token forces the SOFT (\code{acc.cgi}) path:
+for a GSE this returns a \code{GSE} S4 object (as with
+\code{GSEMatrix = FALSE}), not a \code{SummarizedExperiment} /
+\code{ExpressionSet}. See ADR-0007.}
 }
 \value{
 An object of the appropriate class (GDS, GPL, GSM, or GSE) is
