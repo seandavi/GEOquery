@@ -378,3 +378,43 @@ test_that("getGEOSingleCell reads a (modern) h5ad into a SingleCellExperiment (#
     expect_gt(nrow(res[[1]]), 0L)
     expect_gt(ncol(res[[1]]), 1000L)
 })
+
+test_that("addSampleMeta attaches per-sample GEO characteristics to colData (#210)", {
+    skip_if_no_integration()
+    skip_if_not_installed("TENxIO")
+    skip_if_not_installed("SingleCellExperiment")
+    res <- getGEOSingleCell("GSE132771",
+        samples = "GSM3891614", destdir = tempfile("sc_"), addSampleMeta = TRUE)
+    cd <- SummarizedExperiment::colData(res[["GSM3891614"]])
+    sm <- grep("^sample\\.", colnames(cd), value = TRUE)
+    expect_true(length(sm) > 0)
+    expect_true("sample.title" %in% sm)
+    # constant across the sample's cells
+    expect_equal(length(unique(as.character(cd[["sample.title"]]))), 1L)
+})
+
+test_that("addSampleMeta = FALSE attaches nothing (#210)", {
+    skip_if_no_integration()
+    skip_if_not_installed("TENxIO")
+    skip_if_not_installed("SingleCellExperiment")
+    res <- getGEOSingleCell("GSE132771",
+        samples = "GSM3891614", destdir = tempfile("sc_"), addSampleMeta = FALSE)
+    cd <- SummarizedExperiment::colData(res[["GSM3891614"]])
+    expect_equal(length(grep("^sample\\.", colnames(cd))), 0L)
+})
+
+test_that("addSampleMeta survives combining across samples (by='all') (#210)", {
+    skip_if_no_integration()
+    skip_if_not_installed("TENxIO")
+    skip_if_not_installed("SingleCellExperiment")
+    # Two mouse samples (same platform) -> combinable; each cell keeps its own
+    # sample's metadata after the cbind.
+    out <- getGEOSingleCell("GSE132771",
+        samples = c("GSM3891614", "GSM3891615"), destdir = tempfile("sc_"),
+        by = "all", addSampleMeta = TRUE)
+    expect_s4_class(out, "SingleCellExperiment")
+    cd <- SummarizedExperiment::colData(out)
+    expect_true("sample.title" %in% colnames(cd))
+    # both samples' titles are present among the combined cells
+    expect_gte(length(unique(as.character(cd[["sample.title"]]))), 2L)
+})
