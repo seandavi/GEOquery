@@ -1,3 +1,14 @@
+# GEOquery 2.81.23 (2026-07-17)
+
+## Bug fixes
+
+- `extractFilenameFromDownloadURL()` — and therefore `getRNASeqQuantGenomeInfo()` — no longer errors when handed an empty (zero-length) URL, as happens when a Series has no NCBI-computed RNA-seq annotation link. It now returns `NULL` as documented instead of raising an `httr2::url_parse()` error (#207).
+
+## Testing / infrastructure
+
+- Added deterministic, network-free unit tests for the pure helper functions in the RNA-seq (`R/rnaseq.R`), Entrez-search (`R/searchGEO.R`), SOFT-parsing (`R/parseGEO.R`), supplemental-file, GDS-conversion, and file-open code paths, raising baseline coverage (#207).
+- New `skip_if_geo_offline()` test helper (mirroring BiocPkgTools' `skip_if_bioc_offline()`) probes NCBI GEO reachability so network-dependent tests run when the host is up and skip cleanly when it is not (#207, #169).
+
 # GEOquery 2.81.22 (2026-06-14)
 
 ## New features
