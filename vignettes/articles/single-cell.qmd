@@ -109,6 +109,28 @@ matrices often use different references or feature sets, and silently
 reconciling them would be misleading. Combine deliberately when you know the
 features match.
 
+### Sample metadata travels with the cells
+
+The single-cell matrices GEO stores as supplementary files carry no phenotype
+information — the sample's age, sex, genotype, tissue, treatment, and so on live
+in the GEO **sample record**, not in the matrix. By default `getGEOSingleCell()`
+fetches that per-sample metadata and attaches it to each object's `colData`,
+broadcast across the sample's cells, so it is there when you need it (and it
+survives combining with `by = "platform"` / `by = "all"`):
+
+```r
+sce <- getGEOSingleCell("GSE125708", by = "all")
+cd <- SummarizedExperiment::colData(sce)
+cd[, grep("^sample\\.", colnames(cd))]
+#>            sample.title sample.age.ch1 sample.Sex.ch1 sample.tissue.ch1 ...
+#> ...        JH26_WT_...  2 month        Male           retina            ...
+```
+
+Added columns are prefixed `sample.` so they never clash with the importer's own
+`colData`. The metadata comes from the Series Matrix (one small extra download);
+pass `addSampleMeta = FALSE` to skip it. Whole-study files that carry no GSM get
+no sample columns (there is no single sample to attribute them to).
+
 ### Full control
 
 `getGEOSingleCell()` deliberately handles only common layouts. For anything

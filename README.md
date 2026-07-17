@@ -27,7 +27,8 @@ can go from a GEO accession to an analysis-ready object in one call.
   `getRNASeqData()`.
 - **Single-cell.** Inventory, group, and load single-cell supplementary data
   (10x Matrix Market, 10x HDF5, AnnData `.h5ad`, Seurat `.rds`) into
-  `SingleCellExperiment` (or `Seurat`) objects.
+  `SingleCellExperiment` (or `Seurat`) objects, with each sample's GEO
+  characteristics carried into `colData`.
 - **Supplementary files.** List and download any attached files with
   `getGEOSuppFiles()`.
 - **Search.** Query GEO programmatically with `searchGEO()`.

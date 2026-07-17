@@ -549,7 +549,145 @@ readGEOSingleCell <- function(x, format = NULL,
         SummarizedExperiment::rowData(x) <- canon
         x
     })
+    # Reconcile colData *columns* across samples (union, NA-filled, one order) so
+    # cbind's "identical colData columns" requirement holds. Samples can carry
+    # different per-sample metadata columns -- e.g. after addSampleMeta attaches
+    # each sample's own characteristics (#210), or when importer colData differs
+    # -- which would otherwise block the bind.
+    all_cd_cols <- Reduce(
+        union,
+        lapply(aligned, function(x) colnames(SummarizedExperiment::colData(x)))
+    )
+    aligned <- lapply(aligned, function(x) {
+        cd <- SummarizedExperiment::colData(x)
+        for (m in setdiff(all_cd_cols, colnames(cd))) {
+            cd[[m]] <- rep(NA, nrow(cd))
+        }
+        SummarizedExperiment::colData(x) <- cd[, all_cd_cols, drop = FALSE]
+        x
+    })
     do.call(SummarizedExperiment::cbind, aligned)
+}
+
+# ---- Per-sample GEO metadata -> colData (#210) ----------------------------
+#
+# getGEOSingleCell(addSampleMeta = TRUE) attaches each sample's GEO metadata
+# (characteristics, title, source name) as constant colData columns across that
+# sample's cells, prefixed to namespace them away from the importer's own
+# colData. The metadata is the per-sample annotation GEO already stores; the
+# Series Matrix pData (for a GSE) or the GSM SOFT record (for a lone GSM) is the
+# source. Whole-study units with no GSM (NA sample) get nothing -- there is no
+# single sample to map from.
+
+.sample_meta_prefix <- "sample."
+
+# Column names in a Series Matrix colData worth attaching: the parsed
+# characteristic columns (named like "age.ch1", "Sex.ch1" -- a dot before the
+# channel), plus title and source name. Excludes technical/contact/protocol
+# fields and the raw, unparsed "characteristics_ch1" duplicates.
+.sample_meta_cols <- function(cn) {
+    cn[grepl("\\.ch[0-9]+$", cn) | cn %in% c("title", "source_name_ch1", "source_name_ch2")]
+}
+
+# Split GEO "key: value" characteristic strings into a named list, keys unique.
+.split_characteristics <- function(x) {
+    x <- x[!is.na(x) & grepl(":", x)]
+    if (length(x) == 0) {
+        return(list())
+    }
+    k <- trimws(sub(":.*$", "", x))
+    v <- trimws(sub("^[^:]*:", "", x))
+    stats::setNames(as.list(v), make.unique(k))
+}
+
+# Per-sample metadata for a GSE as a data.frame keyed by GSM id (rownames),
+# unioned across the Series' platforms. NULL on any failure.
+.gse_sample_metadata <- function(GEO) {
+    es <- tryCatch(getGEO(GEO, GSEMatrix = TRUE, getGPL = FALSE), error = function(e) NULL)
+    if (is.null(es)) {
+        return(NULL)
+    }
+    if (!is.list(es)) {
+        es <- list(es)
+    }
+    parts <- lapply(es, function(x) {
+        cd <- tryCatch(SummarizedExperiment::colData(x), error = function(e) NULL)
+        if (is.null(cd)) {
+            return(NULL)
+        }
+        cols <- .sample_meta_cols(colnames(cd))
+        if (length(cols) == 0) {
+            return(NULL)
+        }
+        as.data.frame(cd[, cols, drop = FALSE], optional = TRUE, stringsAsFactors = FALSE)
+    })
+    parts <- Filter(Negate(is.null), parts)
+    if (length(parts) == 0) {
+        return(NULL)
+    }
+    allcols <- Reduce(union, lapply(parts, colnames))
+    parts <- lapply(parts, function(d) {
+        for (m in setdiff(allcols, colnames(d))) d[[m]] <- NA
+        d[, allcols, drop = FALSE]
+    })
+    # unname() so rbind keeps each frame's GSM-id rownames rather than prefixing
+    # them with the list element (per-platform file) names.
+    do.call(rbind, unname(parts))
+}
+
+# Per-sample metadata for a single GSM as a one-row data.frame keyed by the GSM
+# id. Reads the GSM SOFT record and unpacks its characteristics. NULL on failure.
+.gsm_sample_metadata <- function(GEO) {
+    g <- tryCatch(getGEO(GEO), error = function(e) NULL)
+    if (is.null(g) || !methods::is(g, "GEOData")) {
+        return(NULL)
+    }
+    m <- Meta(g)
+    row <- list()
+    if (!is.null(m$title)) row[["title"]] <- m$title[1]
+    if (!is.null(m$source_name_ch1)) row[["source_name_ch1"]] <- m$source_name_ch1[1]
+    kv <- .split_characteristics(m$characteristics_ch1)
+    for (k in names(kv)) row[[paste0(k, ".ch1")]] <- kv[[k]]
+    if (length(row) == 0) {
+        return(NULL)
+    }
+    df <- as.data.frame(row, stringsAsFactors = FALSE, check.names = FALSE)
+    rownames(df) <- toupper(GEO)
+    df
+}
+
+# Build the GSM-id-keyed metadata table for a GSE or GSM accession. Never throws
+# (metadata is best-effort and must not break the primary data load).
+.sample_metadata_map <- function(GEO) {
+    tryCatch(
+        {
+            geotype <- toupper(substr(GEO, 1, 3))
+            if (geotype == "GSE") {
+                .gse_sample_metadata(GEO)
+            } else if (geotype == "GSM") {
+                .gsm_sample_metadata(GEO)
+            } else {
+                NULL
+            }
+        },
+        error = function(e) NULL
+    )
+}
+
+# Broadcast a one-row metadata data.frame across all cells of an SCE as constant
+# colData columns, prefixed to avoid colliding with the importer's colData.
+.attach_sample_meta <- function(sce, meta_row) {
+    if (is.null(meta_row) || nrow(meta_row) == 0) {
+        return(sce)
+    }
+    cd <- SummarizedExperiment::colData(sce)
+    n <- nrow(cd)
+    for (col in colnames(meta_row)) {
+        newname <- paste0(.sample_meta_prefix, col)
+        cd[[newname]] <- rep(meta_row[[col]][1], n)
+    }
+    SummarizedExperiment::colData(sce) <- cd
+    sce
 }
 
 #' Download and read the single-cell data of a GEO Series or Sample
@@ -602,6 +740,17 @@ readGEOSingleCell <- function(x, format = NULL,
 #'   Details.
 #' @param as Output class, one of "SingleCellExperiment" (default) or "Seurat"
 #'   (coerced at the boundary via the Seurat package, an optional dependency).
+#' @param addSampleMeta Logical, default \code{TRUE}. Attach each sample's GEO
+#'   metadata -- the parsed \code{characteristics_*} fields, \code{title}, and
+#'   source name -- as constant per-cell \code{colData} columns, so a sample's
+#'   annotation (age, sex, genotype, tissue, treatment, ...) travels with its
+#'   cells (including after combining with \code{by = "platform"}/\code{"all"}).
+#'   Added columns are prefixed \code{"sample."} to avoid colliding with the
+#'   importer's own \code{colData}. The metadata comes from the Series Matrix
+#'   pData (for a GSE) or the GSM SOFT record (for a lone GSM), so it costs one
+#'   additional small download; whole-study files with no GSM get nothing.
+#'   Metadata lookup is best-effort: a failure warns and is skipped, never
+#'   breaking the data load. Set \code{FALSE} to skip it.
 #' @param destdir Download destination directory.
 #' @return Depends on \code{by}: a named list of objects per sample
 #'   (\code{"sample"}); a named list of combined objects per platform
@@ -615,11 +764,18 @@ readGEOSingleCell <- function(x, format = NULL,
 #'   per_sample <- getGEOSingleCell("GSE132771")             # list by GSM
 #'   per_platform <- getGEOSingleCell("GSE132771", by = "platform")
 #'   # -> list(GPL21103 = <mouse SCE>, GPL24676 = <human SCE>)
+#'
+#'   # Each sample's GEO characteristics ride along in colData (default):
+#'   sce <- getGEOSingleCell("GSE125708", by = "all")
+#'   SummarizedExperiment::colData(sce)[, grep("^sample\\.", colnames(
+#'     SummarizedExperiment::colData(sce)))]
+#'   # sample.title, sample.age.ch1, sample.Sex.ch1, sample.tissue.ch1, ...
 #' }
 #' @export
 getGEOSingleCell <- function(GEO, samples = NULL, format = NULL,
     by = c("sample", "platform", "all"),
-    as = c("SingleCellExperiment", "Seurat"), destdir = tempdir()) {
+    as = c("SingleCellExperiment", "Seurat"), addSampleMeta = TRUE,
+    destdir = tempdir()) {
     by <- match.arg(by)
     as <- match.arg(as)
     manifest <- geoSingleCellManifest(GEO, samples = samples)
@@ -637,6 +793,16 @@ getGEOSingleCell <- function(GEO, samples = NULL, format = NULL,
             paste(sprintf("%s [%s]", sel$skip$sample, sel$skip$status), collapse = "; ")
         ))
     }
+    # Fetch the per-sample metadata once (best-effort), only when it is both
+    # requested and mappable -- i.e. at least one unit to load carries a GSM id.
+    sample_meta <- NULL
+    if (isTRUE(addSampleMeta) && any(!is.na(sel$load$sample))) {
+        sample_meta <- .sample_metadata_map(GEO)
+        if (is.null(sample_meta)) {
+            warning("Could not retrieve GEO sample metadata for ", GEO,
+                "; proceeding without it (addSampleMeta).", call. = FALSE)
+        }
+    }
     mkey <- .sc_unit_key(manifest)
     results <- list()
     for (i in seq_len(nrow(sel$load))) {
@@ -645,7 +811,12 @@ getGEOSingleCell <- function(GEO, samples = NULL, format = NULL,
         label <- if (!is.na(u$sample)) u$sample else .sc_unit_label(unit_files$fname[1])
         message(sprintf("Loading %s (%s)...", label, u$format))
         local <- .download_sc_unit(unit_files, destdir)
-        results[[label]] <- readGEOSingleCell(local, format = u$format)
+        sce <- readGEOSingleCell(local, format = u$format)
+        # Whole-study units (NA sample) have no single GSM to map metadata from.
+        if (!is.null(sample_meta) && !is.na(u$sample) && u$sample %in% rownames(sample_meta)) {
+            sce <- .attach_sample_meta(sce, sample_meta[u$sample, , drop = FALSE])
+        }
+        results[[label]] <- sce
     }
     if (by == "sample") {
         return(lapply(results, .as_sc_output, as = as))

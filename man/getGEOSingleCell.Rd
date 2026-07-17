@@ -10,6 +10,7 @@ getGEOSingleCell(
   format = NULL,
   by = c("sample", "platform", "all"),
   as = c("SingleCellExperiment", "Seurat"),
+  addSampleMeta = TRUE,
   destdir = tempdir()
 )
 }
@@ -29,6 +30,18 @@ Details.}
 
 \item{as}{Output class, one of "SingleCellExperiment" (default) or "Seurat"
 (coerced at the boundary via the Seurat package, an optional dependency).}
+
+\item{addSampleMeta}{Logical, default \code{TRUE}. Attach each sample's GEO
+metadata -- the parsed \code{characteristics_*} fields, \code{title}, and
+source name -- as constant per-cell \code{colData} columns, so a sample's
+annotation (age, sex, genotype, tissue, treatment, ...) travels with its
+cells (including after combining with \code{by = "platform"}/\code{"all"}).
+Added columns are prefixed \code{"sample."} to avoid colliding with the
+importer's own \code{colData}. The metadata comes from the Series Matrix
+pData (for a GSE) or the GSM SOFT record (for a lone GSM), so it costs one
+additional small download; whole-study files with no GSM get nothing.
+Metadata lookup is best-effort: a failure warns and is skipped, never
+breaking the data load. Set \code{FALSE} to skip it.}
 
 \item{destdir}{Download destination directory.}
 }
@@ -84,6 +97,12 @@ hold one object, so grouping is effectively a no-op for them.
   per_sample <- getGEOSingleCell("GSE132771")             # list by GSM
   per_platform <- getGEOSingleCell("GSE132771", by = "platform")
   # -> list(GPL21103 = <mouse SCE>, GPL24676 = <human SCE>)
+
+  # Each sample's GEO characteristics ride along in colData (default):
+  sce <- getGEOSingleCell("GSE125708", by = "all")
+  SummarizedExperiment::colData(sce)[, grep("^sample\\\\.", colnames(
+    SummarizedExperiment::colData(sce)))]
+  # sample.title, sample.age.ch1, sample.Sex.ch1, sample.tissue.ch1, ...
 }
 }
 \seealso{

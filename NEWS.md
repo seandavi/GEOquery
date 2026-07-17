@@ -1,3 +1,9 @@
+# GEOquery 2.81.27 (2026-07-17)
+
+## New features
+
+- `getGEOSingleCell()` now attaches each sample's GEO metadata — the parsed `characteristics_*` fields (age, sex, genotype, tissue, treatment, ...), `title`, and source name — to the returned object's `colData`, broadcast across that sample's cells, controlled by a new `addSampleMeta` argument (default `TRUE`). The columns are prefixed `sample.` to avoid clashing with the importer's own `colData`, and they survive combining across samples (`by = "platform"` / `by = "all"`), which now reconciles differing `colData` columns (union, NA-filled). The metadata comes from the Series Matrix pData (a GSE) or the GSM SOFT record (a lone GSM); whole-study files with no GSM get nothing. Previously the single-cell matrices carried no phenotype information at all (#210, split from #158).
+
 # GEOquery 2.81.26 (2026-07-17)
 
 ## New features
