@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.26</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.27</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,9 +43,17 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/feat-sc-sample-meta/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.81.27" id="geoquery-28127-2026-07-17">GEOquery 2.81.27 (2026-07-17)<a class="anchor" aria-label="anchor" href="#geoquery-28127-2026-07-17"></a></h2>
+<div class="section level3">
+<h3 id="new-features-2-81-27">New features<a class="anchor" aria-label="anchor" href="#new-features-2-81-27"></a></h3>
+<ul><li>
+<code><a href="../reference/getGEOSingleCell.html">getGEOSingleCell()</a></code> now attaches each sample’s GEO metadata — the parsed <code>characteristics_*</code> fields (age, sex, genotype, tissue, treatment, …), <code>title</code>, and source name — to the returned object’s <code>colData</code>, broadcast across that sample’s cells, controlled by a new <code>addSampleMeta</code> argument (default <code>TRUE</code>). The columns are prefixed <code>sample.</code> to avoid clashing with the importer’s own <code>colData</code>, and they survive combining across samples (<code>by = "platform"</code> / <code>by = "all"</code>), which now reconciles differing <code>colData</code> columns (union, NA-filled). The metadata comes from the Series Matrix pData (a GSE) or the GSM SOFT record (a lone GSM); whole-study files with no GSM get nothing. Previously the single-cell matrices carried no phenotype information at all (<a href="https://github.com/seandavi/GEOquery/issues/210" class="external-link">#210</a>, split from <a href="https://github.com/seandavi/GEOquery/issues/158" class="external-link">#158</a>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.81.26" id="geoquery-28126-2026-07-17">GEOquery 2.81.26 (2026-07-17)<a class="anchor" aria-label="anchor" href="#geoquery-28126-2026-07-17"></a></h2>
 <div class="section level3">

@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.26</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.27</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
       <p class="author">Sean Davis</p>
 
 
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/vignettes/articles/single-cell.qmd" class="external-link"><code>vignettes/articles/single-cell.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/feat-sc-sample-meta/vignettes/articles/single-cell.qmd" class="external-link"><code>vignettes/articles/single-cell.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -135,10 +135,20 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">sces</span><span class="op">)</span>      <span class="co"># one SingleCellExperiment per sample</span></span>
 <span><span class="va">sces</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <p>It returns a list rather than a single combined object on purpose: per-sample matrices often use different references or feature sets, and silently reconciling them would be misleading. Combine deliberately when you know the features match.</p>
-<section class="level3"><h3 id="full-control">Full control<a class="anchor" aria-label="anchor" href="#full-control"></a>
+<section class="level3"><h3 id="sample-metadata-travels-with-the-cells">Sample metadata travels with the cells<a class="anchor" aria-label="anchor" href="#sample-metadata-travels-with-the-cells"></a>
+</h3>
+<p>The single-cell matrices GEO stores as supplementary files carry no phenotype information — the sample’s age, sex, genotype, tissue, treatment, and so on live in the GEO <strong>sample record</strong>, not in the matrix. By default <code><a href="../reference/getGEOSingleCell.html">getGEOSingleCell()</a></code> fetches that per-sample metadata and attaches it to each object’s <code>colData</code>, broadcast across the sample’s cells, so it is there when you need it (and it survives combining with <code>by = "platform"</code> / <code>by = "all"</code>):</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEOSingleCell.html">getGEOSingleCell</a></span><span class="op">(</span><span class="st">"GSE125708"</span>, by <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span>
+<span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span></span>
+<span><span class="va">cd</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"^sample\\."</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;            sample.title sample.age.ch1 sample.Sex.ch1 sample.tissue.ch1 ...</span></span>
+<span><span class="co">#&gt; ...        JH26_WT_...  2 month        Male           retina            ...</span></span></code></pre></div>
+<p>Added columns are prefixed <code>sample.</code> so they never clash with the importer’s own <code>colData</code>. The metadata comes from the Series Matrix (one small extra download); pass <code>addSampleMeta = FALSE</code> to skip it. Whole-study files that carry no GSM get no sample columns (there is no single sample to attribute them to).</p>
+</section><section class="level3"><h3 id="full-control">Full control<a class="anchor" aria-label="anchor" href="#full-control"></a>
 </h3>
 <p><code><a href="../reference/getGEOSingleCell.html">getGEOSingleCell()</a></code> deliberately handles only common layouts. For anything unusual — bespoke naming, a single combined matrix for many samples, files inside a <code>_RAW.tar</code> — use the manifest to find what you want, download with <code><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles()</a></code>, and read one unit at a time with <code><a href="../reference/readGEOSingleCell.html">readGEOSingleCell()</a></code>:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/readGEOSingleCell.html">readGEOSingleCell</a></span><span class="op">(</span><span class="va">path_to_dir_or_file</span><span class="op">)</span>            <span class="co"># format auto-detected</span></span>
 <span><span class="fu"><a href="../reference/readGEOSingleCell.html">readGEOSingleCell</a></span><span class="op">(</span><span class="va">triplet_files</span>, format <span class="op">=</span> <span class="st">"10x_mtx"</span><span class="op">)</span></span></code></pre></div>
 </section></section><section class="level2"><h2 id="the-reader-dependencies">The reader dependencies<a class="anchor" aria-label="anchor" href="#the-reader-dependencies"></a>
@@ -156,15 +166,15 @@
 </h2>
 <p>GEOquery speaks <code>SingleCellExperiment</code> internally, but Seurat is one coercion away and supported at both edges (Seurat is an optional dependency).</p>
 <p>Get Seurat objects directly:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">seurat_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEOSingleCell.html">getGEOSingleCell</a></span><span class="op">(</span><span class="st">"GSE161228"</span>, as <span class="op">=</span> <span class="st">"Seurat"</span><span class="op">)</span></span>
 <span><span class="co"># or one object:</span></span>
 <span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readGEOSingleCell.html">readGEOSingleCell</a></span><span class="op">(</span><span class="va">path</span>, as <span class="op">=</span> <span class="st">"Seurat"</span><span class="op">)</span></span></code></pre></div>
 <p>Read a Seurat object that a submitter saved as a <code>.rds</code> supplementary file (its contents are detected by class and coerced to a <code>SingleCellExperiment</code>):</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readGEOSingleCell.html">readGEOSingleCell</a></span><span class="op">(</span><span class="va">path_to_rds</span><span class="op">)</span>        <span class="co"># Seurat .rds -&gt; SingleCellExperiment</span></span></code></pre></div>
 <p>Or coerce by hand, in either direction:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">seurat_obj</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/as.Seurat.html" class="external-link">as.Seurat</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span></span>
 <span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/as.SingleCellExperiment.html" class="external-link">as.SingleCellExperiment</a></span><span class="op">(</span><span class="va">seurat_obj</span><span class="op">)</span></span></code></pre></div>
 </section><section class="level2"><h2 id="downstream-the-single-cell-ecosystem">Downstream: the single-cell ecosystem<a class="anchor" aria-label="anchor" href="#downstream-the-single-cell-ecosystem"></a>

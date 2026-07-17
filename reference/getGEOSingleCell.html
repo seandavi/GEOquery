@@ -15,7 +15,7 @@ which units it loads and which it skips."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.26</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.27</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,7 +51,7 @@ which units it loads and which it skips."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Download and read the single-cell data of a GEO Series or Sample</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/R/singlecell.R" class="external-link"><code>R/singlecell.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/feat-sc-sample-meta/R/singlecell.R" class="external-link"><code>R/singlecell.R</code></a></small>
       <div class="d-none name"><code>getGEOSingleCell.Rd</code></div>
     </div>
 
@@ -71,6 +71,7 @@ which units it loads and which it skips.</p>
 <span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample"</span>, <span class="st">"platform"</span>, <span class="st">"all"</span><span class="op">)</span>,</span>
 <span>  as <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SingleCellExperiment"</span>, <span class="st">"Seurat"</span><span class="op">)</span>,</span>
+<span>  addSampleMeta <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  destdir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -103,6 +104,20 @@ Details.</p></dd>
 <dt id="arg-as">as<a class="anchor" aria-label="anchor" href="#arg-as"></a></dt>
 <dd><p>Output class, one of "SingleCellExperiment" (default) or "Seurat"
 (coerced at the boundary via the Seurat package, an optional dependency).</p></dd>
+
+
+<dt id="arg-addsamplemeta">addSampleMeta<a class="anchor" aria-label="anchor" href="#arg-addsamplemeta"></a></dt>
+<dd><p>Logical, default <code>TRUE</code>. Attach each sample's GEO
+metadata – the parsed <code>characteristics_*</code> fields, <code>title</code>, and
+source name – as constant per-cell <code>colData</code> columns, so a sample's
+annotation (age, sex, genotype, tissue, treatment, ...) travels with its
+cells (including after combining with <code>by = "platform"</code>/<code>"all"</code>).
+Added columns are prefixed <code>"sample."</code> to avoid colliding with the
+importer's own <code>colData</code>. The metadata comes from the Series Matrix
+pData (for a GSE) or the GSM SOFT record (for a lone GSM), so it costs one
+additional small download; whole-study files with no GSM get nothing.
+Metadata lookup is best-effort: a failure warns and is skipped, never
+breaking the data load. Set <code>FALSE</code> to skip it.</p></dd>
 
 
 <dt id="arg-destdir">destdir<a class="anchor" aria-label="anchor" href="#arg-destdir"></a></dt>
@@ -165,6 +180,12 @@ hold one object, so grouping is effectively a no-op for them.</p>
 <span class="r-in"><span>  <span class="va">per_sample</span> <span class="op">&lt;-</span> <span class="fu">getGEOSingleCell</span><span class="op">(</span><span class="st">"GSE132771"</span><span class="op">)</span>             <span class="co"># list by GSM</span></span></span>
 <span class="r-in"><span>  <span class="va">per_platform</span> <span class="op">&lt;-</span> <span class="fu">getGEOSingleCell</span><span class="op">(</span><span class="st">"GSE132771"</span>, by <span class="op">=</span> <span class="st">"platform"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># -&gt; list(GPL21103 = &lt;mouse SCE&gt;, GPL24676 = &lt;human SCE&gt;)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Each sample's GEO characteristics ride along in colData (default):</span></span></span>
+<span class="r-in"><span>  <span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu">getGEOSingleCell</span><span class="op">(</span><span class="st">"GSE125708"</span>, by <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"^sample\\."</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="co"># sample.title, sample.age.ch1, sample.Sex.ch1, sample.tissue.ch1, ...</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

@@ -21,7 +21,8 @@ you can go from a GEO accession to an analysis-ready object in one call.
   [`getRNASeqData()`](http://seandavi.github.io/GEOquery/reference/getRNASeqData.md).
 - **Single-cell.** Inventory, group, and load single-cell supplementary
   data (10x Matrix Market, 10x HDF5, AnnData `.h5ad`, Seurat `.rds`)
-  into `SingleCellExperiment` (or `Seurat`) objects.
+  into `SingleCellExperiment` (or `Seurat`) objects, with each sample’s
+  GEO characteristics carried into `colData`.
 - **Supplementary files.** List and download any attached files with
   [`getGEOSuppFiles()`](http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.md).
 - **Search.** Query GEO programmatically with
