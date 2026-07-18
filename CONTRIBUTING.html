@@ -44,7 +44,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Contributing to GEOquery</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/CONTRIBUTING.md" class="external-link"><code>CONTRIBUTING.md</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/docs/adr-linking/CONTRIBUTING.md" class="external-link"><code>CONTRIBUTING.md</code></a></small>
     </div>
 
 <div id="contributing-to-geoquery" class="section level1">
@@ -146,7 +146,29 @@
 </ul></div>
 <div class="section level2">
 <h2 id="architecture-decision-records">Architecture Decision Records<a class="anchor" aria-label="anchor" href="#architecture-decision-records"></a></h2>
-<p>Non-trivial architectural decisions are recorded as ADRs in <code>adr/</code> (see <code>adr/template.md</code> and <code>CLAUDE.md</code>). If your PR changes a parse path, a return type, a dependency, or a notable trade-off, add a numbered ADR.</p>
+<p>Non-trivial architectural decisions are recorded as ADRs in <code>adr/</code> — numbered <code>NNNN-title.md</code>, copied from <code>adr/template.md</code>. Add one when a PR changes a parse path, a return type, a dependency, or makes a notable trade-off. Small, self-explanatory changes don’t need an ADR; a decision you’d otherwise re-litigate in a future PR review does.</p>
+<div class="section level3">
+<h3 id="how-issues-adrs-news-and-prs-link">How issues, ADRs, NEWS, and PRs link<a class="anchor" aria-label="anchor" href="#how-issues-adrs-news-and-prs-link"></a></h3>
+<p>These four artifacts answer different questions, and each points at the others so any one of them leads to the whole story:</p>
+<ul><li>
+<strong>Issue</strong> — <em>why</em> (the user problem / requested behavior). Opened first for bugs, features, and behavior changes (see <a href="#issues-vs-pull-requests">Issues vs. pull requests</a>).</li>
+<li>
+<strong>ADR</strong> — <em>what we decided and why</em> (the design). Needed only when the change is architectural.</li>
+<li>
+<strong>NEWS</strong> — <em>what changed</em>, for users.</li>
+<li>
+<strong>PR</strong> — the implementation that ties them together.</li>
+</ul><p>Conventions:</p>
+<ol style="list-style-type: decimal"><li>
+<strong>PR → issue.</strong> Put <code>Fixes #NNN</code> in the PR body so the merge closes the issue.</li>
+<li>
+<strong>PR → ADR.</strong> If the PR realizes a decision, say <code>Implements ADR-XXXX</code> in the body.</li>
+<li>
+<strong>ADR → issue/PR.</strong> In the ADR’s <strong>Context</strong>, link the motivating issue(s) as <code>#NNN</code>; fill in <code>Deciders</code>, and set <code>Status: accepted</code> when the PR merges. To revise an accepted ADR, write a new one that supersedes it and set the old one’s status to <code>superseded by ADR-YYYY</code> (never edit an accepted ADR’s decision).</li>
+<li>
+<strong>NEWS → PR/ADR.</strong> End each user-facing bullet with the PR link, and cite the ADR when one drove the change, e.g. <code>... (see ADR-0007) (#154)</code>.</li>
+</ol><p>So the full chain reads: <strong>issue → ADR (links the issue) → PR (<code>Fixes #NNN</code>, <code>Implements ADR-XXXX</code>) → NEWS bullet (<code>… (see ADR-XXXX) (#PR)</code>).</strong> For a change with no architectural decision, drop the ADR link and keep issue ↔︎ PR ↔︎ NEWS.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="reporting-bugs">Reporting bugs<a class="anchor" aria-label="anchor" href="#reporting-bugs"></a></h2>
