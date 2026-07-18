@@ -2,6 +2,17 @@
 
 ## GEOquery 2.81.32
 
+### New features
+
+- [`geoToSRA()`](http://seandavi.github.io/GEOquery/reference/geoToSRA.md)
+  resolves a GEO Series or Sample (`GSE`/`GSM`) to its underlying
+  Sequence Read Archive accessions — returning a tidy `data.frame` of
+  `geo_accession`, `srp`, `srx`, `srr`, `srs`
+  (study/experiment/run/sample) by cross-referencing NCBI Entrez (`gds`
+  → `sra`). This is the accession-linking bridge to raw sequencing data;
+  it downloads no sequence files. See ADR-0008
+  ([\#219](https://github.com/seandavi/GEOquery/issues/219)).
+
 ### Internal
 
 - Downloaded and cached files can now be integrity-checked against an
