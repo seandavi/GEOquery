@@ -24,46 +24,45 @@
 #' @param step the number of records to fetch from the database each time. You
 #' may choose a smaller value if failed.
 #'
-#' @return a data.frame contains the search results
+#' @return a data.frame with one row per matching GEO record and columns
+#' `Accession`, `Title`, `Summary`, `Organism`, `Type`, `GPL`, `n_samples`,
+#' `PDAT`, `suppFile`, `FTPLink`, `SeriesTitle`, `entryType`, and `ID` (the
+#' Entrez UID). An empty query returns a zero-row data.frame with those columns.
 #'
 #' @examples
 #' \dontrun{
 #' searchGEO("diabetes[ALL] AND Homo sapiens[ORGN] AND GSE[ETYP]")
 #' }
 #'
+#' @importFrom rentrez entrez_search
 #' @export
 searchGEO <- function(query, step = 500L) {
-  records_num <- rentrez::entrez_search(
-    "gds", query,
-    retmax = 0L
-  )$count
-  seq_starts <- seq(1L, records_num, step)
-  records <- character(length(seq_starts))
   search_res <- rentrez::entrez_search(
     "gds", query,
     use_history = TRUE, retmax = 0L
   )
+  count <- search_res$count
+  if (!count) {
+    return(.empty_gds_summary())
+  }
+  # esummary retstart is 0-based.
+  seq_starts <- seq(0L, count - 1L, by = step)
+  records <- vector("list", length(seq_starts))
   for (i in seq_along(seq_starts)) {
-    records[[i]] <- rentrez::entrez_fetch(
-      db = "gds", web_history = search_res$web_history,
-      rettype = "summary", retmode = "text",
-      retmax = step, retstart = seq_starts[[i]]
+    json <- .fetch_gds_esummary_json(
+      web_history = search_res$web_history,
+      retstart = seq_starts[[i]], retmax = step
     )
+    records[[i]] <- .parse_gds_esummary_json(json)
     Sys.sleep(1L)
   }
-  records <- strsplit(
-    gsub("^\\n|\\n$", "", paste0(records, collapse = "")),
-    "\\n\\n"
-  )[[1L]]
-  name_value_pairs <- parse_name_value_pairs(preprocess_records(records))
-  data.table::setDF(name_value_pairs)
-  name_value_pairs
+  as.data.frame(
+    data.table::rbindlist(records, use.names = TRUE, fill = TRUE)
+  )
 }
 
 
 #' Provide a list of possible search fields for GEO search
-#'
-#' @import rentrez
 #'
 #' @returns a data.frame with names of possible search fields for GEO search
 #' as well as descriptions, data types, etc. for each field. Fields are
@@ -74,6 +73,7 @@ searchGEO <- function(query, step = 500L) {
 #' @examples
 #' searchFieldsGEO()
 #'
+#' @importFrom rentrez entrez_db_searchable
 #' @export
 searchFieldsGEO <- function() {
   res <- do.call(
@@ -85,80 +85,71 @@ searchFieldsGEO <- function() {
 }
 
 
-
-# this function just processed GEO searched results returned by `entrez_fetch`
-# into key-values paris
-preprocess_records <- function(x) {
-  x <- sub("^\\d+\\.", "Title:", x, perl = TRUE)
-  x <- sub(
-    "\\n\\(Submitter supplied\\)\\s*",
-    "\nSummary: ", x,
-    perl = TRUE
-  )
-  x <- gsub(
-    "\\s*\\n?(Platform|Dataset)s?\\s*:\\s*",
-    "\n\\1s: ", x,
-    perl = TRUE
-  )
-  x <- sub("\\tID:\\s*", "\nID: ", x, perl = TRUE)
-  x <- sub(
-    "\\n?\\s*((?:\\s*\\d+(?:\\s*related)?\\s*(?:DataSet|Platform|Sample|Serie)s?)+)([^:])",
-    "\nContains: \\1\\2", x,
-    perl = TRUE
-  )
-  x <- gsub(":\\t+", ": ", x, perl = TRUE)
-  x <- gsub("\\t\\t+", " ", x, perl = TRUE)
-  strsplit(x, "\\n", perl = TRUE)
-}
-
-# parse key-value pairs separeted by ":". For a list of key-value pairs
-# characters (like: `list(c("a:1", "b:2"), c("a:3", "b:4"))`), this function
-# simply cleans those up and transforms the list into a list object, the names
-# of returned value is the unique keys in the pairs, the element of the returned
-# list is the values in the paris.
-# See parse_name_value_pairs(list(c("a:1", "b:2"), c("a:3", "b:4")))
-#' @return a list, every element of which corresponds to each key-value pairs
-#' group by key in the paris.
-#' @noRd
-parse_name_value_pairs <- function(chr_list, sep = ":") {
-  .characteristic_list <- lapply(chr_list, function(x) {
-    if (!length(x)) {
-      return(data.table::data.table())
-    }
-    # Don't use `data.table::tstrsplit`, as it will split string into three
-    # or more elements.
-    name_value_pairs <- data.table::transpose(
-      str_split(x, paste0("(\\s*+)", sep, "(\\s*+)"))
+# Fetch one batch of GDS esummary records as JSON (esummary version 2.0). Uses
+# the Entrez history from a prior entrez_search(use_history=TRUE). Kept separate
+# from the parser so the parser is testable offline; this is the only piece that
+# touches the network. An ENTREZ_KEY, if set, raises the NCBI rate limit.
+.fetch_gds_esummary_json <- function(web_history, retstart, retmax,
+    timeout = getOption("GEOquery.download.timeout", 300)) {
+  req <- httr2::request("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi") |>
+    httr2::req_user_agent("GEOquery (https://github.com/seandavi/GEOquery)") |>
+    httr2::req_timeout(timeout) |>
+    httr2::req_retry(
+      max_tries = 3,
+      is_transient = function(resp) httr2::resp_status(resp) %in% c(429, 500, 502, 503, 504)
+    ) |>
+    httr2::req_url_query(
+      db = "gds", version = "2.0", retmode = "json",
+      WebEnv = web_history$WebEnv, query_key = web_history$QueryKey,
+      retstart = retstart, retmax = retmax
     )
-    res <- as.list(name_value_pairs[[2L]])
-    names(res) <- name_value_pairs[[1L]]
-    data.table::setDT(res)
-    res
-  })
-  characteristic_dt <- data.table::rbindlist(
-    .characteristic_list,
-    use.names = TRUE, fill = TRUE
-  )
-  data.table::setnames(characteristic_dt, make.unique)
-
-  # parse text into corresponding atomic vector mode
-  lapply(characteristic_dt, function(x) {
-    data.table::fread(
-      text = x, sep = "", header = FALSE,
-      strip.white = TRUE, blank.lines.skip = FALSE, fill = TRUE
-    )[[1L]]
-  })
+  key <- Sys.getenv("ENTREZ_KEY")
+  if (nzchar(key)) {
+    req <- httr2::req_url_query(req, api_key = key)
+  }
+  httr2::resp_body_string(httr2::req_perform(req))
 }
 
-# split string based on pattern, Only split once, Return a list of character,
-# the length of every element is two
-str_split <- function(string, pattern, ignore.case = FALSE) {
-  regmatches(
-    string,
-    regexpr(pattern, string,
-      perl = TRUE, fixed = FALSE,
-      ignore.case = ignore.case
-    ),
-    invert = TRUE
+# Parse a GDS esummary (version 2.0) JSON response into a tidy data.frame, one
+# row per record. Offline-testable core of searchGEO().
+#' @importFrom jsonlite fromJSON
+.parse_gds_esummary_json <- function(json) {
+  result <- jsonlite::fromJSON(json, simplifyVector = FALSE)$result
+  uids <- unlist(result$uids)
+  if (is.null(result) || !length(uids)) {
+    return(.empty_gds_summary())
+  }
+  rows <- lapply(uids, function(u) .gds_summary_row(result[[u]]))
+  as.data.frame(
+    data.table::rbindlist(rows, use.names = TRUE, fill = TRUE)
   )
+}
+
+# Map one esummary record (a named list) to a one-row data.frame with stable,
+# human-meaningful columns. Missing fields become NA.
+.gds_summary_row <- function(rec) {
+  g <- function(field) {
+    v <- rec[[field]]
+    if (is.null(v) || !length(v)) NA_character_ else as.character(v)[[1L]]
+  }
+  data.frame(
+    Accession = g("accession"),
+    Title = g("title"),
+    Summary = g("summary"),
+    Organism = g("taxon"),
+    Type = g("gdstype"),
+    GPL = g("gpl"),
+    n_samples = suppressWarnings(as.integer(g("n_samples"))),
+    PDAT = g("pdat"),
+    suppFile = g("suppfile"),
+    FTPLink = g("ftplink"),
+    SeriesTitle = g("seriestitle"),
+    entryType = g("entrytype"),
+    ID = g("uid"),
+    stringsAsFactors = FALSE
+  )
+}
+
+.empty_gds_summary <- function() {
+  .gds_summary_row(list())[0L, , drop = FALSE]
 }

@@ -8,6 +8,13 @@
   cross-referencing NCBI Entrez (`gds` → `sra`). This is the accession-linking
   bridge to raw sequencing data; it downloads no sequence files. See ADR-0008
   (#219).
+- `searchGEO()` now uses a batched **JSON** esummary backend
+  (`esummary db=gds&retmode=json&version=2.0`) instead of fetching and
+  string-parsing one text record at a time. This is faster on large result sets
+  and returns structured, stably-named columns: `Accession`, `Title`,
+  `Summary`, `Organism`, `Type`, `GPL`, `n_samples`, `PDAT`, `suppFile`,
+  `FTPLink`, `SeriesTitle`, `entryType`, and `ID`. Adds a lightweight `jsonlite`
+  dependency (#223).
 
 ## Internal
 

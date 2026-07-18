@@ -1,0 +1,40 @@
+{
+  "header": { "type": "esummary", "version": "0.3" },
+  "result": {
+    "uids": ["200012345", "200067890"],
+    "200012345": {
+      "uid": "200012345",
+      "accession": "GSE12345",
+      "gds": "",
+      "title": "Study A title",
+      "summary": "Summary of study A.",
+      "gpl": "570",
+      "gse": "12345",
+      "taxon": "Homo sapiens",
+      "entrytype": "GSE",
+      "gdstype": "Expression profiling by array",
+      "n_samples": 20,
+      "pdat": "2020/01/15",
+      "suppfile": "CEL, TXT",
+      "ftplink": "ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE12nnn/GSE12345/",
+      "seriestitle": ""
+    },
+    "200067890": {
+      "uid": "200067890",
+      "accession": "GSE67890",
+      "gds": "",
+      "title": "Study B title",
+      "summary": "Summary of study B.",
+      "gpl": "16791",
+      "gse": "67890",
+      "taxon": "Mus musculus",
+      "entrytype": "GSE",
+      "gdstype": "Expression profiling by high throughput sequencing",
+      "n_samples": 6,
+      "pdat": "2021/03/02",
+      "suppfile": "TXT",
+      "ftplink": "ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE67nnn/GSE67890/",
+      "seriestitle": ""
+    }
+  }
+}
