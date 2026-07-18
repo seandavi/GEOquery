@@ -55,6 +55,37 @@ milestone](https://github.com/seandavi/GEOquery/milestones); see
     branch-protected; the required legs are the Ubuntu and macOS
     `R CMD check` jobs.)
 
+## Vignettes are precompiled
+
+The vignettes hit the live NCBI GEO network, which must **not** happen
+during `R CMD build`/`check` on CRAN/Bioconductor build machines. So
+each vignette is authored in a `vignettes/<name>.qmd.orig` source (with
+live `eval: true` code) and **precompiled** into the shipped static
+`vignettes/<name>.qmd`, which has the real output baked in and executes
+nothing at build time. (This is the knitr `*.Rmd.orig` pattern; Quarto’s
+`freeze` does *not* help here, because the vignette engine renders each
+file individually and freeze only applies to full-project renders.)
+
+Do **not** edit `vignettes/*.qmd` directly — they are generated. To
+change a vignette:
+
+1.  Edit the `vignettes/<name>.qmd.orig` source.
+
+2.  Regenerate (with network access and the `Suggests` deps installed):
+
+    ``` sh
+    Rscript dev/precompute-vignettes.R            # all vignettes
+    Rscript dev/precompute-vignettes.R rnaseq     # just one
+    ```
+
+3.  Commit **both** the `.qmd.orig` source and the regenerated `.qmd`.
+
+Refresh whenever you change a vignette’s code, or periodically to pick
+up GEO-side changes. Chunks that can’t run at precompile time
+(private-token examples, very large single-cell downloads, Seurat
+coercions, pure pseudo-code) are marked `#| eval: false` in the source
+and carry hand-written output.
+
 ## NEWS / changelog convention
 
 We follow the [tidyverse NEWS

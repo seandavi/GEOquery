@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.27</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.28</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,10 +19,11 @@
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/downstream-analysis.html">From GEO to downstream analysis</a></li>
-    <li><a class="dropdown-item" href="articles/geo-data-formats.html">Understanding GEO data formats</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/geo-data-formats.html">Understanding GEO data formats</a></li>
+    <li><a class="dropdown-item" href="articles/finding-and-downloading-data.html">Finding and downloading data</a></li>
     <li><a class="dropdown-item" href="articles/rnaseq.html">RNA-seq quantifications from GEO</a></li>
     <li><a class="dropdown-item" href="articles/single-cell.html">Single-cell data from GEO</a></li>
+    <li><a class="dropdown-item" href="articles/downstream-analysis.html">From GEO to downstream analysis</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -43,7 +44,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Contributing to GEOquery</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/CONTRIBUTING.md" class="external-link"><code>CONTRIBUTING.md</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/docs-restructure-precompute/CONTRIBUTING.md" class="external-link"><code>CONTRIBUTING.md</code></a></small>
     </div>
 
 <div id="contributing-to-geoquery" class="section level1">
@@ -78,14 +79,27 @@
 <li><p>Merge when the required checks are green. (<code>devel</code> is branch-protected; the required legs are the Ubuntu and macOS <code>R CMD check</code> jobs.)</p></li>
 </ol></div>
 <div class="section level2">
+<h2 id="vignettes-are-precompiled">Vignettes are precompiled<a class="anchor" aria-label="anchor" href="#vignettes-are-precompiled"></a></h2>
+<p>The vignettes hit the live NCBI GEO network, which must <strong>not</strong> happen during <code>R CMD build</code>/<code>check</code> on CRAN/Bioconductor build machines. So each vignette is authored in a <code>vignettes/&lt;name&gt;.qmd.orig</code> source (with live <code>eval: true</code> code) and <strong>precompiled</strong> into the shipped static <code>vignettes/&lt;name&gt;.qmd</code>, which has the real output baked in and executes nothing at build time. (This is the knitr <code>*.Rmd.orig</code> pattern; Quarto’s <code>freeze</code> does <em>not</em> help here, because the vignette engine renders each file individually and freeze only applies to full-project renders.)</p>
+<p>Do <strong>not</strong> edit <code>vignettes/*.qmd</code> directly — they are generated. To change a vignette:</p>
+<ol style="list-style-type: decimal"><li><p>Edit the <code>vignettes/&lt;name&gt;.qmd.orig</code> source.</p></li>
+<li>
+<p>Regenerate (with network access and the <code>Suggests</code> deps installed):</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">Rscript</span> dev/precompute-vignettes.R            <span class="co"># all vignettes</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="ex">Rscript</span> dev/precompute-vignettes.R rnaseq     <span class="co"># just one</span></span></code></pre></div>
+</li>
+<li><p>Commit <strong>both</strong> the <code>.qmd.orig</code> source and the regenerated <code>.qmd</code>.</p></li>
+</ol><p>Refresh whenever you change a vignette’s code, or periodically to pick up GEO-side changes. Chunks that can’t run at precompile time (private-token examples, very large single-cell downloads, Seurat coercions, pure pseudo-code) are marked <code>#| eval: false</code> in the source and carry hand-written output.</p>
+</div>
+<div class="section level2">
 <h2 id="news--changelog-convention">NEWS / changelog convention<a class="anchor" aria-label="anchor" href="#news--changelog-convention"></a></h2>
 <p>We follow the <a href="https://style.tidyverse.org/news.html" class="external-link">tidyverse NEWS style</a>. Every user-facing change gets one bullet in <code>NEWS.md</code> under the top <code># GEOquery (development version)</code> header (this header is renamed to the release version at release time).</p>
 <p>Rules:</p>
 <ul><li><p>Write a <strong>complete sentence</strong> describing the change from the <strong>user’s</strong> perspective. Put function/argument names in backticks.</p></li>
 <li>
 <p><strong>End every bullet with the PR link</strong>, and credit the contributor:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ss">* </span><span class="in">`getGEO(parseCharacteristics = FALSE)`</span> no longer parses characteristics;</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  the flag is now threaded through <span class="in">`parseGSEMatrix()`</span> (#166, @reporter).</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ss">* </span><span class="in">`getGEO(parseCharacteristics = FALSE)`</span> no longer parses characteristics;</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  the flag is now threaded through <span class="in">`parseGSEMatrix()`</span> (#166, @reporter).</span></code></pre></div>
 </li>
 <li><p>Group bullets under <code>## Breaking changes</code>, <code>## New features</code>, or <code>## Bug fixes</code> only once there are enough to warrant it; otherwise a flat list is fine. Most recent entries at the top.</p></li>
 <li><p>The <code>#NNN</code> and <code>@user</code> references autolink in the pkgdown changelog and on GitHub (the repo URL comes from <code>DESCRIPTION</code>).</p></li>

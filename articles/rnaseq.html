@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.27</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.28</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,10 +36,11 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/downstream-analysis.html">From GEO to downstream analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/geo-data-formats.html">Understanding GEO data formats</a></li>
+<li><a class="dropdown-item" href="../articles/geo-data-formats.html">Understanding GEO data formats</a></li>
+    <li><a class="dropdown-item" href="../articles/finding-and-downloading-data.html">Finding and downloading data</a></li>
     <li><a class="dropdown-item" href="../articles/rnaseq.html">RNA-seq quantifications from GEO</a></li>
     <li><a class="dropdown-item" href="../articles/single-cell.html">Single-cell data from GEO</a></li>
+    <li><a class="dropdown-item" href="../articles/downstream-analysis.html">From GEO to downstream analysis</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -71,7 +72,7 @@
       <p class="author">Sean Davis</p>
 
 
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/vignettes/articles/rnaseq.qmd" class="external-link"><code>vignettes/articles/rnaseq.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/docs-restructure-precompute/vignettes/rnaseq.qmd" class="external-link"><code>vignettes/rnaseq.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -81,6 +82,8 @@
 
 
     <p>A major barrier to reusing public RNA-seq data has been that every submitter processes raw reads differently — different aligners, references, and counting rules — so counts from two studies are rarely directly comparable. To address this, NCBI computes a <strong>uniform set of RNA-seq quantifications</strong> for many GEO Series using a single consistent pipeline. This article explains what those are and how GEOquery retrieves them.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/seandavi/GEOquery" class="external-link">GEOquery</a></span><span class="op">)</span></span></code></pre></div>
 <section class="level2"><h2 id="ncbi-computed-quantifications-vs--submitter-files">NCBI-computed quantifications vs. submitter files<a class="anchor" aria-label="anchor" href="#ncbi-computed-quantifications-vs--submitter-files"></a>
 </h2>
 <p>There are two distinct things you might mean by “the counts” for a GEO RNA-seq study:</p>
@@ -93,16 +96,32 @@
 <p>Not every Series has NCBI quantifications; you can check first.</p>
 </section><section class="level2"><h2 id="checking-availability-and-loading">Checking availability and loading<a class="anchor" aria-label="anchor" href="#checking-availability-and-loading"></a>
 </h2>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/seandavi/GEOquery" class="external-link">GEOquery</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Does this Series have NCBI-computed quantifications?</span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Does this Series have NCBI-computed quantifications?</span></span>
 <span><span class="fu"><a href="../reference/hasRNASeqQuantifications.html">hasRNASeqQuantifications</a></span><span class="op">(</span><span class="st">"GSE164073"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Load them as a SummarizedExperiment</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Load them as a SummarizedExperiment</span></span>
 <span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getRNASeqData.html">getRNASeqData</a></span><span class="op">(</span><span class="st">"GSE164073"</span><span class="op">)</span></span>
-<span><span class="va">se</span></span></code></pre></div>
+<span><span class="va">se</span></span>
+<span><span class="co">#&gt; class: SummarizedExperiment </span></span>
+<span><span class="co">#&gt; dim: 39376 18 </span></span>
+<span><span class="co">#&gt; metadata(5): experimentData annotation protocolData genomeInfo</span></span>
+<span><span class="co">#&gt;   created_at</span></span>
+<span><span class="co">#&gt; assays(1): counts</span></span>
+<span><span class="co">#&gt; rownames(39376): 100287102 653635 ... 4576 4571</span></span>
+<span><span class="co">#&gt; rowData names(18): GeneID Symbol ... GOProcess GOComponent</span></span>
+<span><span class="co">#&gt; colnames(18): GSM4996084 GSM4996085 ... GSM4996100 GSM4996101</span></span>
+<span><span class="co">#&gt; colData names(45): title geo_accession ... time.point.ch1 tissue.ch1</span></span></code></pre></div>
 <p>The result is a <code>SummarizedExperiment</code>: <code>assay(se)</code> is the raw count matrix, <code>rowData(se)</code> carries gene annotation, and <code>colData(se)</code> the sample metadata. Because it is a <code>SummarizedExperiment</code>, it drops straight into the differential expression workflows described in the <a href="downstream-analysis.html">downstream analysis</a> article.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span>
+<span><span class="co">#&gt;           GSM4996084 GSM4996085 GSM4996086</span></span>
+<span><span class="co">#&gt; 100287102          2          5          3</span></span>
+<span><span class="co">#&gt; 653635           244        236        337</span></span>
+<span><span class="co">#&gt; 102466751         25         17         34</span></span>
+<span><span class="co">#&gt; 107985730          1          1          1</span></span>
+<span><span class="co">#&gt; 100302278          0          0          0</span></span></code></pre></div>
 </section><section class="level2"><h2 id="why-raw-counts-and-what-to-do-with-them">Why raw counts (and what to do with them)<a class="anchor" aria-label="anchor" href="#why-raw-counts-and-what-to-do-with-them"></a>
 </h2>
 <p>The NCBI quantifications are deliberately <strong>raw counts</strong>, not normalized values, because the correct normalization depends on your downstream method. Count-based differential expression tools expect raw counts and model the counting noise themselves:</p>
@@ -117,9 +136,20 @@
 </section><section class="level2"><h2 id="when-you-need-the-submitters-files-instead">When you need the submitter’s files instead<a class="anchor" aria-label="anchor" href="#when-you-need-the-submitters-files-instead"></a>
 </h2>
 <p>If a study has no NCBI quantifications, or you specifically need the authors’ processed output (e.g. TPM, or a custom gene model), fall back to the supplementary files and read them yourself:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">"GSE164073"</span>, fetch_files <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>   <span class="co"># inspect first</span></span></code></pre></div>
-</section><script id="quarto-html-after-body" type="application/javascript">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">"GSE164073"</span>, fetch_files <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>   <span class="co"># inspect first</span></span>
+<span><span class="co">#&gt;                               fname</span></span>
+<span><span class="co">#&gt; 1 GSE164073_Eye_count_matrix.csv.gz</span></span>
+<span><span class="co">#&gt;                                                                                                   url</span></span>
+<span><span class="co">#&gt; 1 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE164nnn/GSE164073/suppl/GSE164073_Eye_count_matrix.csv.gz</span></span></code></pre></div>
+</section><section class="level2"><h2 id="where-to-go-next">Where to go next<a class="anchor" aria-label="anchor" href="#where-to-go-next"></a>
+</h2>
+<ul>
+<li>
+<a href="finding-and-downloading-data.html">Finding and downloading data</a> — search for RNA-seq studies and cache large downloads.</li>
+<li>
+<a href="downstream-analysis.html">From GEO to downstream analysis</a> — DESeq2 / edgeR / limma-voom from a count <code>SummarizedExperiment</code>.</li>
+</ul></section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);

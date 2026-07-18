@@ -184,7 +184,12 @@ Set on load: `download.file.method.GEOquery = "auto"` and
   `devtools::document()`.
 - Add user-facing changes to `NEWS.md` under the current unreleased
   version heading.
-- Vignettes are Quarto (`.qmd`, `VignetteBuilder: quarto`), not Rmd.
+- Vignettes are Quarto (`.qmd`, `VignetteBuilder: quarto`), not Rmd, and
+  are **precompiled**: edit `vignettes/<name>.qmd.orig` (live code),
+  then run `Rscript dev/precompute-vignettes.R` to regenerate the
+  shipped static `vignettes/<name>.qmd` (real GEO output baked in, no
+  network at build). Never hand-edit the generated `.qmd`; commit both
+  files. See CONTRIBUTING.md.
 - Branching follows Bioconductor: `devel` is the main working branch.
 
 ## Architecture Decision Records

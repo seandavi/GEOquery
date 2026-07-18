@@ -4,8 +4,8 @@ GEOquery’s job ends once your data is a Bioconductor object. This
 article is a map of *where to go next* — how the object you got from
 [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
 connects to the rest of the Bioconductor ecosystem — rather than a
-tutorial for any one method. The goal is to save you the “I have an
-`ExpressionSet`, now what?” moment.
+tutorial for any one method. The goal is to save you the “I have a
+`SummarizedExperiment`, now what?” moment.
 
 ## Know your object
 
@@ -32,6 +32,9 @@ accepts a matrix:
 library(limma)
 library(SummarizedExperiment)
 se <- getGEO("GSE2553")[[1]]                 # SummarizedExperiment (default)
+
+# `group` here stands in for a real grouping column you derive from the sample
+# metadata -- see the note below; it will not exist verbatim in colData(se).
 design <- model.matrix(~ group, data = colData(se))
 fit <- eBayes(lmFit(assay(se), design))
 topTable(fit, coef = 2)
@@ -39,7 +42,8 @@ topTable(fit, coef = 2)
 
 The hardest part is usually not the model but extracting clean grouping
 variables from `colData(se)` — GEO sample metadata is free text, so
-expect to parse `characteristics_ch1` fields.
+expect to parse `characteristics_ch1` fields into the factor you
+actually model.
 
 ## RNA-seq counts: DESeq2 / edgeR / limma-voom
 
@@ -52,6 +56,7 @@ directly into [DESeq2](https://bioconductor.org/packages/DESeq2):
 
 library(DESeq2)
 se <- getRNASeqData("GSE164073")
+# `condition` must be a real column you added to colData(se) first.
 dds <- DESeqDataSet(se, design = ~ condition)
 dds <- DESeq(dds)
 results(dds)
@@ -93,11 +98,21 @@ Two recurring needs:
   organism packages such as `org.Hs.eg.db`, and
   [biomaRt](https://bioconductor.org/packages/biomaRt).
 
-## Reproducibility note
+## Reproducibility
 
-GEO records can change, and large downloads are slow, so cache
-deliberately: pass a stable `destdir=` to
-[`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)/[`getGEOSuppFiles()`](http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.md)
-and record the GEOquery and data versions
-([`sessionInfo()`](https://rdrr.io/r/utils/sessionInfo.html)) alongside
-your results.
+GEO records can change and large downloads are slow, so cache
+deliberately and record versions. The [Finding and downloading
+data](http://seandavi.github.io/GEOquery/articles/finding-and-downloading-data.md)
+article covers persistent caching (`destdir=` and the `BiocFileCache`
+layer); alongside that, capture
+[`sessionInfo()`](https://rdrr.io/r/utils/sessionInfo.html) with your
+results so the GEOquery and dependency versions are pinned.
+
+## Where to go next
+
+- [Finding and downloading
+  data](http://seandavi.github.io/GEOquery/articles/finding-and-downloading-data.md)
+  — caching and reproducible retrieval.
+- [RNA-seq](http://seandavi.github.io/GEOquery/articles/rnaseq.md) and
+  [Single-cell](http://seandavi.github.io/GEOquery/articles/single-cell.md)
+  — the data-type paths that feed these workflows.

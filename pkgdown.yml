@@ -2,12 +2,13 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
-  articles/downstream-analysis: downstream-analysis.html
-  articles/geo-data-formats: geo-data-formats.html
+  downstream-analysis: downstream-analysis.html
+  finding-and-downloading-data: finding-and-downloading-data.html
+  geo-data-formats: geo-data-formats.html
   GEOquery: GEOquery.html
-  articles/rnaseq: rnaseq.html
-  articles/single-cell: single-cell.html
-last_built: 2026-07-17T22:11Z
+  rnaseq: rnaseq.html
+  single-cell: single-cell.html
+last_built: 2026-07-18T02:07Z
 urls:
   reference: http://seandavi.github.io/GEOquery/reference
   article: http://seandavi.github.io/GEOquery/articles

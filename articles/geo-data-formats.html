@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.27</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.28</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,10 +36,11 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/downstream-analysis.html">From GEO to downstream analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/geo-data-formats.html">Understanding GEO data formats</a></li>
+<li><a class="dropdown-item" href="../articles/geo-data-formats.html">Understanding GEO data formats</a></li>
+    <li><a class="dropdown-item" href="../articles/finding-and-downloading-data.html">Finding and downloading data</a></li>
     <li><a class="dropdown-item" href="../articles/rnaseq.html">RNA-seq quantifications from GEO</a></li>
     <li><a class="dropdown-item" href="../articles/single-cell.html">Single-cell data from GEO</a></li>
+    <li><a class="dropdown-item" href="../articles/downstream-analysis.html">From GEO to downstream analysis</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -71,7 +72,7 @@
       <p class="author">Sean Davis</p>
 
 
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/vignettes/articles/geo-data-formats.qmd" class="external-link"><code>vignettes/articles/geo-data-formats.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/docs-restructure-precompute/vignettes/geo-data-formats.qmd" class="external-link"><code>vignettes/geo-data-formats.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -81,6 +82,8 @@
 
 
     <p>This article explains <em>what</em> the NCBI Gene Expression Omnibus (GEO) actually stores, <em>why</em> it is shaped the way it is, and <em>how</em> GEOquery maps each form onto a Bioconductor object. Understanding the formats is the fastest way to predict what <code><a href="../reference/getGEO.html">getGEO()</a></code> will return and to debug the occasional surprising record.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/seandavi/GEOquery" class="external-link">GEOquery</a></span><span class="op">)</span></span></code></pre></div>
 <section class="level2"><h2 id="the-four-geo-entity-types">The four GEO entity types<a class="anchor" aria-label="anchor" href="#the-four-geo-entity-types"></a>
 </h2>
 <p>GEO is organized around four accession types, and every GEOquery workflow starts by recognizing which one you have:</p>
@@ -126,22 +129,57 @@
 </h3>
 <p>SOFT (“Simple Omnibus Format in Text”) is the canonical, loss-less GEO representation. It is a line-oriented text format where metadata lines begin with <code>!</code>, <code>^</code>, or <code>#</code>, and data tables are delimited by <code>!..._table_begin</code> / <code>!..._table_end</code> markers. SOFT contains <em>everything</em> GEO knows about an entity.</p>
 <p>GEOquery parses SOFT into its own S4 classes — <code>GSE</code>, <code>GSM</code>, <code>GPL</code>, <code>GDS</code> — that mirror the file structure. You reach the pieces with accessors:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gsm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GSM11805"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/GEOData-accessors.html">Meta</a></span><span class="op">(</span><span class="va">gsm</span><span class="op">)</span>      <span class="co"># the metadata as a named list</span></span>
-<span><span class="fu"><a href="../reference/GEOData-accessors.html">Table</a></span><span class="op">(</span><span class="va">gsm</span><span class="op">)</span>     <span class="co"># the data table as a data.frame</span></span>
-<span><span class="fu"><a href="../reference/GEOData-accessors.html">Columns</a></span><span class="op">(</span><span class="va">gsm</span><span class="op">)</span>   <span class="co"># descriptions of the data-table columns</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/GEOData-accessors.html">Meta</a></span><span class="op">(</span><span class="va">gsm</span><span class="op">)</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>   <span class="co"># Meta(): the metadata as a named list</span></span>
+<span><span class="co">#&gt; [1] "channel_count"      "contact_address"    "contact_city"      </span></span>
+<span><span class="co">#&gt; [4] "contact_country"    "contact_department" "contact_email"     </span></span>
+<span><span class="co">#&gt; [7] "contact_fax"        "contact_institute"</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/GEOData-accessors.html">Columns</a></span><span class="op">(</span><span class="va">gsm</span><span class="op">)</span>                <span class="co"># descriptions of the data-table columns</span></span>
+<span><span class="co">#&gt;     Column</span></span>
+<span><span class="co">#&gt; 1         </span></span>
+<span><span class="co">#&gt; 2    VALUE</span></span>
+<span><span class="co">#&gt; 3 ABS_CALL</span></span>
+<span><span class="co">#&gt;                                                                  Description</span></span>
+<span><span class="co">#&gt; 1                                                                   ID_REF =</span></span>
+<span><span class="co">#&gt; 2                         MAS 5.0 Statistical Algorithm (mean scaled to 500)</span></span>
+<span><span class="co">#&gt; 3 MAS 5.0 Absent, Marginal, Present call  with Alpha1 = 0.05, Alpha2 = 0.065</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/GEOData-accessors.html">Table</a></span><span class="op">(</span><span class="va">gsm</span><span class="op">)</span><span class="op">)</span>            <span class="co"># Table(): the data table as a data.frame</span></span>
+<span><span class="co">#&gt;            ID_REF  VALUE ABS_CALL</span></span>
+<span><span class="co">#&gt; 1  AFFX-BioB-5_at  953.9        P</span></span>
+<span><span class="co">#&gt; 2  AFFX-BioB-M_at 2982.8        P</span></span>
+<span><span class="co">#&gt; 3  AFFX-BioB-3_at 1657.9        P</span></span>
+<span><span class="co">#&gt; 4  AFFX-BioC-5_at 2652.7        P</span></span>
+<span><span class="co">#&gt; 5  AFFX-BioC-3_at 2019.5        P</span></span>
+<span><span class="co">#&gt; 6 AFFX-BioDn-5_at 3531.5        P</span></span></code></pre></div>
 <p>SOFT is the right choice when you need fields that only exist in the full record. The cost is size and speed: a large <code>GSE</code> family SOFT file can be enormous, and parsing it is correspondingly slow.</p>
 </section><section class="level3"><h3 id="series-matrix-the-fast-analysis-ready-path">Series Matrix — the fast, analysis-ready path<a class="anchor" aria-label="anchor" href="#series-matrix-the-fast-analysis-ready-path"></a>
 </h3>
 <p>For a <code>GSE</code>, GEO also publishes a <strong>Series Matrix</strong> file: a compact, tab-delimited table with the sample metadata as a header block (<code>!Sample_...</code> lines) followed by a single expression matrix (rows = features, columns = samples). This is what most analyses actually need, and it parses orders of magnitude faster than SOFT.</p>
-<p>This is the GEOquery <strong>default</strong> (<code>GSEMatrix = TRUE</code>). The result is a Bioconductor <code>SummarizedExperiment</code> (or, opting back, an <code>ExpressionSet</code> — see below):</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GSE2553"</span><span class="op">)</span>   <span class="co"># returns a list, one SummarizedExperiment per platform</span></span>
+<p>This is the GEOquery <strong>default</strong> (<code>GSEMatrix = TRUE</code>). The result is a Bioconductor <code>SummarizedExperiment</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">gse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GSE2553"</span><span class="op">)</span>   <span class="co"># a list, one SummarizedExperiment per platform</span></span>
 <span><span class="va">se</span> <span class="op">&lt;-</span> <span class="va">gse</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span>      <span class="co"># the expression matrix</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span>    <span class="co"># sample (phenotype) metadata</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span>    <span class="co"># feature annotation, from the platform GPL</span></span></code></pre></div>
+<span><span class="va">se</span></span>
+<span><span class="co">#&gt; class: RangedSummarizedExperiment </span></span>
+<span><span class="co">#&gt; dim: 12600 181 </span></span>
+<span><span class="co">#&gt; metadata(3): experimentData annotation protocolData</span></span>
+<span><span class="co">#&gt; assays(1): exprs</span></span>
+<span><span class="co">#&gt; rownames(12600): 1 2 ... 12599 12600</span></span>
+<span><span class="co">#&gt; rowData names(13): ID PenAt ... LLID Chimeric_Cluster_IDs</span></span>
+<span><span class="co">#&gt; colnames(181): GSM48681 GSM48682 ... GSM48860 GSM48861</span></span>
+<span><span class="co">#&gt; colData names(30): title geo_accession ... supplementary_file</span></span>
+<span><span class="co">#&gt;   data_row_count</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>        <span class="co"># the expression matrix</span></span>
+<span><span class="co">#&gt;     GSM48681   GSM48682   GSM48683</span></span>
+<span><span class="co">#&gt; 1  0.2701103  0.3925373  0.4186763</span></span>
+<span><span class="co">#&gt; 2  6.3459203  2.1304703  2.0750533</span></span>
+<span><span class="co">#&gt; 3 -0.0918793 -0.2411003 -0.2499943</span></span>
+<span><span class="co">#&gt; 4  1.4679053  0.6252703  0.4673843</span></span>
+<span><span class="co">#&gt; 5 -0.2817373  0.6492023 -1.4973643</span></span></code></pre></div>
 <p>If you ever need a field that the Series Matrix omits, drop to SOFT with <code>getGEO("GSE...", GSEMatrix = FALSE)</code>.</p>
 </section><section class="level3"><h3 id="why-getgeo-returns-different-classes">Why <code>getGEO()</code> returns different classes<a class="anchor" aria-label="anchor" href="#why-getgeo-returns-different-classes"></a>
 </h3>
@@ -158,7 +196,7 @@
 </section></section><section class="level2"><h2 id="expressionset-vs--summarizedexperiment">ExpressionSet vs. SummarizedExperiment<a class="anchor" aria-label="anchor" href="#expressionset-vs--summarizedexperiment"></a>
 </h2>
 <p><code>SummarizedExperiment</code> is the modern Bioconductor standard and the substrate that single-cell (<code>SingleCellExperiment</code>) and spatial (<code>SpatialExperiment</code>) classes build on; it is now the GEOquery <strong>default</strong>. <code>ExpressionSet</code> (from <strong>Biobase</strong>) is the historical container, still available on request:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># default: SummarizedExperiment</span></span>
 <span><span class="va">se_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GSE2553"</span><span class="op">)</span></span>
 <span><span class="co"># opt back into the legacy ExpressionSet:</span></span>
@@ -169,17 +207,45 @@
 </section><section class="level2"><h2 id="supplementary-files-where-everything-else-lives">Supplementary files: where everything else lives<a class="anchor" aria-label="anchor" href="#supplementary-files-where-everything-else-lives"></a>
 </h2>
 <p>Series Matrix and SOFT cover <em>processed</em> expression tables, but a great deal of GEO data — raw reads, processed counts, single-cell matrices, peak calls, images — is attached as <strong>supplementary files</strong> that GEO does not parse and whose format it does not constrain. GEOquery lists and downloads them but, by design, does not try to interpret arbitrary content:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># see what is attached, without downloading</span></span>
-<span><span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">"GSE63137"</span>, fetch_files <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles</a></span><span class="op">(</span><span class="st">"GSE63137"</span>, fetch_files <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                                                               fname</span></span>
+<span><span class="co">#&gt; 1                   GSE63137_ATAC-seq_PV_neurons_HOMER_peaks.bed.gz</span></span>
+<span><span class="co">#&gt; 2                  GSE63137_ATAC-seq_VIP_neurons_HOMER_peaks.bed.gz</span></span>
+<span><span class="co">#&gt; 3           GSE63137_ATAC-seq_excitatory_neurons_HOMER_peaks.bed.gz</span></span>
+<span><span class="co">#&gt; 4   GSE63137_ChIP-seq_H3K27ac_excitatory_neurons_SICER_peaks.bed.gz</span></span>
+<span><span class="co">#&gt; 5  GSE63137_ChIP-seq_H3K27me3_excitatory_neurons_SICER_peaks.bed.gz</span></span>
+<span><span class="co">#&gt; 6   GSE63137_ChIP-seq_H3K4me1_excitatory_neurons_SICER_peaks.bed.gz</span></span>
+<span><span class="co">#&gt; 7   GSE63137_ChIP-seq_H3K4me3_excitatory_neurons_SICER_peaks.bed.gz</span></span>
+<span><span class="co">#&gt; 8                         GSE63137_MethylC-seq_DMRs_methylpy.txt.gz</span></span>
+<span><span class="co">#&gt; 9                  GSE63137_MethylC-seq_PV_neurons_UMRs_LMRs.txt.gz</span></span>
+<span><span class="co">#&gt; 10                GSE63137_MethylC-seq_VIP_neurons_UMRs_LMRs.txt.gz</span></span>
+<span><span class="co">#&gt; 11         GSE63137_MethylC-seq_excitatory_neurons_UMRs_LMRs.txt.gz</span></span>
+<span><span class="co">#&gt; 12                                                 GSE63137_RAW.tar</span></span>
+<span><span class="co">#&gt;                                                                                                                                 url</span></span>
+<span><span class="co">#&gt; 1                   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_PV_neurons_HOMER_peaks.bed.gz</span></span>
+<span><span class="co">#&gt; 2                  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_VIP_neurons_HOMER_peaks.bed.gz</span></span>
+<span><span class="co">#&gt; 3           https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_excitatory_neurons_HOMER_peaks.bed.gz</span></span>
+<span><span class="co">#&gt; 4   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K27ac_excitatory_neurons_SICER_peaks.bed.gz</span></span>
+<span><span class="co">#&gt; 5  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K27me3_excitatory_neurons_SICER_peaks.bed.gz</span></span>
+<span><span class="co">#&gt; 6   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K4me1_excitatory_neurons_SICER_peaks.bed.gz</span></span>
+<span><span class="co">#&gt; 7   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K4me3_excitatory_neurons_SICER_peaks.bed.gz</span></span>
+<span><span class="co">#&gt; 8                         https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_DMRs_methylpy.txt.gz</span></span>
+<span><span class="co">#&gt; 9                  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_PV_neurons_UMRs_LMRs.txt.gz</span></span>
+<span><span class="co">#&gt; 10                https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_VIP_neurons_UMRs_LMRs.txt.gz</span></span>
+<span><span class="co">#&gt; 11         https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_excitatory_neurons_UMRs_LMRs.txt.gz</span></span>
+<span><span class="co">#&gt; 12                                                 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_RAW.tar</span></span></code></pre></div>
 <p>This matters enormously for sequencing-era data. RNA-seq counts and <strong>all</strong> single-cell data live here, not in the Series Matrix — which is why those have dedicated entry points (see the <a href="rnaseq.html">RNA-seq</a> and <a href="single-cell.html">single-cell</a> articles).</p>
 </section><section class="level2"><h2 id="where-to-go-next">Where to go next<a class="anchor" aria-label="anchor" href="#where-to-go-next"></a>
 </h2>
 <ul>
 <li>
+<a href="finding-and-downloading-data.html">Finding and downloading data</a> — search GEO, control <code><a href="../reference/getGEO.html">getGEO()</a></code>, and cache downloads.</li>
+<li>
 <a href="single-cell.html">Single-cell data from GEO</a> — why single-cell lives in supplementary files and how to load it into a <code>SingleCellExperiment</code>.</li>
 <li>
-<a href="downstream-analysis.html">Downstream analysis</a> — taking a GEOquery object into differential expression and beyond, with pointers to the relevant Bioconductor packages.</li>
+<a href="downstream-analysis.html">From GEO to downstream analysis</a> — taking a GEOquery object into differential expression and beyond.</li>
 </ul></section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);

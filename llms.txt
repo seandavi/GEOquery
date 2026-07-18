@@ -70,12 +70,15 @@ getGEOSuppFiles("GSE63137", fetch_files = FALSE)
 
 ## Documentation
 
-The package vignette is a quick-start; the in-depth, narrative articles
-cover the *why* and the downstream workflows:
+Six vignettes take you from first contact to downstream analysis — a
+quick-start plus in-depth articles covering the *why* and the workflows:
 
-- [Getting started](http://seandavi.github.io/GEOquery/)
+- [Getting
+  started](http://seandavi.github.io/GEOquery/articles/GEOquery.md)
 - [Understanding GEO data
   formats](http://seandavi.github.io/GEOquery/articles/geo-data-formats.md)
+- [Finding and downloading
+  data](http://seandavi.github.io/GEOquery/articles/finding-and-downloading-data.md)
 - [RNA-seq
   quantifications](http://seandavi.github.io/GEOquery/articles/rnaseq.md)
 - [Single-cell data from
@@ -216,15 +219,17 @@ citation("GEOquery")
 
 # Articles
 
-### All vignettes
+### Articles
 
-- [From GEO to downstream
-  analysis](http://seandavi.github.io/GEOquery/articles/downstream-analysis.md):
-- [Understanding GEO data
-  formats](http://seandavi.github.io/GEOquery/articles/geo-data-formats.md):
 - [Getting started with
   GEOquery](http://seandavi.github.io/GEOquery/articles/GEOquery.md):
+- [Understanding GEO data
+  formats](http://seandavi.github.io/GEOquery/articles/geo-data-formats.md):
+- [Finding and downloading
+  data](http://seandavi.github.io/GEOquery/articles/finding-and-downloading-data.md):
 - [RNA-seq quantifications from
   GEO](http://seandavi.github.io/GEOquery/articles/rnaseq.md):
 - [Single-cell data from
   GEO](http://seandavi.github.io/GEOquery/articles/single-cell.md):
+- [From GEO to downstream
+  analysis](http://seandavi.github.io/GEOquery/articles/downstream-analysis.md):

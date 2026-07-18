@@ -7,6 +7,11 @@ the fastest way to predict what
 [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md)
 will return and to debug the occasional surprising record.
 
+``` r
+
+library(GEOquery)
+```
+
 ## The four GEO entity types
 
 GEO is organized around four accession types, and every GEOquery
@@ -44,9 +49,35 @@ accessors:
 ``` r
 
 gsm <- getGEO("GSM11805")
-Meta(gsm)      # the metadata as a named list
-Table(gsm)     # the data table as a data.frame
-Columns(gsm)   # descriptions of the data-table columns
+names(head(Meta(gsm), 8))   # Meta(): the metadata as a named list
+#> [1] "channel_count"      "contact_address"    "contact_city"      
+#> [4] "contact_country"    "contact_department" "contact_email"     
+#> [7] "contact_fax"        "contact_institute"
+```
+
+``` r
+
+Columns(gsm)                # descriptions of the data-table columns
+#>     Column
+#> 1         
+#> 2    VALUE
+#> 3 ABS_CALL
+#>                                                                  Description
+#> 1                                                                   ID_REF =
+#> 2                         MAS 5.0 Statistical Algorithm (mean scaled to 500)
+#> 3 MAS 5.0 Absent, Marginal, Present call  with Alpha1 = 0.05, Alpha2 = 0.065
+```
+
+``` r
+
+head(Table(gsm))            # Table(): the data table as a data.frame
+#>            ID_REF  VALUE ABS_CALL
+#> 1  AFFX-BioB-5_at  953.9        P
+#> 2  AFFX-BioB-M_at 2982.8        P
+#> 3  AFFX-BioB-3_at 1657.9        P
+#> 4  AFFX-BioC-5_at 2652.7        P
+#> 5  AFFX-BioC-3_at 2019.5        P
+#> 6 AFFX-BioDn-5_at 3531.5        P
 ```
 
 SOFT is the right choice when you need fields that only exist in the
@@ -62,16 +93,33 @@ features, columns = samples). This is what most analyses actually need,
 and it parses orders of magnitude faster than SOFT.
 
 This is the GEOquery **default** (`GSEMatrix = TRUE`). The result is a
-Bioconductor `SummarizedExperiment` (or, opting back, an `ExpressionSet`
-— see below):
+Bioconductor `SummarizedExperiment`:
 
 ``` r
 
-gse <- getGEO("GSE2553")   # returns a list, one SummarizedExperiment per platform
+gse <- getGEO("GSE2553")   # a list, one SummarizedExperiment per platform
 se <- gse[[1]]
-assay(se)      # the expression matrix
-colData(se)    # sample (phenotype) metadata
-rowData(se)    # feature annotation, from the platform GPL
+se
+#> class: RangedSummarizedExperiment 
+#> dim: 12600 181 
+#> metadata(3): experimentData annotation protocolData
+#> assays(1): exprs
+#> rownames(12600): 1 2 ... 12599 12600
+#> rowData names(13): ID PenAt ... LLID Chimeric_Cluster_IDs
+#> colnames(181): GSM48681 GSM48682 ... GSM48860 GSM48861
+#> colData names(30): title geo_accession ... supplementary_file
+#>   data_row_count
+```
+
+``` r
+
+assay(se)[1:5, 1:3]        # the expression matrix
+#>     GSM48681   GSM48682   GSM48683
+#> 1  0.2701103  0.3925373  0.4186763
+#> 2  6.3459203  2.1304703  2.0750533
+#> 3 -0.0918793 -0.2411003 -0.2499943
+#> 4  1.4679053  0.6252703  0.4673843
+#> 5 -0.2817373  0.6492023 -1.4973643
 ```
 
 If you ever need a field that the Series Matrix omits, drop to SOFT with
@@ -128,6 +176,32 @@ content:
 
 # see what is attached, without downloading
 getGEOSuppFiles("GSE63137", fetch_files = FALSE)
+#>                                                               fname
+#> 1                   GSE63137_ATAC-seq_PV_neurons_HOMER_peaks.bed.gz
+#> 2                  GSE63137_ATAC-seq_VIP_neurons_HOMER_peaks.bed.gz
+#> 3           GSE63137_ATAC-seq_excitatory_neurons_HOMER_peaks.bed.gz
+#> 4   GSE63137_ChIP-seq_H3K27ac_excitatory_neurons_SICER_peaks.bed.gz
+#> 5  GSE63137_ChIP-seq_H3K27me3_excitatory_neurons_SICER_peaks.bed.gz
+#> 6   GSE63137_ChIP-seq_H3K4me1_excitatory_neurons_SICER_peaks.bed.gz
+#> 7   GSE63137_ChIP-seq_H3K4me3_excitatory_neurons_SICER_peaks.bed.gz
+#> 8                         GSE63137_MethylC-seq_DMRs_methylpy.txt.gz
+#> 9                  GSE63137_MethylC-seq_PV_neurons_UMRs_LMRs.txt.gz
+#> 10                GSE63137_MethylC-seq_VIP_neurons_UMRs_LMRs.txt.gz
+#> 11         GSE63137_MethylC-seq_excitatory_neurons_UMRs_LMRs.txt.gz
+#> 12                                                 GSE63137_RAW.tar
+#>                                                                                                                                 url
+#> 1                   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_PV_neurons_HOMER_peaks.bed.gz
+#> 2                  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_VIP_neurons_HOMER_peaks.bed.gz
+#> 3           https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_excitatory_neurons_HOMER_peaks.bed.gz
+#> 4   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K27ac_excitatory_neurons_SICER_peaks.bed.gz
+#> 5  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K27me3_excitatory_neurons_SICER_peaks.bed.gz
+#> 6   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K4me1_excitatory_neurons_SICER_peaks.bed.gz
+#> 7   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K4me3_excitatory_neurons_SICER_peaks.bed.gz
+#> 8                         https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_DMRs_methylpy.txt.gz
+#> 9                  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_PV_neurons_UMRs_LMRs.txt.gz
+#> 10                https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_VIP_neurons_UMRs_LMRs.txt.gz
+#> 11         https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_excitatory_neurons_UMRs_LMRs.txt.gz
+#> 12                                                 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_RAW.tar
 ```
 
 This matters enormously for sequencing-era data. RNA-seq counts and
@@ -139,11 +213,15 @@ articles).
 
 ## Where to go next
 
+- [Finding and downloading
+  data](http://seandavi.github.io/GEOquery/articles/finding-and-downloading-data.md)
+  — search GEO, control
+  [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md),
+  and cache downloads.
 - [Single-cell data from
   GEO](http://seandavi.github.io/GEOquery/articles/single-cell.md) — why
   single-cell lives in supplementary files and how to load it into a
   `SingleCellExperiment`.
-- [Downstream
+- [From GEO to downstream
   analysis](http://seandavi.github.io/GEOquery/articles/downstream-analysis.md)
-  — taking a GEOquery object into differential expression and beyond,
-  with pointers to the relevant Bioconductor packages.
+  — taking a GEOquery object into differential expression and beyond.

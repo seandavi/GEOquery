@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.27</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.28</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,10 +36,11 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/downstream-analysis.html">From GEO to downstream analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/geo-data-formats.html">Understanding GEO data formats</a></li>
+<li><a class="dropdown-item" href="../articles/geo-data-formats.html">Understanding GEO data formats</a></li>
+    <li><a class="dropdown-item" href="../articles/finding-and-downloading-data.html">Finding and downloading data</a></li>
     <li><a class="dropdown-item" href="../articles/rnaseq.html">RNA-seq quantifications from GEO</a></li>
     <li><a class="dropdown-item" href="../articles/single-cell.html">Single-cell data from GEO</a></li>
+    <li><a class="dropdown-item" href="../articles/downstream-analysis.html">From GEO to downstream analysis</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -71,7 +72,7 @@
       <p class="author">Sean Davis</p>
 
 
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/vignettes/articles/downstream-analysis.qmd" class="external-link"><code>vignettes/articles/downstream-analysis.qmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/docs-restructure-precompute/vignettes/downstream-analysis.qmd" class="external-link"><code>vignettes/downstream-analysis.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -80,7 +81,7 @@
 
 
 
-    <p>GEOquery’s job ends once your data is a Bioconductor object. This article is a map of <em>where to go next</em> — how the object you got from <code><a href="../reference/getGEO.html">getGEO()</a></code> connects to the rest of the Bioconductor ecosystem — rather than a tutorial for any one method. The goal is to save you the “I have an <code>ExpressionSet</code>, now what?” moment.</p>
+    <p>GEOquery’s job ends once your data is a Bioconductor object. This article is a map of <em>where to go next</em> — how the object you got from <code><a href="../reference/getGEO.html">getGEO()</a></code> connects to the rest of the Bioconductor ecosystem — rather than a tutorial for any one method. The goal is to save you the “I have a <code>SummarizedExperiment</code>, now what?” moment.</p>
 <section class="level2"><h2 id="know-your-object">Know your object<a class="anchor" aria-label="anchor" href="#know-your-object"></a>
 </h2>
 <p>What you do next depends on what GEOquery returned (see <a href="geo-data-formats.html">Understanding GEO data formats</a>):</p>
@@ -128,16 +129,20 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioinf.wehi.edu.au/limma/" class="external-link">limma</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">SummarizedExperiment</a></span><span class="op">)</span></span>
 <span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GSE2553"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>                 <span class="co"># SummarizedExperiment (default)</span></span>
+<span></span>
+<span><span class="co"># `group` here stands in for a real grouping column you derive from the sample</span></span>
+<span><span class="co"># metadata -- see the note below; it will not exist verbatim in colData(se).</span></span>
 <span><span class="va">design</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span> <span class="va">group</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">lmFit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span>, <span class="va">design</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/limma/man/toptable.html" class="external-link">topTable</a></span><span class="op">(</span><span class="va">fit</span>, coef <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p>The hardest part is usually not the model but extracting clean grouping variables from <code>colData(se)</code> — GEO sample metadata is free text, so expect to parse <code>characteristics_ch1</code> fields.</p>
+<p>The hardest part is usually not the model but extracting clean grouping variables from <code>colData(se)</code> — GEO sample metadata is free text, so expect to parse <code>characteristics_ch1</code> fields into the factor you actually model.</p>
 </section><section class="level2"><h2 id="rna-seq-counts-deseq2-edger-limma-voom">RNA-seq counts: DESeq2 / edgeR / limma-voom<a class="anchor" aria-label="anchor" href="#rna-seq-counts-deseq2-edger-limma-voom"></a>
 </h2>
 <p>For NCBI-computed RNA-seq counts (see the <a href="rnaseq.html">RNA-seq article</a>), use a count-based model. The <code>SummarizedExperiment</code> GEOquery returns plugs directly into <a href="https://bioconductor.org/packages/DESeq2" class="external-link">DESeq2</a>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">DESeq2</span><span class="op">)</span></span>
 <span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getRNASeqData.html">getRNASeqData</a></span><span class="op">(</span><span class="st">"GSE164073"</span><span class="op">)</span></span>
+<span><span class="co"># `condition` must be a real column you added to colData(se) first.</span></span>
 <span><span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu">DESeqDataSet</span><span class="op">(</span><span class="va">se</span>, design <span class="op">=</span> <span class="op">~</span> <span class="va">condition</span><span class="op">)</span></span>
 <span><span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu">DESeq</span><span class="op">(</span><span class="va">dds</span><span class="op">)</span></span>
 <span><span class="fu">results</span><span class="op">(</span><span class="va">dds</span><span class="op">)</span></span></code></pre></div>
@@ -155,10 +160,17 @@
 <code class="sourceCode R"><span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_SummarizedExperiment.html">as_SummarizedExperiment</a></span><span class="op">(</span><span class="fu"><a href="../reference/getGEO.html">getGEO</a></span><span class="op">(</span><span class="st">"GSE2553"</span>, returnType <span class="op">=</span> <span class="st">"ExpressionSet"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 </li>
 <li><p><strong>Re-annotate features.</strong> GEO platform annotation can be dated. For mapping probe/gene identifiers, reach for the Bioconductor annotation infrastructure — <a href="https://bioconductor.org/packages/AnnotationDbi" class="external-link">AnnotationDbi</a>, organism packages such as <code>org.Hs.eg.db</code>, and <a href="https://bioconductor.org/packages/biomaRt" class="external-link">biomaRt</a>.</p></li>
-</ul></section><section class="level2"><h2 id="reproducibility-note">Reproducibility note<a class="anchor" aria-label="anchor" href="#reproducibility-note"></a>
+</ul></section><section class="level2"><h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>
 </h2>
-<p>GEO records can change, and large downloads are slow, so cache deliberately: pass a stable <code>destdir=</code> to <code><a href="../reference/getGEO.html">getGEO()</a></code>/<code><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles()</a></code> and record the GEOquery and data versions (<code><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo()</a></code>) alongside your results.</p>
-</section><script id="quarto-html-after-body" type="application/javascript">
+<p>GEO records can change and large downloads are slow, so cache deliberately and record versions. The <a href="finding-and-downloading-data.html">Finding and downloading data</a> article covers persistent caching (<code>destdir=</code> and the <code>BiocFileCache</code> layer); alongside that, capture <code><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo()</a></code> with your results so the GEOquery and dependency versions are pinned.</p>
+</section><section class="level2"><h2 id="where-to-go-next">Where to go next<a class="anchor" aria-label="anchor" href="#where-to-go-next"></a>
+</h2>
+<ul>
+<li>
+<a href="finding-and-downloading-data.html">Finding and downloading data</a> — caching and reproducible retrieval.</li>
+<li>
+<a href="rnaseq.html">RNA-seq</a> and <a href="single-cell.html">Single-cell</a> — the data-type paths that feed these workflows.</li>
+</ul></section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);

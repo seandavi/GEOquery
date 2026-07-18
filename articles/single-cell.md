@@ -7,6 +7,11 @@ meet, and how GEOquery’s single-cell functions turn them into
 `SingleCellExperiment` objects ready for the Bioconductor single-cell
 ecosystem.
 
+``` r
+
+library(GEOquery)
+```
+
 ## Why single-cell data is different
 
 For a microarray or bulk RNA-seq study, the processed matrix lives in
@@ -51,40 +56,55 @@ download.
 
 [`geoSingleCellManifest()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md)
 lists the supplementary files and classifies each by format and role,
-extracting the GSM sample id — **without downloading** anything. It lets
-you see, often many gigabytes ahead of time, what a study actually
-contains.
+extracting the GSM sample id and platform — **without downloading**
+anything. It lets you see, often many gigabytes ahead of time, what a
+study actually contains. GSE132771 is a two-platform study (mouse and
+human) where each sample contributes a 10x Matrix Market triplet:
 
 ``` r
 
-library(GEOquery)
-m <- geoSingleCellManifest("GSE161228")
-m
-#> fname                    sample   format    role       url
-#> GSM..._matrix.mtx.gz     GSM...   10x_mtx   matrix     ...
-#> GSM..._barcodes.tsv.gz   GSM...   10x_mtx   barcodes   ...
-#> GSM..._features.tsv.gz   GSM...   10x_mtx   features   ...
+m <- geoSingleCellManifest("GSE132771")
+nrow(m)      # every supplementary file across the study
+#> [1] 72
+# three files per sample: matrix + barcodes + features (a `url` column, omitted
+# here for width, gives each file's download location)
+head(m[, c("fname", "sample", "format", "role", "platform")])
+#>                                   fname     sample  format     role platform
+#> 1 GSM3891612_Bleo1_GFPp_barcodes.tsv.gz GSM3891612 10x_mtx barcodes GPL21103
+#> 2    GSM3891612_Bleo1_GFPp_genes.tsv.gz GSM3891612 10x_mtx features GPL21103
+#> 3   GSM3891612_Bleo1_GFPp_matrix.mtx.gz GSM3891612 10x_mtx   matrix GPL21103
+#> 4 GSM3891613_Bleo2_GFPp_barcodes.tsv.gz GSM3891613 10x_mtx barcodes GPL21103
+#> 5    GSM3891613_Bleo2_GFPp_genes.tsv.gz GSM3891613 10x_mtx features GPL21103
+#> 6   GSM3891613_Bleo2_GFPp_matrix.mtx.gz GSM3891613 10x_mtx   matrix GPL21103
 ```
 
 ## Step 2 — decide: loadable units
 
 [`geoSingleCellUnits()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellUnits.md)
 collapses that file list into **loadable units** — one per sample and
-format — and tells you whether each is complete. A 10x triplet is only
-loadable if all three files are present:
+format — and reports whether each is complete and which platform it
+belongs to. A 10x triplet is only loadable if all three files
+(`matrix`/`barcodes`/`features`) are present; the `status` and
+`loadable` columns tell you, so incomplete samples never fail
+mid-download:
 
 ``` r
 
 u <- geoSingleCellUnits(m)
-u
-#> sample  format   n_files  status                          loadable
-#> GSM1    10x_mtx  3        complete                        TRUE
-#> GSM2    10x_mtx  2        incomplete (missing features)   FALSE
-#> GSM3    h5ad     1        complete                        TRUE
+nrow(u)      # one unit per sample
+#> [1] 24
+head(u)
+#>             unit     sample platform  format n_files   status loadable
+#> 1 mtx|GSM3891612 GSM3891612 GPL21103 10x_mtx       3 complete     TRUE
+#> 2 mtx|GSM3891613 GSM3891613 GPL21103 10x_mtx       3 complete     TRUE
+#> 3 mtx|GSM3891614 GSM3891614 GPL21103 10x_mtx       3 complete     TRUE
+#> 4 mtx|GSM3891615 GSM3891615 GPL21103 10x_mtx       3 complete     TRUE
+#> 5 mtx|GSM3891616 GSM3891616 GPL21103 10x_mtx       3 complete     TRUE
+#> 6 mtx|GSM3891617 GSM3891617 GPL21103 10x_mtx       3 complete     TRUE
 ```
 
-This is where you make decisions: which samples, which format if a study
-offers more than one, and which incomplete units to skip.
+This is where you make decisions: which samples, which platform, and
+which incomplete units (`loadable = FALSE`) to skip.
 
 ## Step 3 — load
 
@@ -96,19 +116,30 @@ what it loads and what it skips, so nothing disappears silently:
 
 ``` r
 
-sces <- getGEOSingleCell("GSE161228")
-#> Loading GSM1 (10x_mtx)...
-#> Loading GSM3 (h5ad)...
-#> Skipping 1 unit(s): GSM2 [incomplete (missing features)]
+sces <- getGEOSingleCell("GSE132771")
+#> Loading GSM3891612 (10x_mtx)...
+#> Loading GSM3891613 (10x_mtx)...
+#> ... (one per sample)
 
 length(sces)      # one SingleCellExperiment per sample
 sces[[1]]
 ```
 
-It returns a list rather than a single combined object on purpose:
+Any unit reported `loadable = FALSE` (an incomplete 10x triplet, say) is
+skipped with a message rather than failing the whole call, so nothing
+disappears silently.
+
+By default it returns a *list* rather than a single combined object:
 per-sample matrices often use different references or feature sets, and
-silently reconciling them would be misleading. Combine deliberately when
-you know the features match.
+silently reconciling them would be misleading. Because GSE132771 spans
+two platforms, combining is meaningful only within a platform —
+`by = "platform"` combines the mouse and human samples separately and
+refuses to merge across them:
+
+``` r
+
+per_platform <- getGEOSingleCell("GSE132771", by = "platform")
+```
 
 ### Sample metadata travels with the cells
 
@@ -124,11 +155,12 @@ need it (and it survives combining with `by = "platform"` /
 
 ``` r
 
-sce <- getGEOSingleCell("GSE125708", by = "all")
-cd <- SummarizedExperiment::colData(sce)
+sces <- getGEOSingleCell("GSE132771")
+cd <- SummarizedExperiment::colData(sces[[1]])
 cd[, grep("^sample\\.", colnames(cd))]
-#>            sample.title sample.age.ch1 sample.Sex.ch1 sample.tissue.ch1 ...
-#> ...        JH26_WT_...  2 month        Male           retina            ...
+#>              sample.title sample.source_name_ch1 sample.genotype.ch1 ...
+#> AAACCTGAG..  Normal lung  Normal human lung      wild type           ...
+#> AAACCTGAGT.. Normal lung  Normal human lung      wild type           ...
 ```
 
 Added columns are prefixed `sample.` so they never clash with the
@@ -221,3 +253,12 @@ not everything. It does **not** handle loom files, files packaged inside
 [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
 is the escape hatch for those, and the design notes are in the project’s
 `adr/0004-single-cell-architecture.md`.
+
+## Where to go next
+
+- [Understanding GEO data
+  formats](http://seandavi.github.io/GEOquery/articles/geo-data-formats.md)
+  — why supplementary files exist and what GEO does and doesn’t parse.
+- [From GEO to downstream
+  analysis](http://seandavi.github.io/GEOquery/articles/downstream-analysis.md)
+  — the OSCA stack from a `SingleCellExperiment`.
