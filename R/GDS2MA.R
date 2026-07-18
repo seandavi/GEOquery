@@ -1,6 +1,13 @@
-#' @importClassesFrom limma MAList
 #' @export
 "GDS2MA" <- function(GDS, do.log2 = FALSE, GPL = NULL, AnnotGPL = TRUE, getGPL = TRUE) {
+    .Deprecated("GDS2eSet", msg = paste(
+        "GDS2MA() is deprecated and will be removed in a future release.",
+        "Use GDS2eSet() to obtain an ExpressionSet (coercible to",
+        "SummarizedExperiment); convert to an MAList with limma if needed."
+    ))
+    if (!requireNamespace("limma", quietly = TRUE)) {
+        stop("GDS2MA() requires the 'limma' package; install it or use GDS2eSet().")
+    }
     if (!is.null(GPL) & getGPL) {
         GPL <- getGEO(Meta(GDS)$platform, AnnotGPL = AnnotGPL)
         ord.table <- match(Table(GDS)[, 1], Table(GPL)[, 1])

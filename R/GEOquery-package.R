@@ -67,10 +67,15 @@ NULL
 
 
 #' Convert a GDS data structure to a BioConductor data structure
-#' 
+#'
 #' Functions to take a GDS data structure from getGEO and coerce it to limma
 #' MALists or ExpressionSets.
-#' 
+#'
+#' `GDS2MA()` is **deprecated** and will be removed in a future release: the
+#' `MAList` return type is superseded by `ExpressionSet`/`SummarizedExperiment`,
+#' which can be coerced to whatever downstream analysis needs. Use `GDS2eSet()`
+#' instead (and convert to an `MAList` with limma if you still need one).
+#'
 #' This function just rearranges one data structure into another.  For GDS, it
 #' also deals appropriately with making the 'targets' list item for the limma
 #' data structure and the phenoData slot of ExpressionSets.

@@ -1,3 +1,14 @@
+# GEOquery 2.81.31 (2026-07-18)
+
+## Deprecated
+
+- `GDS2MA()` is deprecated and now warns; it will be removed in a future
+  release. Its `limma::MAList` return type is superseded by `GDS2eSet()`'s
+  `ExpressionSet` (coercible to `SummarizedExperiment` and other downstream
+  structures). `limma` moves from `Imports` to `Suggests` accordingly, so it is
+  no longer installed with GEOquery; `GDS2MA()` errors with a clear message if
+  `limma` is absent (#217).
+
 # GEOquery 2.81.30 (2026-07-18)
 
 ## Internal
