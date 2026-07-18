@@ -51,3 +51,18 @@
         class = "geoquery_parse_error", fname = fname, parent = parent
     )
 }
+
+# Advisory warning (not an error): a downloaded/cached file's MD5 did not match
+# the expected value (#222). Carries structured data so callers can catch the
+# `geoquery_checksum_mismatch` class and decide whether to retry or discard.
+#' @importFrom rlang warn
+.warn_checksum_mismatch <- function(path, expected, actual) {
+    rlang::warn(
+        sprintf(
+            "Checksum mismatch for '%s': expected md5 %s, got %s.",
+            path, expected, actual
+        ),
+        class = c("geoquery_checksum_mismatch", "geoquery_warning"),
+        path = path, expected = expected, actual = actual
+    )
+}
