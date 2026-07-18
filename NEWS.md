@@ -1,3 +1,12 @@
+# GEOquery 2.81.30 (2026-07-18)
+
+## Internal
+
+- Dropped the `rvest` and `stringr` dependencies (no user-facing change). GEO
+  download-page link parsing now uses `xml2` (already a dependency) and the
+  remaining string helpers use base R; the extracted `.extractGeoDownloadLinks()`
+  is covered by a new offline test (#216).
+
 # GEOquery 2.81.29 (2026-07-18)
 
 ## Bug fixes
