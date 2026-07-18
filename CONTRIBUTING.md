@@ -132,9 +132,38 @@ Build-excluded changes (anything matched by `.Rbuildignore`, e.g. `.github/`,
 
 ## Architecture Decision Records
 
-Non-trivial architectural decisions are recorded as ADRs in `adr/` (see
-`adr/template.md` and `CLAUDE.md`). If your PR changes a parse path, a return
-type, a dependency, or a notable trade-off, add a numbered ADR.
+Non-trivial architectural decisions are recorded as ADRs in `adr/` — numbered
+`NNNN-title.md`, copied from `adr/template.md`. Add one when a PR changes a parse
+path, a return type, a dependency, or makes a notable trade-off. Small,
+self-explanatory changes don't need an ADR; a decision you'd otherwise re-litigate
+in a future PR review does.
+
+### How issues, ADRs, NEWS, and PRs link
+
+These four artifacts answer different questions, and each points at the others so
+any one of them leads to the whole story:
+
+- **Issue** — *why* (the user problem / requested behavior). Opened first for
+  bugs, features, and behavior changes (see [Issues vs. pull requests](#issues-vs-pull-requests)).
+- **ADR** — *what we decided and why* (the design). Needed only when the change is
+  architectural.
+- **NEWS** — *what changed*, for users.
+- **PR** — the implementation that ties them together.
+
+Conventions:
+
+1. **PR → issue.** Put `Fixes #NNN` in the PR body so the merge closes the issue.
+2. **PR → ADR.** If the PR realizes a decision, say `Implements ADR-XXXX` in the body.
+3. **ADR → issue/PR.** In the ADR's **Context**, link the motivating issue(s) as
+   `#NNN`; fill in `Deciders`, and set `Status: accepted` when the PR merges. To
+   revise an accepted ADR, write a new one that supersedes it and set the old
+   one's status to `superseded by ADR-YYYY` (never edit an accepted ADR's decision).
+4. **NEWS → PR/ADR.** End each user-facing bullet with the PR link, and cite the
+   ADR when one drove the change, e.g. `... (see ADR-0007) (#154)`.
+
+So the full chain reads: **issue → ADR (links the issue) → PR (`Fixes #NNN`,
+`Implements ADR-XXXX`) → NEWS bullet (`… (see ADR-XXXX) (#PR)`).** For a change
+with no architectural decision, drop the ADR link and keep issue ↔ PR ↔ NEWS.
 
 ## Reporting bugs
 
