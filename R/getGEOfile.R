@@ -174,7 +174,7 @@ getGEORaw <- function(GEO, destdir = tempdir()) {
 # (the response is streamed to disk in binary). On failure the partial file is
 # removed and a typed `geoquery_download_error` is raised (#170, #173).
 downloadFile <- function(url, destfile, mode = "wb", quiet = TRUE,
-    timeout = getOption("GEOquery.download.timeout", 300)) {
+    timeout = getOption("GEOquery.download.timeout", 300), md5 = NULL) {
   use_cache <- isTRUE(getOption("GEOquery.cache", FALSE))
   # Cache hit: copy the cached file into place and skip the download (#171).
   if (use_cache) {
@@ -182,6 +182,7 @@ downloadFile <- function(url, destfile, mode = "wb", quiet = TRUE,
     if (!is.null(cached) && file.exists(cached)) {
       file.copy(cached, destfile, overwrite = TRUE)
       if (!quiet) message("Using cached download: ", destfile)
+      .verify_md5(destfile, md5)
       return(invisible(TRUE))
     }
   }
@@ -200,6 +201,8 @@ downloadFile <- function(url, destfile, mode = "wb", quiet = TRUE,
       )
     }
   )
+  # Integrity check before caching, so a corrupt download is never stored (#222).
+  .verify_md5(destfile, md5)
   # Cache miss: store the freshly downloaded file for next time (#171). A cache
   # failure must never break the download.
   if (use_cache) {
