@@ -44,9 +44,16 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/feat/checksum/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.81.32" id="geoquery-28132">GEOquery 2.81.32<a class="anchor" aria-label="anchor" href="#geoquery-28132"></a></h2>
+<div class="section level3">
+<h3 id="internal-2-81-32">Internal<a class="anchor" aria-label="anchor" href="#internal-2-81-32"></a></h3>
+<ul><li>Downloaded and cached files can now be integrity-checked against an expected MD5. <code>downloadFile()</code> gains an opt-in <code>md5=</code> argument; a mismatch emits a structured <code>geoquery_checksum_mismatch</code> warning (advisory, not an error) and the corrupt file is not cached. Foundational for the raw-file resolver and fetch receipt (<a href="https://github.com/seandavi/GEOquery/issues/222" class="external-link">#222</a>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.81.31" id="geoquery-28131-2026-07-18">GEOquery 2.81.31 (2026-07-18)<a class="anchor" aria-label="anchor" href="#geoquery-28131-2026-07-18"></a></h2>
 <div class="section level3">

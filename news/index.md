@@ -1,5 +1,16 @@
 # Changelog
 
+## GEOquery 2.81.32
+
+### Internal
+
+- Downloaded and cached files can now be integrity-checked against an
+  expected MD5. `downloadFile()` gains an opt-in `md5=` argument; a
+  mismatch emits a structured `geoquery_checksum_mismatch` warning
+  (advisory, not an error) and the corrupt file is not cached.
+  Foundational for the raw-file resolver and fetch receipt
+  ([\#222](https://github.com/seandavi/GEOquery/issues/222)).
+
 ## GEOquery 2.81.31 (2026-07-18)
 
 ### Deprecated
