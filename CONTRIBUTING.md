@@ -27,7 +27,10 @@ milestone](https://github.com/seandavi/GEOquery/milestones); see
 
 ## Development workflow
 
-1.  Branch off `devel` (e.g. `git switch -c fix/issue-123`).
+1.  Start work off `devel`. With **jujutsu** (`jj`, the repo is
+    colocated so git still works): `jj new devel`, make the change, then
+    `jj describe -m "..."`. With plain git:
+    `git switch -c fix/issue-123`. Either way `devel` is `trunk()`.
 
 2.  Make the change. Keep PRs focused — one logical change per PR.
 
@@ -48,12 +51,41 @@ milestone](https://github.com/seandavi/GEOquery/milestones); see
 
 5.  Update `NEWS.md` (see below) and bump the version (see below).
 
-6.  Open a pull request against `devel`. The PR template’s checklist is
-    the contract; CI runs `R CMD check` across a platform matrix.
+6.  Push and open a pull request against `devel`. With `jj`:
+    `jj git push --named fix/issue-123=@` (creates, tracks, and pushes
+    the bookmark). With git: `git push -u origin fix/issue-123`. The PR
+    template’s checklist is the contract; CI runs `R CMD check` across a
+    platform matrix.
 
 7.  Merge when the required checks are green. (`devel` is
     branch-protected; the required legs are the Ubuntu and macOS
     `R CMD check` jobs.)
+
+## jj for git users (optional)
+
+**Entirely optional.** The repo is a colocated
+[jujutsu](https://jj-vcs.github.io/jj/) + git checkout, so every `git`
+command still works and the remote only ever sees plain git branches —
+use jj only if you want to. To set it up: `jj git init --colocate` in
+your clone. Then the common steps map like this (`devel` is `trunk()`,
+jj bookmarks are git branches):
+
+| git | jj |
+|----|----|
+| `git switch -c fix/x devel` | `jj new devel` |
+| `git status` / `git log --oneline` | `jj st` / `jj log` |
+| `git commit -m "..."` | `jj describe -m "..."` (the working copy *is* the commit — no staging) |
+| `git rebase devel` | `jj rebase -o devel` |
+| `git push -u origin fix/x` | `jj git push --named fix/x=@` |
+| `git push` (updates) | `jj git push` |
+
+Push still goes through a bookmark → PR against `devel`; nothing about
+the Bioconductor side changes.
+
+Safety net: `jj op log` shows every operation jj has performed, and
+`jj op restore <id>` (or `jj undo` for the last one) rewinds the *whole
+repo* to that state — so a botched rebase or an accidental `jj abandon`
+is one command to recover.
 
 ## Vignettes are precompiled
 

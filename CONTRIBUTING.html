@@ -44,7 +44,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Contributing to GEOquery</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/CONTRIBUTING.md" class="external-link"><code>CONTRIBUTING.md</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/docs/jj-workflow/CONTRIBUTING.md" class="external-link"><code>CONTRIBUTING.md</code></a></small>
     </div>
 
 <div id="contributing-to-geoquery" class="section level1">
@@ -61,7 +61,7 @@
 </div>
 <div class="section level2">
 <h2 id="development-workflow">Development workflow<a class="anchor" aria-label="anchor" href="#development-workflow"></a></h2>
-<ol style="list-style-type: decimal"><li><p>Branch off <code>devel</code> (e.g. <code>git switch -c fix/issue-123</code>).</p></li>
+<ol style="list-style-type: decimal"><li><p>Start work off <code>devel</code>. With <strong>jujutsu</strong> (<code>jj</code>, the repo is colocated so git still works): <code>jj new devel</code>, make the change, then <code>jj describe -m "..."</code>. With plain git: <code>git switch -c fix/issue-123</code>. Either way <code>devel</code> is <code>trunk()</code>.</p></li>
 <li><p>Make the change. Keep PRs focused — one logical change per PR.</p></li>
 <li>
 <p>Reload and test locally:</p>
@@ -75,9 +75,35 @@
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="op">)</span>             <span class="co"># updates man/ and NAMESPACE — never hand-edit these</span></span></code></pre></div>
 </li>
 <li><p>Update <code>NEWS.md</code> (see below) and bump the version (see below).</p></li>
-<li><p>Open a pull request against <code>devel</code>. The PR template’s checklist is the contract; CI runs <code>R CMD check</code> across a platform matrix.</p></li>
+<li><p>Push and open a pull request against <code>devel</code>. With <code>jj</code>: <code>jj git push --named fix/issue-123=@</code> (creates, tracks, and pushes the bookmark). With git: <code>git push -u origin fix/issue-123</code>. The PR template’s checklist is the contract; CI runs <code>R CMD check</code> across a platform matrix.</p></li>
 <li><p>Merge when the required checks are green. (<code>devel</code> is branch-protected; the required legs are the Ubuntu and macOS <code>R CMD check</code> jobs.)</p></li>
 </ol></div>
+<div class="section level2">
+<h2 id="jj-for-git-users-optional">jj for git users (optional)<a class="anchor" aria-label="anchor" href="#jj-for-git-users-optional"></a></h2>
+<p><strong>Entirely optional.</strong> The repo is a colocated <a href="https://jj-vcs.github.io/jj/" class="external-link">jujutsu</a> + git checkout, so every <code>git</code> command still works and the remote only ever sees plain git branches — use jj only if you want to. To set it up: <code>jj git init --colocate</code> in your clone. Then the common steps map like this (<code>devel</code> is <code>trunk()</code>, jj bookmarks are git branches):</p>
+<table class="table"><colgroup><col width="50%"><col width="50%"></colgroup><thead><tr><th>git</th>
+<th>jj</th>
+</tr></thead><tbody><tr><td><code>git switch -c fix/x devel</code></td>
+<td><code>jj new devel</code></td>
+</tr><tr><td>
+<code>git status</code> / <code>git log --oneline</code>
+</td>
+<td>
+<code>jj st</code> / <code>jj log</code>
+</td>
+</tr><tr><td><code>git commit -m "..."</code></td>
+<td>
+<code>jj describe -m "..."</code> (the working copy <em>is</em> the commit — no staging)</td>
+</tr><tr><td><code>git rebase devel</code></td>
+<td><code>jj rebase -o devel</code></td>
+</tr><tr><td><code>git push -u origin fix/x</code></td>
+<td><code>jj git push --named fix/x=@</code></td>
+</tr><tr><td>
+<code>git push</code> (updates)</td>
+<td><code>jj git push</code></td>
+</tr></tbody></table><p>Push still goes through a bookmark → PR against <code>devel</code>; nothing about the Bioconductor side changes.</p>
+<p>Safety net: <code>jj op log</code> shows every operation jj has performed, and <code>jj op restore &lt;id&gt;</code> (or <code>jj undo</code> for the last one) rewinds the <em>whole repo</em> to that state — so a botched rebase or an accidental <code>jj abandon</code> is one command to recover.</p>
+</div>
 <div class="section level2">
 <h2 id="vignettes-are-precompiled">Vignettes are precompiled<a class="anchor" aria-label="anchor" href="#vignettes-are-precompiled"></a></h2>
 <p>The vignettes hit the live NCBI GEO network, which must <strong>not</strong> happen during <code>R CMD build</code>/<code>check</code> on CRAN/Bioconductor build machines. So each vignette is authored in a <code>vignettes/&lt;name&gt;.qmd.orig</code> source (with live <code>eval: true</code> code) and <strong>precompiled</strong> into the shipped static <code>vignettes/&lt;name&gt;.qmd</code>, which has the real output baked in and executes nothing at build time. (This is the knitr <code>*.Rmd.orig</code> pattern; Quarto’s <code>freeze</code> does <em>not</em> help here, because the vignette engine renders each file individually and freeze only applies to full-project renders.)</p>
