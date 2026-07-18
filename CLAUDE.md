@@ -85,7 +85,7 @@ When adding accessors: define a `setGeneric` here and `#' @export` the `setMetho
 - `R/getGEOSuppFiles.R` — supplementary file listing/download; `getDirListing()` scrapes FTP directory HTML.
 - `R/rnaseq.R` — NCBI-computed RNA-seq quantification support (`getRNASeqData`, `hasRNASeqQuantifications`); scrapes GEO download pages with `rvest`/`xml2` to find raw-count and annotation URLs.
 - `R/searchGEO.R` — Entrez search via `rentrez` (`searchGEO`, `searchFieldsGEO`).
-- `R/GDS2MA.R` — convert GDS to limma `MAList` / `ExpressionSet`.
+- `R/GDS2MA.R` — convert GDS to `ExpressionSet` (`GDS2eSet`). `GDS2MA` (→ limma `MAList`) is **deprecated**; `limma` is Suggests-only and guarded by `requireNamespace`.
 
 ### Runtime options (`R/zzz.R`)
 

@@ -109,8 +109,12 @@ make_fake_gds <- function() {
 }
 
 test_that("GDS2MA() builds an MAList offline (GPL = NULL, getGPL = FALSE)", {
+    skip_if_not_installed("limma")
     gds <- make_fake_gds()
-    ma <- GDS2MA(gds, GPL = NULL, getGPL = FALSE)
+    expect_warning(
+        ma <- GDS2MA(gds, GPL = NULL, getGPL = FALSE),
+        "deprecated"
+    )
 
     expect_s4_class(ma, "MAList")
     # M holds only the GSM columns as a numeric matrix.

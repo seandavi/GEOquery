@@ -17,8 +17,8 @@ test_that("GDS2eSet works", {
 test_that("GDS2MA works", {
     skip_if_no_integration()
     gds = getGEO(filename=system.file("extdata/GDS507.soft.gz",package="GEOquery"))
-    
-    malist = GDS2MA(gds)
+
+    expect_warning(malist <- GDS2MA(gds), "deprecated")
 
     expect_is(malist,'MAList') #,'malist should be an MAList')
     expect_equivalent(nrow(malist),22645) #'malist has wrong number of rows')
