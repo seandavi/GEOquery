@@ -19,7 +19,10 @@ definitions of these fields can be identified using
 may choose a smaller value if failed.}
 }
 \value{
-a data.frame contains the search results
+a data.frame with one row per matching GEO record and columns
+\code{Accession}, \code{Title}, \code{Summary}, \code{Organism}, \code{Type}, \code{GPL}, \code{n_samples},
+\code{PDAT}, \code{suppFile}, \code{FTPLink}, \code{SeriesTitle}, \code{entryType}, and \code{ID} (the
+Entrez UID). An empty query returns a zero-row data.frame with those columns.
 }
 \description{
 This function searches the \href{https://www.ncbi.nlm.nih.gov/gds}{GDS}
