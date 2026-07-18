@@ -103,5 +103,5 @@ test_that("getRNASeqQuantGenomeInfo returns correct data", {
 
   expect_length(genome_info, 3)
   expect_true(genome_info["species"] == "Human")
-  expect_true(stringr::str_starts(genome_info["genome_build"], "GR"))
+  expect_true(startsWith(genome_info["genome_build"], "GR"))
 })

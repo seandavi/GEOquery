@@ -24,6 +24,30 @@ test_that("extractFilenameFromDownloadURL() returns NULL for character(0)", {
   expect_null(GEOquery:::extractFilenameFromDownloadURL(character(0)))
 })
 
+test_that(".extractGeoDownloadLinks() parses and normalizes hrefs offline", {
+  html <- paste0(
+    "<html><body>",
+    "<a href='/geo/download/?acc=GSE1&file=raw_counts.tsv.gz'>raw</a>",
+    "<a href='ftp://ftp.ncbi.nlm.nih.gov/geo/GSE1_annot.tsv.gz'>annot</a>",
+    "<a>no-href</a>",
+    "</body></html>"
+  )
+  links <- GEOquery:::.extractGeoDownloadLinks(html)
+
+  expect_s3_class(links, "geoDownloadLinks")
+  # leading /geo/ and ftp:// are rewritten to absolute https URLs
+  expect_true(any(grepl(
+    "^https://www.ncbi.nlm.nih.gov/geo/download/\\?acc=GSE1&file=raw_counts",
+    links
+  )))
+  expect_true(any(grepl(
+    "^https://ftp.ncbi.nlm.nih.gov/geo/GSE1_annot.tsv.gz$", links
+  )))
+  # the raw-counts / annotation selectors still work on the result
+  expect_match(GEOquery:::getRNAQuantRawCountsURL(links), "raw_counts")
+  expect_match(GEOquery:::getRNAQuantAnnotationURL(links), "annot.tsv.gz")
+})
+
 test_that("urlExtractRNASeqQuantGenomeInfo() parses genome build and species", {
   info <- GEOquery:::urlExtractRNASeqQuantGenomeInfo(annot_url)
   expect_equal(info[["genome_build"]], "GRCh38.p13")

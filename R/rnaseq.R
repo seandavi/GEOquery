@@ -9,19 +9,26 @@
 #' @keywords internal
 getGSEDownloadPageURLs <- function(gse) {
   url <- "https://ncbi.nlm.nih.gov/geo/download/"
-  links <- httr2::request(url) |>
+  html <- httr2::request(url) |>
     httr2::req_timeout(15) |>
     httr2::req_retry(3) |>
     httr2::req_url_query(acc = gse) |>
     httr2::req_perform() |>
-    httr2::resp_body_string() |>
-    rvest::read_html() |>
-    rvest::html_nodes("a") |>
-    rvest::html_attr("href") |>
-    stringr::str_replace("^/geo/", "https://www.ncbi.nlm.nih.gov/geo/") |>
-    stringr::str_replace("^ftp://", "https://")
+    httr2::resp_body_string()
+  .extractGeoDownloadLinks(html)
+}
+
+# Parse the <a href> links out of a GEO download page and normalize them to
+# absolute https URLs. Split out from getGSEDownloadPageURLs() so the parsing
+# can be tested offline.
+.extractGeoDownloadLinks <- function(html) {
+  links <- xml2::read_html(html) |>
+    xml2::xml_find_all("//a") |>
+    xml2::xml_attr("href")
+  links <- sub("^/geo/", "https://www.ncbi.nlm.nih.gov/geo/", links)
+  links <- sub("^ftp://", "https://", links)
   class(links) <- c("geoDownloadLinks", class(links))
-  return(links)
+  links
 }
 
 
@@ -39,7 +46,7 @@ getRNAQuantRawCountsURL <- function(links) {
   if (!inherits(links, "geoDownloadLinks")) {
     stop("Input must be a geoDownloadLinks object")
   }
-  link <- stringr::str_subset(links, "raw_counts")
+  link <- grep("raw_counts", links, value = TRUE)
   return(link)
 }
 
@@ -57,7 +64,7 @@ getRNAQuantAnnotationURL <- function(links) {
   if (!inherits(links, "geoDownloadLinks")) {
     stop("Input must be a geoDownloadLinks object")
   }
-  link <- stringr::str_subset(links, "annot.tsv.gz")
+  link <- grep("annot.tsv.gz", links, value = TRUE)
   return(link)
 }
 
@@ -116,7 +123,7 @@ urlExtractRNASeqQuantGenomeInfo <- function(url) {
   if (is.null(fname)) {
     return(NULL)
   }
-  splits <- stringr::str_split(fname, "\\.")[[1]]
+  splits <- strsplit(fname, "\\.")[[1]]
   genome_build <- paste0(splits[2], ".", splits[3])
   species <- splits[1]
   return(c(genome_build = genome_build, species = species, fname = fname))
