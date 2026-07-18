@@ -1,0 +1,230 @@
+---
+title: "Finding and downloading data"
+author: "Sean Davis"
+format:
+  html:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Finding and downloading data}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+Most GEOquery examples assume you already have an accession. This article covers
+the steps before and around that: **finding** studies programmatically,
+**controlling** what `getGEO()` fetches, **caching** downloads for reproducible
+work, and reaching **private** records under review.
+
+
+``` r
+library(GEOquery)
+```
+
+## Finding studies from R
+
+If you do not yet have an accession, `searchGEO()` queries the NCBI GEO DataSets
+database with the standard Entrez syntax and returns one row per hit:
+
+
+``` r
+res <- searchGEO("asthma[Title] AND GSE[ETYP]")
+nrow(res)
+#> [1] 387
+res[1:5, c("Series Accession", "Title", "Organism")]
+#>   Series Accession
+#> 1        GSE301357
+#> 2        GSE325572
+#> 3        GSE334345
+#> 4        GSE332995
+#> 5        GSE297032
+#>                                                                                                    Title
+#> 1                       The airway transcriptome in type2 cytokine biomarker-high and -low severe asthma
+#> 2         Transcriptomic analyses identify TMPRSS4 as a shared biomarker in asthma and atopic dermatitis
+#> 3 Exploratory investigation of changes in blood transcriptome following mepolizumab treatment for asthma
+#> 4        Shuangpi Formula Treats Neutrophilic Asthma via Circadian-Mediated Anti-Inflammatory Mechanisms
+#> 5                                                       Atopic asthma lowers nasal mucosal sphingolipids
+#>            Organism
+#> 1      Homo sapiens
+#> 2      Homo sapiens
+#> 3      Homo sapiens
+#> 4 Rattus norvegicus
+#> 5      Homo sapiens
+```
+
+The query uses Entrez field tags — `[Title]`, `[Organism]`, `[Description]`,
+`[ETYP]` (entity type, e.g. `GSE`), and many more — combined with `AND` / `OR`.
+To see the fields available for searching:
+
+
+``` r
+head(searchFieldsGEO(), 12)
+#>    Name     FullName  Description TermCount IsDate IsNumerical SingleToken
+#> 1   ALL   All Fields All term....  48154253      N           N           N
+#> 2   UID          UID Unique n....         0      N           Y           Y
+#> 3  FILT       Filter Limits t....        71      N           N           Y
+#> 4  ORGN     Organism exploded....     78347      N           N           Y
+#> 5  ACCN GEO Acce.... accessio....  20700173      N           N           Y
+#> 6  TITL        Title Words in....  10584350      N           N           Y
+#> 7  DESC  Description Text fro....  11474236      N           N           Y
+#> 8  SFIL Suppleme.... Suppleme....       256      N           N           Y
+#> 9  ETYP   Entry Type Entry ty....         4      N           N           Y
+#> 10 STYP  Sample Type  Sample type         9      N           N           Y
+#> 11 VTYP Sample V.... type of ....         7      N           N           Y
+#> 12 PTYP Platform.... Platform....        17      N           N           Y
+#>    Hierarchy IsHidden
+#> 1          N        N
+#> 2          N        Y
+#> 3          N        N
+#> 4          Y        N
+#> 5          N        N
+#> 6          N        N
+#> 7          N        N
+#> 8          N        N
+#> 9          N        N
+#> 10         N        N
+#> 11         N        N
+#> 12         N        N
+```
+
+Once a hit looks promising, hand its accession straight to `getGEO()`:
+
+
+``` r
+gse <- getGEO(res[["Series Accession"]][1])
+```
+
+To open a record in your web browser instead — handy for eyeballing a study
+before committing to a download — use `browseGEOAccession()`:
+
+
+``` r
+browseGEOAccession("GSE2553")
+```
+
+## Controlling what `getGEO()` fetches
+
+`getGEO()` has a few knobs worth knowing:
+
+
+``` r
+# Default: fast Series Matrix path -> list of SummarizedExperiment
+getGEO("GSE2553")
+
+# Legacy container instead of SummarizedExperiment
+getGEO("GSE2553", returnType = "ExpressionSet")
+
+# Skip the platform (GPL) download when you don't need feature annotation;
+# faster, and avoids fetching a large platform table
+getGEO("GSE2553", getGPL = FALSE)
+
+# Full SOFT record (a GSE S4 object) instead of the Series Matrix
+getGEO("GSE2553", GSEMatrix = FALSE)
+
+# Store the downloaded file somewhere stable (see Caching, below)
+getGEO("GSE2553", destdir = "~/geo-cache")
+
+# Override character encoding for the rare non-UTF-8 record
+getGEO("GSE2553", encoding = "Latin-1")
+```
+
+The `encoding` override is also available globally with
+`options(GEOquery.encoding = "Latin-1")` for a whole session.
+
+## Supplementary files
+
+Processed expression tables are only part of a study; raw and processed
+supplementary files (RNA-seq counts, single-cell matrices, and more) are listed
+and downloaded separately. Always look before you leap:
+
+
+``` r
+getGEOSuppFiles("GSE63137", fetch_files = FALSE)   # inspect: a data.frame of files
+#>                                                               fname
+#> 1                   GSE63137_ATAC-seq_PV_neurons_HOMER_peaks.bed.gz
+#> 2                  GSE63137_ATAC-seq_VIP_neurons_HOMER_peaks.bed.gz
+#> 3           GSE63137_ATAC-seq_excitatory_neurons_HOMER_peaks.bed.gz
+#> 4   GSE63137_ChIP-seq_H3K27ac_excitatory_neurons_SICER_peaks.bed.gz
+#> 5  GSE63137_ChIP-seq_H3K27me3_excitatory_neurons_SICER_peaks.bed.gz
+#> 6   GSE63137_ChIP-seq_H3K4me1_excitatory_neurons_SICER_peaks.bed.gz
+#> 7   GSE63137_ChIP-seq_H3K4me3_excitatory_neurons_SICER_peaks.bed.gz
+#> 8                         GSE63137_MethylC-seq_DMRs_methylpy.txt.gz
+#> 9                  GSE63137_MethylC-seq_PV_neurons_UMRs_LMRs.txt.gz
+#> 10                GSE63137_MethylC-seq_VIP_neurons_UMRs_LMRs.txt.gz
+#> 11         GSE63137_MethylC-seq_excitatory_neurons_UMRs_LMRs.txt.gz
+#> 12                                                 GSE63137_RAW.tar
+#>                                                                                                                                 url
+#> 1                   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_PV_neurons_HOMER_peaks.bed.gz
+#> 2                  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_VIP_neurons_HOMER_peaks.bed.gz
+#> 3           https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_excitatory_neurons_HOMER_peaks.bed.gz
+#> 4   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K27ac_excitatory_neurons_SICER_peaks.bed.gz
+#> 5  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K27me3_excitatory_neurons_SICER_peaks.bed.gz
+#> 6   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K4me1_excitatory_neurons_SICER_peaks.bed.gz
+#> 7   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K4me3_excitatory_neurons_SICER_peaks.bed.gz
+#> 8                         https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_DMRs_methylpy.txt.gz
+#> 9                  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_PV_neurons_UMRs_LMRs.txt.gz
+#> 10                https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_VIP_neurons_UMRs_LMRs.txt.gz
+#> 11         https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_excitatory_neurons_UMRs_LMRs.txt.gz
+#> 12                                                 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_RAW.tar
+```
+
+
+``` r
+getGEOSuppFiles("GSE63137")                        # download all into ./GSE63137/
+```
+
+## Caching and reproducibility
+
+By default, GEOquery downloads to a **temporary** directory
+(`destdir = tempdir()`), which R clears at the end of the session — so the same
+`getGEO()` call re-downloads every session. For interactive work and
+reproducible pipelines you usually want downloads to persist. Two options:
+
+**Point `destdir` at a stable directory** on any call that downloads:
+
+
+``` r
+getGEO("GSE2553", destdir = "~/geo-cache")
+getGEOSuppFiles("GSE63137", baseDir = "~/geo-cache")
+```
+
+**Or turn on the built-in persistent cache**, backed by `BiocFileCache`. Once
+enabled, repeated downloads of the same URL are served from disk across sessions:
+
+
+``` r
+options(GEOquery.cache = TRUE)                 # enable for the session
+options(GEOquery.cache.path = "~/geo-cache")   # optional: choose the location
+
+geoCache()        # the BiocFileCache object backing the cache
+clearGEOCache()   # wipe it when you want a clean re-download
+```
+
+For results you intend to publish, record what you used: pin a stable `destdir`
+or the cache, and capture `sessionInfo()` (GEOquery and dependency versions)
+alongside your output. GEO records can change over time, so a saved object plus a
+version record is the difference between reproducible and "worked on my machine."
+
+## Private and embargoed records
+
+Records still under peer review are not published to GEO's public FTP tree, so a
+normal `getGEO()` cannot see them. If you have a **reviewer access token** (the
+"Reviewer access" link on the private GSE's page), pass it with `token`:
+
+
+``` r
+gse <- getGEO("GSE123456", token = "yourreviewertoken")
+```
+
+Because private records bypass the FTP tree, a token forces the SOFT
+(`acc.cgi`) download path. For a GSE that means you get a `GSE` S4 object (as with
+`GSEMatrix = FALSE`) rather than a `SummarizedExperiment`.
+
+## Where to go next
+
+- [Understanding GEO data formats](geo-data-formats.html) — what SOFT vs. Series
+  Matrix means for the object you get back.
+- [RNA-seq quantifications from GEO](rnaseq.html) and
+  [Single-cell data from GEO](single-cell.html) — dedicated paths for
+  sequencing-era supplementary data.
+- [From GEO to downstream analysis](downstream-analysis.html) — where the object
+  goes next.

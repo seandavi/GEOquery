@@ -1,0 +1,113 @@
+---
+title: "Getting started with GEOquery"
+author: "Sean Davis"
+format:
+  html:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Getting started with GEOquery}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+GEOquery is the bridge between the NCBI Gene Expression Omnibus (GEO) and
+Bioconductor: it downloads a GEO accession and parses it into a ready-to-use
+Bioconductor object. This page gets you from install to a first analysis-ready
+object; the other vignettes go deeper on formats, finding data, and specific
+data types (links at the end).
+
+## Install
+
+```{r}
+#| eval: false
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+BiocManager::install("GEOquery")
+```
+
+## Your first record
+
+Everything starts with `getGEO()` and a GEO accession. The most common case is a
+GEO **Series** (a `GSE` — one study), which `getGEO()` returns as a list of
+`SummarizedExperiment` objects, one per platform:
+
+```{r}
+#| message: false
+library(GEOquery)
+
+gse <- getGEO("GSE2553")
+length(gse)          # one element per platform in the study
+se <- gse[[1]]
+se
+```
+
+A study is returned as a *list* because a single GEO Series can span more than
+one platform. Here there is just one, so we take `gse[[1]]`.
+
+The `SummarizedExperiment` bundles three aligned pieces — the expression matrix,
+the per-sample metadata, and the per-feature annotation — reached with three
+accessors:
+
+```{r}
+assay(se)[1:5, 1:3]                       # expression matrix (features x samples)
+```
+
+```{r}
+colData(se)[1:3, c("title", "geo_accession", "source_name_ch1")]   # sample metadata
+```
+
+```{r}
+head(rowData(se))                         # feature annotation, from the platform
+```
+
+That is the whole loop: one accession in, an analysis-ready object out. (Prefer
+the legacy `ExpressionSet`? Pass `returnType = "ExpressionSet"`.)
+
+## The other entity types
+
+GEO has four accession types. A `GSE` (Series) is the one you usually want, but
+Samples (`GSM`), Platforms (`GPL`), and curated DataSets (`GDS`) parse to
+GEOquery's own S4 classes:
+
+```{r}
+class(getGEO("GSM11805"))     # a single sample
+class(getGEO("GDS507"))       # a curated dataset
+```
+
+What these classes are, and why `getGEO()` returns different things for
+different accessions, is the subject of
+[Understanding GEO data formats](geo-data-formats.html).
+
+## Peeking at supplementary files
+
+Processed expression tables are only part of a study. Raw data, RNA-seq counts,
+and single-cell matrices arrive as **supplementary files**. You can list them
+without downloading anything:
+
+```{r}
+getGEOSuppFiles("GSE63137", fetch_files = FALSE)
+```
+
+## Where to go next
+
+- [Understanding GEO data formats](geo-data-formats.html) — the four entity
+  types, SOFT vs. Series Matrix, and why `getGEO()` returns different classes.
+- [Finding and downloading data](finding-and-downloading-data.html) — search GEO
+  from R, control what `getGEO()` fetches, cache downloads, and reach
+  private records.
+- [RNA-seq quantifications from GEO](rnaseq.html) — NCBI's uniformly-computed
+  counts.
+- [Single-cell data from GEO](single-cell.html) — the inspect → decide → load
+  workflow into a `SingleCellExperiment`.
+- [From GEO to downstream analysis](downstream-analysis.html) — taking a
+  GEOquery object into limma / DESeq2 / edgeR / the single-cell ecosystem.
+
+## Getting help
+
+- Usage questions: the
+  [Bioconductor support site](https://support.bioconductor.org/), tagged
+  `geoquery`.
+- Bugs and feature requests: the
+  [issue tracker](https://github.com/seandavi/GEOquery/issues) — please include a
+  GEO accession and `sessionInfo()`.

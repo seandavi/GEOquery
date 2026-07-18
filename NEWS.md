@@ -1,3 +1,9 @@
+# GEOquery 2.81.28 (2026-07-17)
+
+## Documentation
+
+- Restructured the vignettes into a coherent six-document set, all installed with the package: *Getting started*, *Understanding GEO data formats*, *Finding and downloading data* (new — covers `searchGEO()`, download control, persistent caching/reproducibility, and reviewer-token access), *RNA-seq quantifications*, *Single-cell data from GEO*, and *From GEO to downstream analysis*. The in-depth articles are now built as vignettes (previously website-only) so they are available offline and on the Bioconductor landing page. Vignette code is precompiled from `*.qmd.orig` sources (see `dev/precompute-vignettes.R`) so it shows real GEO output while package/CI builds make no network calls.
+
 # GEOquery 2.81.27 (2026-07-17)
 
 ## New features

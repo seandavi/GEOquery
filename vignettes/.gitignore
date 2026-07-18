@@ -3,3 +3,4 @@ GEOquery_cache
 /.quarto/
 *_files
 *html
+**/*.quarto_ipynb

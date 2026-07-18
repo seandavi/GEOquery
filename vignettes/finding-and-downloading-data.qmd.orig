@@ -1,0 +1,156 @@
+---
+title: "Finding and downloading data"
+author: "Sean Davis"
+format:
+  html:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Finding and downloading data}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+Most GEOquery examples assume you already have an accession. This article covers
+the steps before and around that: **finding** studies programmatically,
+**controlling** what `getGEO()` fetches, **caching** downloads for reproducible
+work, and reaching **private** records under review.
+
+```{r}
+#| message: false
+library(GEOquery)
+```
+
+## Finding studies from R
+
+If you do not yet have an accession, `searchGEO()` queries the NCBI GEO DataSets
+database with the standard Entrez syntax and returns one row per hit:
+
+```{r}
+res <- searchGEO("asthma[Title] AND GSE[ETYP]")
+nrow(res)
+res[1:5, c("Series Accession", "Title", "Organism")]
+```
+
+The query uses Entrez field tags — `[Title]`, `[Organism]`, `[Description]`,
+`[ETYP]` (entity type, e.g. `GSE`), and many more — combined with `AND` / `OR`.
+To see the fields available for searching:
+
+```{r}
+head(searchFieldsGEO(), 12)
+```
+
+Once a hit looks promising, hand its accession straight to `getGEO()`:
+
+```{r}
+#| eval: false
+gse <- getGEO(res[["Series Accession"]][1])
+```
+
+To open a record in your web browser instead — handy for eyeballing a study
+before committing to a download — use `browseGEOAccession()`:
+
+```{r}
+#| eval: false
+browseGEOAccession("GSE2553")
+```
+
+## Controlling what `getGEO()` fetches
+
+`getGEO()` has a few knobs worth knowing:
+
+```{r}
+#| eval: false
+# Default: fast Series Matrix path -> list of SummarizedExperiment
+getGEO("GSE2553")
+
+# Legacy container instead of SummarizedExperiment
+getGEO("GSE2553", returnType = "ExpressionSet")
+
+# Skip the platform (GPL) download when you don't need feature annotation;
+# faster, and avoids fetching a large platform table
+getGEO("GSE2553", getGPL = FALSE)
+
+# Full SOFT record (a GSE S4 object) instead of the Series Matrix
+getGEO("GSE2553", GSEMatrix = FALSE)
+
+# Store the downloaded file somewhere stable (see Caching, below)
+getGEO("GSE2553", destdir = "~/geo-cache")
+
+# Override character encoding for the rare non-UTF-8 record
+getGEO("GSE2553", encoding = "Latin-1")
+```
+
+The `encoding` override is also available globally with
+`options(GEOquery.encoding = "Latin-1")` for a whole session.
+
+## Supplementary files
+
+Processed expression tables are only part of a study; raw and processed
+supplementary files (RNA-seq counts, single-cell matrices, and more) are listed
+and downloaded separately. Always look before you leap:
+
+```{r}
+getGEOSuppFiles("GSE63137", fetch_files = FALSE)   # inspect: a data.frame of files
+```
+
+```{r}
+#| eval: false
+getGEOSuppFiles("GSE63137")                        # download all into ./GSE63137/
+```
+
+## Caching and reproducibility
+
+By default, GEOquery downloads to a **temporary** directory
+(`destdir = tempdir()`), which R clears at the end of the session — so the same
+`getGEO()` call re-downloads every session. For interactive work and
+reproducible pipelines you usually want downloads to persist. Two options:
+
+**Point `destdir` at a stable directory** on any call that downloads:
+
+```{r}
+#| eval: false
+getGEO("GSE2553", destdir = "~/geo-cache")
+getGEOSuppFiles("GSE63137", baseDir = "~/geo-cache")
+```
+
+**Or turn on the built-in persistent cache**, backed by `BiocFileCache`. Once
+enabled, repeated downloads of the same URL are served from disk across sessions:
+
+```{r}
+#| eval: false
+options(GEOquery.cache = TRUE)                 # enable for the session
+options(GEOquery.cache.path = "~/geo-cache")   # optional: choose the location
+
+geoCache()        # the BiocFileCache object backing the cache
+clearGEOCache()   # wipe it when you want a clean re-download
+```
+
+For results you intend to publish, record what you used: pin a stable `destdir`
+or the cache, and capture `sessionInfo()` (GEOquery and dependency versions)
+alongside your output. GEO records can change over time, so a saved object plus a
+version record is the difference between reproducible and "worked on my machine."
+
+## Private and embargoed records
+
+Records still under peer review are not published to GEO's public FTP tree, so a
+normal `getGEO()` cannot see them. If you have a **reviewer access token** (the
+"Reviewer access" link on the private GSE's page), pass it with `token`:
+
+```{r}
+#| eval: false
+gse <- getGEO("GSE123456", token = "yourreviewertoken")
+```
+
+Because private records bypass the FTP tree, a token forces the SOFT
+(`acc.cgi`) download path. For a GSE that means you get a `GSE` S4 object (as with
+`GSEMatrix = FALSE`) rather than a `SummarizedExperiment`.
+
+## Where to go next
+
+- [Understanding GEO data formats](geo-data-formats.html) — what SOFT vs. Series
+  Matrix means for the object you get back.
+- [RNA-seq quantifications from GEO](rnaseq.html) and
+  [Single-cell data from GEO](single-cell.html) — dedicated paths for
+  sequencing-era supplementary data.
+- [From GEO to downstream analysis](downstream-analysis.html) — where the object
+  goes next.

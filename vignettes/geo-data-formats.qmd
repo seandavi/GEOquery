@@ -1,0 +1,220 @@
+---
+title: "Understanding GEO data formats"
+author: "Sean Davis"
+format:
+  html:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Understanding GEO data formats}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+This article explains *what* the NCBI Gene Expression Omnibus (GEO) actually
+stores, *why* it is shaped the way it is, and *how* GEOquery maps each form onto
+a Bioconductor object. Understanding the formats is the fastest way to predict
+what `getGEO()` will return and to debug the occasional surprising record.
+
+
+``` r
+library(GEOquery)
+```
+
+## The four GEO entity types
+
+GEO is organized around four accession types, and every GEOquery workflow starts
+by recognizing which one you have:
+
+| Prefix | Entity | What it is |
+|--------|--------|------------|
+| `GPL`  | Platform | The array or sequencing platform: the list of probes/features and their annotation. |
+| `GSM`  | Sample | One hybridization / sequencing run: the measurements for a single biological sample, plus its metadata. |
+| `GSE`  | Series | A study: a set of related `GSM` samples, optionally spanning several platforms. |
+| `GDS`  | DataSet | A *curated*, normalized collection assembled by GEO staff from a `GSE`. Far fewer exist; new submissions do not get one. |
+
+A `GSE` is the unit you almost always want. The subtlety is that a single `GSE`
+can contain samples from more than one platform, which is why
+`getGEO("GSE...")` returns a **list** — one element per platform.
+
+## Two file formats, two code paths
+
+GEO exposes the same underlying data in two very different file formats, and
+GEOquery has a distinct parser for each. Knowing which one you are using
+explains the object you get back.
+
+### SOFT — the complete, verbose record
+
+SOFT ("Simple Omnibus Format in Text") is the canonical, loss-less GEO
+representation. It is a line-oriented text format where metadata lines begin with
+`!`, `^`, or `#`, and data tables are delimited by `!..._table_begin` /
+`!..._table_end` markers. SOFT contains *everything* GEO knows about an entity.
+
+GEOquery parses SOFT into its own S4 classes — `GSE`, `GSM`, `GPL`, `GDS` — that
+mirror the file structure. You reach the pieces with accessors:
+
+
+``` r
+gsm <- getGEO("GSM11805")
+names(head(Meta(gsm), 8))   # Meta(): the metadata as a named list
+#> [1] "channel_count"      "contact_address"    "contact_city"      
+#> [4] "contact_country"    "contact_department" "contact_email"     
+#> [7] "contact_fax"        "contact_institute"
+```
+
+
+``` r
+Columns(gsm)                # descriptions of the data-table columns
+#>     Column
+#> 1         
+#> 2    VALUE
+#> 3 ABS_CALL
+#>                                                                  Description
+#> 1                                                                   ID_REF =
+#> 2                         MAS 5.0 Statistical Algorithm (mean scaled to 500)
+#> 3 MAS 5.0 Absent, Marginal, Present call  with Alpha1 = 0.05, Alpha2 = 0.065
+```
+
+
+``` r
+head(Table(gsm))            # Table(): the data table as a data.frame
+#>            ID_REF  VALUE ABS_CALL
+#> 1  AFFX-BioB-5_at  953.9        P
+#> 2  AFFX-BioB-M_at 2982.8        P
+#> 3  AFFX-BioB-3_at 1657.9        P
+#> 4  AFFX-BioC-5_at 2652.7        P
+#> 5  AFFX-BioC-3_at 2019.5        P
+#> 6 AFFX-BioDn-5_at 3531.5        P
+```
+
+SOFT is the right choice when you need fields that only exist in the full record.
+The cost is size and speed: a large `GSE` family SOFT file can be enormous, and
+parsing it is correspondingly slow.
+
+### Series Matrix — the fast, analysis-ready path
+
+For a `GSE`, GEO also publishes a **Series Matrix** file: a compact,
+tab-delimited table with the sample metadata as a header block (`!Sample_...`
+lines) followed by a single expression matrix (rows = features, columns =
+samples). This is what most analyses actually need, and it parses orders of
+magnitude faster than SOFT.
+
+This is the GEOquery **default** (`GSEMatrix = TRUE`). The result is a
+Bioconductor `SummarizedExperiment`:
+
+
+``` r
+gse <- getGEO("GSE2553")   # a list, one SummarizedExperiment per platform
+se <- gse[[1]]
+se
+#> class: RangedSummarizedExperiment 
+#> dim: 12600 181 
+#> metadata(3): experimentData annotation protocolData
+#> assays(1): exprs
+#> rownames(12600): 1 2 ... 12599 12600
+#> rowData names(13): ID PenAt ... LLID Chimeric_Cluster_IDs
+#> colnames(181): GSM48681 GSM48682 ... GSM48860 GSM48861
+#> colData names(30): title geo_accession ... supplementary_file
+#>   data_row_count
+```
+
+
+``` r
+assay(se)[1:5, 1:3]        # the expression matrix
+#>     GSM48681   GSM48682   GSM48683
+#> 1  0.2701103  0.3925373  0.4186763
+#> 2  6.3459203  2.1304703  2.0750533
+#> 3 -0.0918793 -0.2411003 -0.2499943
+#> 4  1.4679053  0.6252703  0.4673843
+#> 5 -0.2817373  0.6492023 -1.4973643
+```
+
+If you ever need a field that the Series Matrix omits, drop to SOFT with
+`getGEO("GSE...", GSEMatrix = FALSE)`.
+
+### Why `getGEO()` returns different classes
+
+This is the most common source of confusion, and it follows directly from the
+formats:
+
+- `GSE` + Series Matrix (default) → a **list** of `SummarizedExperiment`
+  (or `ExpressionSet` with `returnType = "ExpressionSet"`)
+- `GSE` + SOFT (`GSEMatrix = FALSE`) → a single `GSE` S4 object
+- `GSM` / `GPL` / `GDS` → the corresponding S4 object
+
+When in doubt, check `class()` and remember that the GSE-matrix path always
+returns a list because a study may span platforms.
+
+## ExpressionSet vs. SummarizedExperiment
+
+`SummarizedExperiment` is the modern Bioconductor standard and the substrate that
+single-cell (`SingleCellExperiment`) and spatial (`SpatialExperiment`) classes
+build on; it is now the GEOquery **default**. `ExpressionSet` (from **Biobase**)
+is the historical container, still available on request:
+
+
+``` r
+# default: SummarizedExperiment
+se_list <- getGEO("GSE2553")
+# opt back into the legacy ExpressionSet:
+eset_list <- getGEO("GSE2553", returnType = "ExpressionSet")
+# or convert an existing ExpressionSet without re-downloading:
+se <- as_SummarizedExperiment(eset_list[[1]])
+```
+
+The accessor vocabulary differs — `assay()`/`colData()`/`rowData()` for
+`SummarizedExperiment` versus `exprs()`/`pData()`/`fData()` for `ExpressionSet` —
+so pick one and stay consistent.
+
+## Supplementary files: where everything else lives
+
+Series Matrix and SOFT cover *processed* expression tables, but a great deal of
+GEO data — raw reads, processed counts, single-cell matrices, peak calls,
+images — is attached as **supplementary files** that GEO does not parse and whose
+format it does not constrain. GEOquery lists and downloads them but, by design,
+does not try to interpret arbitrary content:
+
+
+``` r
+# see what is attached, without downloading
+getGEOSuppFiles("GSE63137", fetch_files = FALSE)
+#>                                                               fname
+#> 1                   GSE63137_ATAC-seq_PV_neurons_HOMER_peaks.bed.gz
+#> 2                  GSE63137_ATAC-seq_VIP_neurons_HOMER_peaks.bed.gz
+#> 3           GSE63137_ATAC-seq_excitatory_neurons_HOMER_peaks.bed.gz
+#> 4   GSE63137_ChIP-seq_H3K27ac_excitatory_neurons_SICER_peaks.bed.gz
+#> 5  GSE63137_ChIP-seq_H3K27me3_excitatory_neurons_SICER_peaks.bed.gz
+#> 6   GSE63137_ChIP-seq_H3K4me1_excitatory_neurons_SICER_peaks.bed.gz
+#> 7   GSE63137_ChIP-seq_H3K4me3_excitatory_neurons_SICER_peaks.bed.gz
+#> 8                         GSE63137_MethylC-seq_DMRs_methylpy.txt.gz
+#> 9                  GSE63137_MethylC-seq_PV_neurons_UMRs_LMRs.txt.gz
+#> 10                GSE63137_MethylC-seq_VIP_neurons_UMRs_LMRs.txt.gz
+#> 11         GSE63137_MethylC-seq_excitatory_neurons_UMRs_LMRs.txt.gz
+#> 12                                                 GSE63137_RAW.tar
+#>                                                                                                                                 url
+#> 1                   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_PV_neurons_HOMER_peaks.bed.gz
+#> 2                  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_VIP_neurons_HOMER_peaks.bed.gz
+#> 3           https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ATAC-seq_excitatory_neurons_HOMER_peaks.bed.gz
+#> 4   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K27ac_excitatory_neurons_SICER_peaks.bed.gz
+#> 5  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K27me3_excitatory_neurons_SICER_peaks.bed.gz
+#> 6   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K4me1_excitatory_neurons_SICER_peaks.bed.gz
+#> 7   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_ChIP-seq_H3K4me3_excitatory_neurons_SICER_peaks.bed.gz
+#> 8                         https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_DMRs_methylpy.txt.gz
+#> 9                  https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_PV_neurons_UMRs_LMRs.txt.gz
+#> 10                https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_VIP_neurons_UMRs_LMRs.txt.gz
+#> 11         https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_MethylC-seq_excitatory_neurons_UMRs_LMRs.txt.gz
+#> 12                                                 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63137/suppl/GSE63137_RAW.tar
+```
+
+This matters enormously for sequencing-era data. RNA-seq counts and **all**
+single-cell data live here, not in the Series Matrix — which is why those have
+dedicated entry points (see the [RNA-seq](rnaseq.html) and
+[single-cell](single-cell.html) articles).
+
+## Where to go next
+
+- [Finding and downloading data](finding-and-downloading-data.html) — search GEO,
+  control `getGEO()`, and cache downloads.
+- [Single-cell data from GEO](single-cell.html) — why single-cell lives in
+  supplementary files and how to load it into a `SingleCellExperiment`.
+- [From GEO to downstream analysis](downstream-analysis.html) — taking a GEOquery
+  object into differential expression and beyond.

@@ -72,11 +72,12 @@ getGEOSuppFiles("GSE63137", fetch_files = FALSE)
 
 ## Documentation
 
-The package vignette is a quick-start; the in-depth, narrative articles cover
-the *why* and the downstream workflows:
+Six vignettes take you from first contact to downstream analysis — a
+quick-start plus in-depth articles covering the *why* and the workflows:
 
-- [Getting started](http://seandavi.github.io/GEOquery/)
+- [Getting started](http://seandavi.github.io/GEOquery/articles/GEOquery.html)
 - [Understanding GEO data formats](http://seandavi.github.io/GEOquery/articles/geo-data-formats.html)
+- [Finding and downloading data](http://seandavi.github.io/GEOquery/articles/finding-and-downloading-data.html)
 - [RNA-seq quantifications](http://seandavi.github.io/GEOquery/articles/rnaseq.html)
 - [Single-cell data from GEO](http://seandavi.github.io/GEOquery/articles/single-cell.html)
 - [From GEO to downstream analysis](http://seandavi.github.io/GEOquery/articles/downstream-analysis.html)

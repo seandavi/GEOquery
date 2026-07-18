@@ -17,4 +17,11 @@ Dockerfile
 ^CLAUDE\.md$
 ^ROADMAP\.md$
 ^CONTRIBUTING\.md$
-^vignettes/articles$
+^vignettes/\.quarto$
+^vignettes/.*\.qmd\.orig$
+^vignettes/figures$
+^vignettes/GS[EM][0-9]+$
+^GS[EM][0-9]+$
+^G(DS|PL)[0-9]+$
+^\.claude$
+^\.posit$

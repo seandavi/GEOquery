@@ -4,3 +4,13 @@ template:
   light-switch: true
 development:
   mode: auto
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - GEOquery
+  - geo-data-formats
+  - finding-and-downloading-data
+  - rnaseq
+  - single-cell
+  - downstream-analysis
