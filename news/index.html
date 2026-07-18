@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.30</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.31</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,9 +44,17 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/deprecate/gds2ma-drop-limma/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.81.31" id="geoquery-28131-2026-07-18">GEOquery 2.81.31 (2026-07-18)<a class="anchor" aria-label="anchor" href="#geoquery-28131-2026-07-18"></a></h2>
+<div class="section level3">
+<h3 id="deprecated-2-81-31">Deprecated<a class="anchor" aria-label="anchor" href="#deprecated-2-81-31"></a></h3>
+<ul><li>
+<code><a href="../reference/coercion.html">GDS2MA()</a></code> is deprecated and now warns; it will be removed in a future release. Its <code>limma::MAList</code> return type is superseded by <code><a href="../reference/coercion.html">GDS2eSet()</a></code>’s <code>ExpressionSet</code> (coercible to <code>SummarizedExperiment</code> and other downstream structures). <code>limma</code> moves from <code>Imports</code> to <code>Suggests</code> accordingly, so it is no longer installed with GEOquery; <code><a href="../reference/coercion.html">GDS2MA()</a></code> errors with a clear message if <code>limma</code> is absent (<a href="https://github.com/seandavi/GEOquery/issues/217" class="external-link">#217</a>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.81.30" id="geoquery-28130-2026-07-18">GEOquery 2.81.30 (2026-07-18)<a class="anchor" aria-label="anchor" href="#geoquery-28130-2026-07-18"></a></h2>
 <div class="section level3">

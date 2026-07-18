@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.30</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.31</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>CLAUDE.md</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/CLAUDE.md" class="external-link"><code>CLAUDE.md</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/deprecate/gds2ma-drop-limma/CLAUDE.md" class="external-link"><code>CLAUDE.md</code></a></small>
     </div>
 
 <div id="claudemd" class="section level1">
@@ -136,7 +136,7 @@
 <li>
 <code>R/searchGEO.R</code> — Entrez search via <code>rentrez</code> (<code>searchGEO</code>, <code>searchFieldsGEO</code>).</li>
 <li>
-<code>R/GDS2MA.R</code> — convert GDS to limma <code>MAList</code> / <code>ExpressionSet</code>.</li>
+<code>R/GDS2MA.R</code> — convert GDS to <code>ExpressionSet</code> (<code>GDS2eSet</code>). <code>GDS2MA</code> (→ limma <code>MAList</code>) is <strong>deprecated</strong>; <code>limma</code> is Suggests-only and guarded by <code>requireNamespace</code>.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="runtime-options-rzzzr">Runtime options (<code>R/zzz.R</code>)<a class="anchor" aria-label="anchor" href="#runtime-options-rzzzr"></a></h3>

@@ -9,7 +9,7 @@ MALists or ExpressionSets."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.30</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.31</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,7 @@ MALists or ExpressionSets."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Convert a GDS data structure to a BioConductor data structure</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/R/GEOquery-package.R" class="external-link"><code>R/GEOquery-package.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/deprecate/gds2ma-drop-limma/R/GEOquery-package.R" class="external-link"><code>R/GEOquery-package.R</code></a></small>
       <div class="d-none name"><code>coercion.Rd</code></div>
     </div>
 
@@ -105,7 +105,11 @@ object</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function just rearranges one data structure into another.  For GDS, it
+    <p><code>GDS2MA()</code> is <strong>deprecated</strong> and will be removed in a future release: the
+<code>MAList</code> return type is superseded by <code>ExpressionSet</code>/<code>SummarizedExperiment</code>,
+which can be coerced to whatever downstream analysis needs. Use <code>GDS2eSet()</code>
+instead (and convert to an <code>MAList</code> with limma if you still need one).</p>
+<p>This function just rearranges one data structure into another.  For GDS, it
 also deals appropriately with making the 'targets' list item for the limma
 data structure and the phenoData slot of ExpressionSets.</p>
     </div>

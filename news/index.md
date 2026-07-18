@@ -1,5 +1,20 @@
 # Changelog
 
+## GEOquery 2.81.31 (2026-07-18)
+
+### Deprecated
+
+- [`GDS2MA()`](http://seandavi.github.io/GEOquery/reference/coercion.md)
+  is deprecated and now warns; it will be removed in a future release.
+  Its `limma::MAList` return type is superseded by
+  [`GDS2eSet()`](http://seandavi.github.io/GEOquery/reference/coercion.md)’s
+  `ExpressionSet` (coercible to `SummarizedExperiment` and other
+  downstream structures). `limma` moves from `Imports` to `Suggests`
+  accordingly, so it is no longer installed with GEOquery;
+  [`GDS2MA()`](http://seandavi.github.io/GEOquery/reference/coercion.md)
+  errors with a clear message if `limma` is absent
+  ([\#217](https://github.com/seandavi/GEOquery/issues/217)).
+
 ## GEOquery 2.81.30 (2026-07-18)
 
 ### Internal
