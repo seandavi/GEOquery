@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.29</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,9 +44,16 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/fix/printhead/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.81.29" id="geoquery-28129-2026-07-18">GEOquery 2.81.29 (2026-07-18)<a class="anchor" aria-label="anchor" href="#geoquery-28129-2026-07-18"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-2-81-29">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-81-29"></a></h3>
+<ul><li>Printing a <code>GSM</code>, <code>GPL</code>, or <code>GDS</code> object now shows the leading rows of its data table again. A corrupted definition of the internal <code><a href="https://rdrr.io/pkg/limma/man/printHead.html" class="external-link">printHead()</a></code> helper had made it return a function instead of printing, so the “Data Table” preview in the <code><a href="https://rdrr.io/r/methods/show.html" class="external-link">show()</a></code> method was broken (<a href="https://github.com/seandavi/GEOquery/issues/215" class="external-link">#215</a>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.81.28" id="geoquery-28128-2026-07-17">GEOquery 2.81.28 (2026-07-17)<a class="anchor" aria-label="anchor" href="#geoquery-28128-2026-07-17"></a></h2>
 <div class="section level3">
