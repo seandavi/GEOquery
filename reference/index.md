@@ -59,8 +59,6 @@
   Sample
 - [`geoSingleCellUnits()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellUnits.md)
   : Group a single-cell manifest into loadable units
-- [`geoToSRA()`](http://seandavi.github.io/GEOquery/reference/geoToSRA.md)
-  : Resolve a GEO accession to its SRA accessions
 - [`getDirListing()`](http://seandavi.github.io/GEOquery/reference/getDirListing.md)
   : get a directory listing from NCBI GEO
 - [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md) :
