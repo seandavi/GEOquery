@@ -44,15 +44,14 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/feat/searchgeo-json/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.81.32" id="geoquery-28132">GEOquery 2.81.32<a class="anchor" aria-label="anchor" href="#geoquery-28132"></a></h2>
 <div class="section level3">
-<h3 id="new-features-2-81-32">New features<a class="anchor" aria-label="anchor" href="#new-features-2-81-32"></a></h3>
-<ul><li>
-<code><a href="../reference/searchGEO.html">searchGEO()</a></code> now uses a batched <strong>JSON</strong> esummary backend (<code>esummary db=gds&amp;retmode=json&amp;version=2.0</code>) instead of fetching and string-parsing one text record at a time. This is faster on large result sets and returns structured, stably-named columns: <code>Accession</code>, <code>Title</code>, <code>Summary</code>, <code>Organism</code>, <code>Type</code>, <code>GPL</code>, <code>n_samples</code>, <code>PDAT</code>, <code>suppFile</code>, <code>FTPLink</code>, <code>SeriesTitle</code>, <code>entryType</code>, and <code>ID</code>. Adds a lightweight <code>jsonlite</code> dependency (<a href="https://github.com/seandavi/GEOquery/issues/223" class="external-link">#223</a>).</li>
+<h3 id="internal-2-81-32">Internal<a class="anchor" aria-label="anchor" href="#internal-2-81-32"></a></h3>
+<ul><li>Downloaded and cached files can now be integrity-checked against an expected MD5. <code>downloadFile()</code> gains an opt-in <code>md5=</code> argument; a mismatch emits a structured <code>geoquery_checksum_mismatch</code> warning (advisory, not an error) and the corrupt file is not cached. Foundational for the raw-file resolver and fetch receipt (<a href="https://github.com/seandavi/GEOquery/issues/222" class="external-link">#222</a>).</li>
 </ul></div>
 </div>
     <div class="section level2">

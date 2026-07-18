@@ -28,11 +28,7 @@ searchGEO(query, step = 500L)
 
 ## Value
 
-a data.frame with one row per matching GEO record and columns
-`Accession`, `Title`, `Summary`, `Organism`, `Type`, `GPL`, `n_samples`,
-`PDAT`, `suppFile`, `FTPLink`, `SeriesTitle`, `entryType`, and `ID` (the
-Entrez UID). An empty query returns a zero-row data.frame with those
-columns.
+a data.frame contains the search results
 
 ## Details
 

@@ -2,17 +2,14 @@
 
 ## GEOquery 2.81.32
 
-### New features
+### Internal
 
-- [`searchGEO()`](http://seandavi.github.io/GEOquery/reference/searchGEO.md)
-  now uses a batched **JSON** esummary backend
-  (`esummary db=gds&retmode=json&version=2.0`) instead of fetching and
-  string-parsing one text record at a time. This is faster on large
-  result sets and returns structured, stably-named columns: `Accession`,
-  `Title`, `Summary`, `Organism`, `Type`, `GPL`, `n_samples`, `PDAT`,
-  `suppFile`, `FTPLink`, `SeriesTitle`, `entryType`, and `ID`. Adds a
-  lightweight `jsonlite` dependency
-  ([\#223](https://github.com/seandavi/GEOquery/issues/223)).
+- Downloaded and cached files can now be integrity-checked against an
+  expected MD5. `downloadFile()` gains an opt-in `md5=` argument; a
+  mismatch emits a structured `geoquery_checksum_mismatch` warning
+  (advisory, not an error) and the corrupt file is not cached.
+  Foundational for the raw-file resolver and fetch receipt
+  ([\#222](https://github.com/seandavi/GEOquery/issues/222)).
 
 ## GEOquery 2.81.31 (2026-07-18)
 
