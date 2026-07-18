@@ -1,3 +1,12 @@
+# GEOquery 2.81.29 (2026-07-18)
+
+## Bug fixes
+
+- Printing a `GSM`, `GPL`, or `GDS` object now shows the leading rows of its data
+  table again. A corrupted definition of the internal `printHead()` helper had
+  made it return a function instead of printing, so the "Data Table" preview in
+  the `show()` method was broken (#215).
+
 # GEOquery 2.81.28 (2026-07-17)
 
 ## Documentation

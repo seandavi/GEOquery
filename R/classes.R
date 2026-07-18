@@ -19,24 +19,8 @@ setClass("GSM", representation(dataTable = "GEODataTable"), prototype = list(dat
 setClass("GDS", representation(gpl = "GPL", dataTable = "GEODataTable"), prototype = list(gpl = new("GPL"),
     dataTable = new("GEODataTable")), contains = "GEOData")
 
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth printHead
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth <-
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth function(x)
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth #
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth Print
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth leading
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth 5
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth elements
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth or
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth rows
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth of
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth atomic
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth object
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth From
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth limma
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth and
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth Gordon
-printHead <- function(x) #  Print leading 5 elements or rows of atomic object   From limma and Gordon Smyth Smyth
+# Print the leading 5 elements or rows of an atomic object. From limma, by Gordon Smyth.
+printHead <- function(x)
 {
     if (is.atomic(x)) {
         d <- dim(x)

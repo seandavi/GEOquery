@@ -1,8 +1,8 @@
 Package: GEOquery
 Type: Package
 Title: Get data from NCBI Gene Expression Omnibus (GEO)
-Version: 2.81.28
-Date: 2026-07-17
+Version: 2.81.29
+Date: 2026-07-18
 Authors@R: 
   c(person(given = "Sean",
            family = "Davis",
