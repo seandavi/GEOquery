@@ -1,6 +1,15 @@
 # Offline tests for the shared HTTP layer (#173). httr2's own mocking is used,
 # so no network and no extra dependency.
 
+test_that(".geo_request retries transport failures, not just bad statuses", {
+    # NCBI refuses connections under load; httr2 does not retry those unless
+    # retry_on_failure is set. Mocked errors bypass httr2's retry loop, so the
+    # policy is asserted directly rather than exercised.
+    pol <- GEOquery:::.geo_request("https://example.com/x")$policies
+    expect_true(pol$retry_on_failure)
+    expect_equal(pol$retry_max_tries, 3)
+})
+
 test_that("getDirListing parses GEO-prefixed hrefs from a mocked index (#173)", {
     html <- paste0(
         "<html><body>",

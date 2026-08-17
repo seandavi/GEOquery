@@ -91,13 +91,9 @@ searchFieldsGEO <- function() {
 # touches the network. An ENTREZ_KEY, if set, raises the NCBI rate limit.
 .fetch_gds_esummary_json <- function(web_history, retstart, retmax,
     timeout = getOption("GEOquery.download.timeout", 300)) {
-  req <- httr2::request("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi") |>
-    httr2::req_user_agent("GEOquery (https://github.com/seandavi/GEOquery)") |>
-    httr2::req_timeout(timeout) |>
-    httr2::req_retry(
-      max_tries = 3,
-      is_transient = function(resp) httr2::resp_status(resp) %in% c(429, 500, 502, 503, 504)
-    ) |>
+  req <- .geo_request(
+    "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi", timeout
+  ) |>
     httr2::req_url_query(
       db = "gds", version = "2.0", retmode = "json",
       WebEnv = web_history$WebEnv, query_key = web_history$QueryKey,
