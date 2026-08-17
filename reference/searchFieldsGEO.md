@@ -23,36 +23,36 @@ their properties are in columns.
 ``` r
 searchFieldsGEO()
 #>    Name     FullName  Description TermCount IsDate IsNumerical SingleToken
-#> 1   ALL   All Fields All term....  48165460      N           N           N
+#> 1   ALL   All Fields All term....  48654337      N           N           N
 #> 2   UID          UID Unique n....         0      N           Y           Y
 #> 3  FILT       Filter Limits t....        71      N           N           Y
-#> 4  ORGN     Organism exploded....     78372      N           N           Y
-#> 5  ACCN GEO Acce.... accessio....  20705684      N           N           Y
-#> 6  TITL        Title Words in....  10586569      N           N           Y
-#> 7  DESC  Description Text fro....  11477524      N           N           Y
-#> 8  SFIL Suppleme.... Suppleme....       256      N           N           Y
+#> 4  ORGN     Organism exploded....     78740      N           N           Y
+#> 5  ACCN GEO Acce.... accessio....  20874027      N           N           Y
+#> 6  TITL        Title Words in....  10675670      N           N           Y
+#> 7  DESC  Description Text fro....  11702987      N           N           Y
+#> 8  SFIL Suppleme.... Suppleme....       255      N           N           Y
 #> 9  ETYP   Entry Type Entry ty....         4      N           N           Y
 #> 10 STYP  Sample Type  Sample type         9      N           N           Y
 #> 11 VTYP Sample V.... type of ....         7      N           N           Y
 #> 12 PTYP Platform.... Platform....        17      N           N           Y
 #> 13 GTYP DataSet Type type of ....        27      N           N           Y
-#> 14 NSAM Number o.... Number o....      2172      N           Y           Y
-#> 15  SRC Sample S.... sample s....    469047      N           N           Y
-#> 16 AUTH       Author author o....   1373363      N           N           Y
-#> 17 INST Submitte.... institut....     26711      N           N           Y
-#> 18 NPRO Number o.... number o....      7280      N           Y           Y
+#> 14 NSAM Number o.... Number o....      2173      N           Y           Y
+#> 15  SRC Sample S.... sample s....    473037      N           N           Y
+#> 16 AUTH       Author author o....   1384491      N           N           Y
+#> 17 INST Submitte.... institut....     26871      N           N           Y
+#> 18 NPRO Number o.... number o....      7283      N           Y           Y
 #> 19 SSTP Subset V.... subset v....        24      N           N           Y
 #> 20 SSDE Subset D.... subset d....      7535      N           N           Y
 #> 21 GEID Reporter.... name or ....   2840498      N           N           Y
-#> 22 PDAT Publicat.... publicat....      8698      Y           N           Y
-#> 23 UDAT  Update Date         date      7815      Y           N           Y
+#> 22 PDAT Publicat.... publicat....      8729      Y           N           Y
+#> 23 UDAT  Update Date         date      7846      Y           N           Y
 #> 24 TAGL   Tag Length Tag/Sign....         9      N           N           Y
-#> 25 RGSE Related .... Related ....     30943      N           N           Y
-#> 26 RGPL Related .... Related ....    293690      N           N           Y
-#> 27 MESH   MeSH Terms Medical ....     17834      N           N           Y
+#> 25 RGSE Related .... Related ....     31013      N           N           Y
+#> 26 RGPL Related .... Related ....    297542      N           N           Y
+#> 27 MESH   MeSH Terms Medical ....     17860      N           N           Y
 #> 28 PROJ      Project      Project        10      N           N           Y
-#> 29 ATNM Attribut.... Attribut....     50486      N           N           Y
-#> 30 ATTR    Attribute    Attribute   2879761      N           N           Y
+#> 29 ATNM Attribut.... Attribut....     50665      N           N           Y
+#> 30 ATTR    Attribute    Attribute   2902483      N           N           Y
 #> 31 PROP   Properties   Properties         3      N           N           Y
 #>    Hierarchy IsHidden
 #> 1          N        N

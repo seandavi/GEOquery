@@ -2,6 +2,15 @@
 
 ## GEOquery 2.81.32
 
+### Bug fixes
+
+- Downloads now retry when the connection itself fails, not only when
+  the server returns a retryable status. NCBI refuses connections under
+  load, which surfaces as a curl transport error with no HTTP response —
+  a case `httr2` does not retry unless asked. This was the cause of
+  intermittent `Couldn't connect to server [www.ncbi.nlm.nih.gov]`
+  failures that aborted after ~65ms with no second attempt.
+
 ### New features
 
 - [`geoToSRA()`](http://seandavi.github.io/GEOquery/reference/geoToSRA.md)
