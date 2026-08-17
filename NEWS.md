@@ -1,3 +1,14 @@
+# GEOquery 2.81.33
+
+## Bug fixes
+
+- `getRNASeqQuantGenomeInfo()` and `getRNASeqQuantResults()` now fail with a
+  clear message naming the missing file and the GEO download page to check,
+  when that page does not list the expected RNA-seq quantification files.
+  Previously a missing gene annotation table produced a silent `NULL` genome
+  info, or an empty URL handed to `readr::read_tsv()`, so the failure surfaced
+  far from its cause (#229).
+
 # GEOquery 2.81.32
 
 ## Bug fixes

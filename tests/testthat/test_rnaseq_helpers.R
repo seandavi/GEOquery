@@ -88,3 +88,25 @@ test_that("raw counts/annotation helpers require a geoDownloadLinks object", {
     "Input must be a geoDownloadLinks object"
   )
 })
+
+test_that("a download page missing the expected file fails loudly (#229)", {
+  # NCBI occasionally serves a download page without the RNA-seq sections.
+  # Previously this surfaced as a silent NULL from getRNASeqQuantGenomeInfo()
+  # and an unreadable empty URL in getRNASeqQuantResults().
+  no_links <- structure(character(0), class = c("geoDownloadLinks", "character"))
+  bare <- httr2::response(200, body = charToRaw("<html><body></body></html>"))
+
+  httr2::with_mocked_responses(function(req) bare, {
+    expect_error(
+      GEOquery:::getRNASeqQuantGenomeInfo("GSE83322"),
+      "gene annotation table.*GSE83322"
+    )
+    expect_error(
+      GEOquery:::getRNASeqQuantResults("GSE83322"),
+      "raw counts matrix.*GSE83322"
+    )
+  })
+
+  expect_equal(GEOquery:::.requireDownloadLink("u", "GSE1", "x"), "u")
+  expect_error(GEOquery:::.requireDownloadLink(no_links, "GSE1", "x"), "GSE1")
+})
