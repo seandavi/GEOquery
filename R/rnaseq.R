@@ -66,6 +66,22 @@ getRNAQuantAnnotationURL <- function(links) {
   return(link)
 }
 
+# The RNA-seq URL extractors return character(0) when the download page does
+# not list the file -- the accession has no processed counts, or NCBI served a
+# partial page. Left unchecked, that empty URL flows on and surfaces far from
+# its cause: readr::read_tsv() on nothing, or a silent NULL genome info. Fail
+# here instead, naming the file and where to look (#229).
+.requireDownloadLink <- function(link, gse, what) {
+  if (length(link) == 0) {
+    stop(
+      "No '", what, "' file found for ", gse, ".\n",
+      "Navigate to: \n  https://www.ncbi.nlm.nih.gov/geo/download/?acc=", gse,
+      "\nand check if the '", what, "' section is available."
+    )
+  }
+  link
+}
+
 #' Extract filename from a GEO download URL
 #'
 #' This function extracts the filename from a GEO download URL.
@@ -144,7 +160,9 @@ urlExtractRNASeqQuantGenomeInfo <- function(url) {
 #' @export
 getRNASeqQuantGenomeInfo <- function(gse) {
   links <- getGSEDownloadPageURLs(gse)
-  annotation_link <- getRNAQuantAnnotationURL(links)
+  annotation_link <- .requireDownloadLink(
+    getRNAQuantAnnotationURL(links), gse, "gene annotation table"
+  )
   metadata <- urlExtractRNASeqQuantGenomeInfo(annotation_link)
   return(metadata)
 }
@@ -207,16 +225,12 @@ readRNAQuantRawCounts <- function(link) {
 #' @keywords internal
 getRNASeqQuantResults <- function(gse) {
   links <- getGSEDownloadPageURLs(gse)
-  raw_counts_link <- getRNAQuantRawCountsURL(links)
-  if (length(raw_counts_link) == 0) {
-    stop(
-      "No raw counts file found.\n",
-      "Navigate to: \n  https://ncbi.nlm.nih.gov/geo/download/?acc=",
-      gse,
-      "\nand check if the 'RNA-Seq raw counts' link is available."
-    )
-  }
-  annotation_link <- getRNAQuantAnnotationURL(links)
+  raw_counts_link <- .requireDownloadLink(
+    getRNAQuantRawCountsURL(links), gse, "Series RNA-seq raw counts matrix"
+  )
+  annotation_link <- .requireDownloadLink(
+    getRNAQuantAnnotationURL(links), gse, "gene annotation table"
+  )
   quants <- readRNAQuantRawCounts(raw_counts_link)
   annotation <- readRNAQuantAnnotation(annotation_link)
   return(list(quants = quants, annotation = annotation))
