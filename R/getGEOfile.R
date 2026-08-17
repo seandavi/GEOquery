@@ -166,6 +166,10 @@ getGEORaw <- function(GEO, destdir = tempdir()) {
     httr2::req_timeout(timeout) |>
     httr2::req_retry(
       max_tries = 3,
+      # NCBI drops/refuses connections under load; those surface as curl
+      # transport errors with no response, which httr2 does NOT retry by
+      # default. Without this, a 65ms "Couldn't connect to server" fails hard.
+      retry_on_failure = TRUE,
       is_transient = function(resp) httr2::resp_status(resp) %in% c(429, 500, 502, 503, 504)
     )
 }

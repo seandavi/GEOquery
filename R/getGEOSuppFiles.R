@@ -143,7 +143,7 @@ getGEOSuppFiles <- function(
 
  
                 if (!file.exists(destfile)) {
-                    httr2::request(base_url=url) |>
+                    .geo_request(url) |>
                       httr2::req_url_path_append(i) |>
                       httr2::req_url_query(tool="geoquery") |>
                       httr2::req_perform(path=destfile)

@@ -9,9 +9,7 @@
 #' @keywords internal
 getGSEDownloadPageURLs <- function(gse) {
   url <- "https://ncbi.nlm.nih.gov/geo/download/"
-  html <- httr2::request(url) |>
-    httr2::req_timeout(15) |>
-    httr2::req_retry(3) |>
+  html <- .geo_request(url) |>
     httr2::req_url_query(acc = gse) |>
     httr2::req_perform() |>
     httr2::resp_body_string()
