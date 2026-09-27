@@ -90,6 +90,7 @@ getGEOfile <- function(GEO, destdir = tempdir(), AnnotGPL = FALSE, amount = c(
           if (!file.exists(destfile)) {
             downloadFile(myurl, destfile, mode)
           } else {
+            .receipt_record(destfile, myurl)
             message(sprintf(
               "Using locally cached version of %s found here:\n%s ",
               GEO, destfile
@@ -113,6 +114,7 @@ getGEOfile <- function(GEO, destdir = tempdir(), AnnotGPL = FALSE, amount = c(
     if (!file.exists(destfile)) {
       downloadFile(myurl, destfile, mode = mode, quiet = TRUE)
     } else {
+      .receipt_record(destfile, myurl)
       message(sprintf(
         "Using locally cached version of %s found here:\n%s ",
         GEO, destfile
@@ -131,6 +133,7 @@ getGEOfile <- function(GEO, destdir = tempdir(), AnnotGPL = FALSE, amount = c(
   if (!file.exists(destfile)) {
     downloadFile(myurl, destfile, mode)
   } else {
+    .receipt_record(destfile, myurl)
     message(sprintf(
       "Using locally cached version of %s found here:\n%s ", GEO,
       destfile
@@ -187,12 +190,13 @@ downloadFile <- function(url, destfile, mode = "wb", quiet = TRUE,
       file.copy(cached, destfile, overwrite = TRUE)
       if (!quiet) message("Using cached download: ", destfile)
       .verify_md5(destfile, md5)
+      .receipt_record(destfile, url, source = "cache")
       return(invisible(TRUE))
     }
   }
   req <- .geo_request(url, timeout) |>
     httr2::req_headers(`accept-encoding` = "gzip")
-  tryCatch(
+  response <- tryCatch(
     httr2::req_perform(req, path = destfile),
     error = function(e) {
       if (file.exists(destfile)) {
@@ -207,6 +211,7 @@ downloadFile <- function(url, destfile, mode = "wb", quiet = TRUE,
   )
   # Integrity check before caching, so a corrupt download is never stored (#222).
   .verify_md5(destfile, md5)
+  .receipt_record(destfile, url, response, source = "download")
   # Cache miss: store the freshly downloaded file for next time (#171). A cache
   # failure must never break the download.
   if (use_cache) {
