@@ -145,6 +145,29 @@ considerations such as background processing and normalization are
 consistent across the dataset. Information reflecting experimental design is
 provided through GDS subsets.
 }
+\section{Fetch receipts}{
+
+Set \code{options(GEOquery.fetch.receipt = "/path/to/new-receipt.json")} to
+write an optional JSON receipt after a successful call. The path must not
+exist and its parent directory must be writable. The default, \code{NULL} (or
+\code{FALSE}), disables receipts. Choose a fresh path for each call and reset
+the option to \code{NULL} when finished. Return values are unchanged.
+
+Schema version 1 records one resource per local input file, including
+nested GPL downloads: \code{accession}, \code{url}, \code{endpoint}, \code{expected_url},
+\code{file} (basename), \code{source} (\code{download}, \code{cache} or \code{local}),
+\code{bytes}, \code{md5}, \code{http_last_modified}, \code{geo_last_update},
+\code{geoquery_version} and UTC \code{timestamp}. The timestamp describes the
+current observation of the stored bytes, not a historic download time.
+Dates not available from the response or parsed object are JSON null.
+A reused local file has no verified source URL: \code{url} and \code{endpoint}
+are null, while \code{expected_url} records the URL GEOquery would have used
+if known. Cache URLs are cache keys. Reviewer tokens, URL credentials and
+non-routing query parameters are omitted. No extra network requests are
+made. Receipts describe retrieval inputs, not transformations or biological
+validity; they may still identify private accessions and file names.
+}
+
 \section{Warning }{
  Some of the files that are downloaded, particularly those
 associated with GSE entries from GEO are absolutely ENORMOUS and parsing

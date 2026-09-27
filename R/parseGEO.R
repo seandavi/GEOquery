@@ -475,11 +475,12 @@ getAndParseGSEMatrices <- function(GEO, destdir, AnnotGPL, getGPL = TRUE, parseC
     for (i in 1:length(b)) {
         message(b[i])
         destfile = file.path(destdir, b[i])
+        url = sprintf("https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/matrix/%s",
+            stub, GEO, b[i])
         if (file.exists(destfile)) {
+            .receipt_record(destfile, url)
             message(sprintf("Using locally cached version: %s", destfile))
         } else {
-            url = sprintf("https://ftp.ncbi.nlm.nih.gov/geo/series/%s/%s/matrix/%s",
-                stub, GEO, b[i])
             downloadFile(url, destfile = destfile, mode = "wb")
         }
         ret[[b[i]]] <- parseGSEMatrix(destfile, destdir = destdir, AnnotGPL = AnnotGPL,
@@ -659,6 +660,7 @@ parseGSEMatrix <- function(fname, AnnotGPL = FALSE, destdir = tempdir(), getGPL 
     }
     eset <- new("ExpressionSet", phenoData = as(sampledat, "AnnotatedDataFrame"), annotation = GPL,
         featureData = fd, experimentData = ed, exprs = as.matrix(datamat))
+    .receipt_metadata(fname, eset)
     return(list(GPL = as.character(sampledat[1, grep("platform_id", colnames(sampledat),
         ignore.case = TRUE)]), eset = eset))
 }

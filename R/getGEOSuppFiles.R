@@ -91,6 +91,12 @@ getGEOSuppFileURL <- function(GEO) {
 #' @param quiet logical(1). If TRUE, suppress informational messages such as
 #'     "No supplemental files found" and "Using locally cached version".
 #'     Defaults to the `GEOquery.quiet` option, or FALSE.
+#' @section Fetch receipts:
+#' With `fetch_files = TRUE`, the `GEOquery.fetch.receipt` option writes
+#' a JSON receipt for downloaded or reused files. See [getGEO()] for the
+#' schema, output-path requirements and credential handling. Supplementary
+#' files are not parsed, so `geo_last_update` is null. Listing-only calls
+#' (`fetch_files = FALSE`) do not write a receipt.
 #' @return If fetch_files=TRUE, a data frame is returned invisibly with rownames representing the
 #' full path of the resulting downloaded files and the records in the
 #' data.frame the output of file.info for each downloaded file.
@@ -117,6 +123,8 @@ getGEOSuppFiles <- function(
     filter_regex = NULL,
     quiet = getOption("GEOquery.quiet", FALSE)
 ) {
+    receipt <- if (fetch_files) .receipt_start("getGEOSuppFiles") else NULL
+    on.exit(.receipt_stop(receipt), add = TRUE)
     geotype <- toupper(substr(GEO, 1, 3))
     storedir <- baseDir
     fileinfo <- list()
@@ -143,12 +151,16 @@ getGEOSuppFiles <- function(
 
  
                 if (!file.exists(destfile)) {
-                    .geo_request(url) |>
+                    request <- .geo_request(url) |>
                       httr2::req_url_path_append(i) |>
-                      httr2::req_url_query(tool="geoquery") |>
-                      httr2::req_perform(path=destfile)
+                      httr2::req_url_query(tool="geoquery")
+                    response <- httr2::req_perform(request, path = destfile)
+                    .receipt_record(
+                      destfile, request$url, response, source = "download"
+                    )
                     res <- 0
                 } else {
+                  .receipt_record(destfile, url_join(url, i))
                   if (!quiet) {
                     message(sprintf("Using locally cached version of supplementary file(s) %s found here:\n%s ",
                       GEO, destfile))
@@ -162,6 +174,7 @@ getGEOSuppFiles <- function(
         ret$destdir <- storedir
         ret$filepath <- file.path(storedir, fnames)
         ret$GEO <- GEO
+        .receipt_write(receipt)
         return(ret)
     } else {
         return(data.frame(fname = fnames, url = url_join(url, fnames)))

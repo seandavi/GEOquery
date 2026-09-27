@@ -93,6 +93,26 @@
 #' results (GDS/GPL/GSM/GSE S4 objects) are unaffected. As of this release the
 #' default is "SummarizedExperiment"; pass returnType = "ExpressionSet" for the
 #' previous behavior.
+#' @section Fetch receipts:
+#' Set `options(GEOquery.fetch.receipt = "/path/to/new-receipt.json")` to
+#' write an optional JSON receipt after a successful call. The path must not
+#' exist and its parent directory must be writable. The default, `NULL` (or
+#' `FALSE`), disables receipts. Choose a fresh path for each call and reset
+#' the option to `NULL` when finished. Return values are unchanged.
+#'
+#' Schema version 1 records one resource per local input file, including
+#' nested GPL downloads: `accession`, `url`, `endpoint`, `expected_url`,
+#' `file` (basename), `source` (`download`, `cache` or `local`),
+#' `bytes`, `md5`, `http_last_modified`, `geo_last_update`,
+#' `geoquery_version` and UTC `timestamp`. The timestamp describes the
+#' current observation of the stored bytes, not a historic download time.
+#' Dates not available from the response or parsed object are JSON null.
+#' A reused local file has no verified source URL: `url` and `endpoint`
+#' are null, while `expected_url` records the URL GEOquery would have used
+#' if known. Cache URLs are cache keys. Reviewer tokens, URL credentials and
+#' non-routing query parameters are omitted. No extra network requests are
+#' made. Receipts describe retrieval inputs, not transformations or biological
+#' validity; they may still identify private accessions and file names.
 #' @param encoding Optional character encoding for reading the downloaded GEO
 #' file, one of "unknown" (the default; let the reader auto-detect), "UTF-8", or
 #' "Latin-1". Most GEO files are UTF-8/ASCII, but a few carry Latin-1 bytes that
@@ -139,6 +159,8 @@ getGEO <- function(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits =
     GSEMatrix = TRUE, AnnotGPL = FALSE, getGPL = TRUE, parseCharacteristics = TRUE,
     returnType = c("SummarizedExperiment", "ExpressionSet"), encoding = NULL,
     token = NULL) {
+    receipt <- .receipt_start("getGEO")
+    on.exit(.receipt_stop(receipt), add = TRUE)
     returnType_default <- missing(returnType)
     returnType <- match.arg(returnType)
     if (!is.null(token) && (!is.character(token) || length(token) != 1L)) {
@@ -172,13 +194,20 @@ getGEO <- function(GEO = NULL, filename = NULL, destdir = tempdir(), GSElimits =
         if (GSEMatrix & geotype == "GSE" & is.null(token)) {
             ret <- getAndParseGSEMatrices(GEO, destdir, AnnotGPL = AnnotGPL, getGPL = getGPL,
                 parseCharacteristics = parseCharacteristics)
-            return(.applyReturnType(ret, returnType, returnType_default))
+            ret <- .applyReturnType(ret, returnType, returnType_default)
+            .receipt_write(receipt)
+            return(ret)
         }
         filename <- getGEOfile(GEO, destdir = destdir, AnnotGPL = AnnotGPL, token = token)
+    } else {
+        .receipt_record(filename)
     }
     ret <- parseGEO(filename, GSElimits, destdir, AnnotGPL = AnnotGPL, getGPL = getGPL,
         parseCharacteristics = parseCharacteristics)
-    return(.applyReturnType(ret, returnType, returnType_default))
+    .receipt_metadata(filename, ret)
+    ret <- .applyReturnType(ret, returnType, returnType_default)
+    .receipt_write(receipt)
+    return(ret)
 }
 
 # Apply the requested return type to a parsed result. ExpressionSet results
