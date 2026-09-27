@@ -35,7 +35,9 @@ resource has these fields, with JSON null for unknown values:
 
 | Field | Meaning |
 | --- | --- |
-| accession | GEO accession from the retrieval URL or parsed metadata |
+| accession | Parsed GEO accession when available, otherwise the retrieval URL's accession |
+| requested_accession | Accession from the retrieval URL, or null for an unassociated local input |
+| accession_mismatch | Whether parsed and requested accessions differ; null when either is unavailable |
 | url | Sanitized request URL, or persistent cache key; null for local reuse |
 | endpoint | That URL's origin and path, excluding its query |
 | expected_url | For local reuse, the expected retrieval URL if known, without asserting file origin |
@@ -52,6 +54,15 @@ The timestamp is not a claim about an earlier download. A cache key does not
 establish current remote freshness. Checksums identify local bytes; they are
 not comparison against a publisher-supplied checksum. Supplementary files
 are not parsed, and no HTTP or GEO metadata requests are added.
+
+Parsed accessions are compared after trimming surrounding whitespace and
+normalizing case. A disagreement preserves both identities in the receipt
+and raises a `geoquery_receipt_accession_mismatch` warning, inheriting from
+`geoquery_warning`, once per resource. The condition carries `path`,
+`requested_accession` and `observed_accession`. Returned objects are unchanged.
+Normal R warning handling applies, including `options(warn = 2)`, which
+aborts the call and prevents a completed receipt. With receipts disabled,
+this identity check adds no warning or work.
 
 Receipt URLs omit userinfo, fragments and all query parameters except GEO
 routing fields `acc`, `targ`, `form`, `view` and `tool`. This excludes reviewer

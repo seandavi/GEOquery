@@ -95,7 +95,8 @@ getGEOSuppFileURL <- function(GEO) {
 #' With `fetch_files = TRUE`, the `GEOquery.fetch.receipt` option writes
 #' a JSON receipt for downloaded or reused files. See [getGEO()] for the
 #' schema, output-path requirements and credential handling. Supplementary
-#' files are not parsed, so `geo_last_update` is null. Listing-only calls
+#' files are not parsed, so `geo_last_update` and `accession_mismatch` are null.
+#' Listing-only calls
 #' (`fetch_files = FALSE`) do not write a receipt.
 #' @return If fetch_files=TRUE, a data frame is returned invisibly with rownames representing the
 #' full path of the resulting downloaded files and the records in the

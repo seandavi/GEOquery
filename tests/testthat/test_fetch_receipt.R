@@ -23,16 +23,16 @@ receipt_gzip <- function(text) {
   readBin(path, "raw", n = file.info(path)$size)
 }
 
-receipt_matrix <- function() {
+receipt_matrix <- function(accession = "GSE10", platform = "GPL10") {
   receipt_gzip(c(
     "!Series_title\tSynthetic series",
-    "!Series_geo_accession\tGSE10",
+    paste0("!Series_geo_accession\t", accession),
     "!Series_summary\tSynthetic receipt fixture",
     "!Series_last_update_date\tJul 18 2026",
     "!Series_type\tExpression profiling by array",
     "!Sample_title\tA\tB",
     "!Sample_geo_accession\tGSM11\tGSM12",
-    "!Sample_platform_id\tGPL10\tGPL10",
+    paste0("!Sample_platform_id\t", platform, "\t", platform),
     "!series_matrix_table_begin",
     "\"ID_REF\"\t\"GSM11\"\t\"GSM12\"",
     "\"probe_1\"\t1.5\t2.5",
@@ -41,11 +41,11 @@ receipt_matrix <- function() {
   ))
 }
 
-receipt_gpl <- function() {
+receipt_gpl <- function(accession = "GPL10", include_accession = TRUE) {
   receipt_gzip(c(
     "^PLATFORM = GPL10",
     "!Platform_title = Synthetic platform",
-    "!Platform_geo_accession = GPL10",
+    if (include_accession) paste0("!Platform_geo_accession = ", accession),
     "!Platform_last_update_date = Jul 17 2026",
     "#ID = Probe ID",
     "#GENE = Gene label",
@@ -113,12 +113,15 @@ test_that("getGEO receipts include every matrix and nested GPL only once", {
     expect_equal(dates, c("Jul 18 2026", "Jul 17 2026", "Jul 18 2026"))
     for (resource in document$resources) {
       expect_named(resource, c(
-        "accession", "url", "endpoint", "expected_url", "file", "source",
+        "accession", "requested_accession", "accession_mismatch",
+        "url", "endpoint", "expected_url", "file", "source",
         "bytes", "md5", "http_last_modified", "geo_last_update",
         "geoquery_version", "timestamp"
       ))
       file <- file.path(directory, resource$file)
       expect_identical(resource$source, "download")
+      expect_identical(resource$requested_accession, resource$accession)
+      expect_false(resource$accession_mismatch)
       expect_equal(resource$bytes, unname(file.info(file)$size))
       expect_identical(resource$md5, unname(tools::md5sum(file)))
       expect_identical(
@@ -150,6 +153,8 @@ test_that("existing matrices record local bytes and unknown HTTP metadata", {
     expect_equal(requests, 1L)
     resource <- receipt_read(path)$resources[[1L]]
     expect_identical(resource$source, "local")
+    expect_identical(resource$requested_accession, "GSE10")
+    expect_false(resource$accession_mismatch)
     expect_null(resource$url)
     expect_null(resource$endpoint)
     expect_null(resource$http_last_modified)
@@ -183,6 +188,8 @@ test_that("persistent cache hits record their key and no invented HTTP date", {
     expect_equal(requests, 1L)
     resource <- receipt_read(path)$resources[[1L]]
     expect_identical(resource$source, "cache")
+    expect_identical(resource$requested_accession, "GSE10")
+    expect_false(resource$accession_mismatch)
     expect_identical(resource$url, url)
     expect_null(resource$http_last_modified)
     expect_identical(resource$md5, unname(tools::md5sum(fixture)))
@@ -201,6 +208,8 @@ test_that("local inputs retain their return type and parsed metadata", {
     expect_equal(unname(Biobase::exprs(value)[1, 1]), 1.5)
     resource <- receipt_read(path)$resources[[1L]]
     expect_identical(resource$accession, "GSE10")
+    expect_null(resource$requested_accession)
+    expect_null(resource$accession_mismatch)
     expect_identical(resource$geo_last_update, "Jul 18 2026")
     expect_null(resource$url)
     expect_null(resource$expected_url)
@@ -235,6 +244,8 @@ test_that("supplementary receipts cover filtered downloads and local reuse", {
     expect_identical(document$resources[[2L]]$source, "local")
     for (resource in document$resources) {
       expect_identical(resource$accession, "GSE10")
+      expect_identical(resource$requested_accession, "GSE10")
+      expect_null(resource$accession_mismatch)
       expect_null(resource$geo_last_update)
       expect_identical(
         resource$md5,
@@ -408,5 +419,206 @@ test_that("a receipt preserves downloaded data at a colliding output path", {
     expect_false(any(grepl(
       "^\\.geoquery-receipt-", list.files(directory, all.files = TRUE)
     )))
+  })
+})
+
+receipt_catch_mismatch <- function(code) {
+  warnings <- list()
+  value <- withCallingHandlers(
+    code,
+    geoquery_receipt_accession_mismatch = function(warning) {
+      warnings[[length(warnings) + 1L]] <<- warning
+      invokeRestart("muffleWarning")
+    }
+  )
+  list(value = value, warnings = warnings)
+}
+
+test_that("parsed identity takes precedence across retrieval sources", {
+  for (source in c("download", "cache", "local")) {
+    receipt_fixture(function(directory, path) {
+      filename <- "GSE999_series_matrix.txt.gz"
+      url <- paste0(
+        "https://ftp.ncbi.nlm.nih.gov/geo/series/GSEnnn/GSE999/matrix/",
+        filename
+      )
+      bytes <- receipt_matrix()
+      fixture <- file.path(directory, "fixture.gz")
+      writeBin(bytes, fixture)
+      if (source == "cache") {
+        previous <- options(
+          GEOquery.cache = TRUE,
+          GEOquery.cache.path = file.path(directory, "cache")
+        )
+        on.exit(options(previous), add = TRUE)
+        GEOquery:::.cache_add(url, fixture)
+      } else if (source == "local") {
+        file.copy(fixture, file.path(directory, filename))
+      }
+      requests <- 0L
+      mock <- function(req) {
+        requests <<- requests + 1L
+        if (grepl("/matrix/$", req$url)) {
+          receipt_response(receipt_index(filename))
+        } else {
+          receipt_response(bytes, file.path(directory, filename))
+        }
+      }
+      observed <- receipt_catch_mismatch(httr2::with_mocked_responses(
+        mock, getGEO(
+          "GSE999", destdir = directory, getGPL = FALSE,
+          returnType = "ExpressionSet"
+        )
+      ))
+      expect_length(observed$warnings, 1L)
+      if (length(observed$warnings)) {
+        warning <- observed$warnings[[1L]]
+        expect_s3_class(warning, "geoquery_warning")
+        expect_identical(warning$requested_accession, "GSE999")
+        expect_identical(warning$observed_accession, "GSE10")
+        expect_identical(basename(warning$path), filename)
+      }
+      expect_equal(requests, if (source == "download") 2L else 1L)
+      expect_identical(
+        Biobase::experimentData(observed$value[[1L]])@other$geo_accession,
+        "GSE10"
+      )
+      record <- receipt_read(path)$resources[[1L]]
+      expect_identical(record$accession, "GSE10")
+      expect_identical(record$requested_accession, "GSE999")
+      expect_true(record$accession_mismatch)
+      expect_identical(record$source, source)
+      expect_identical(record$md5, unname(tools::md5sum(fixture)))
+      expect_identical(record$geo_last_update, "Jul 18 2026")
+      expect_null(GEOquery:::.geo_receipt_state$active)
+    })
+  }
+})
+
+test_that("repeated nested GPL reuse warns only once per resource", {
+  receipt_fixture(function(directory, path) {
+    files <- c(
+      "GSE10-GPL10_series_matrix.txt.gz", "GSE10-GPL11_series_matrix.txt.gz"
+    )
+    mock <- function(req) {
+      if (grepl("/matrix/$", req$url)) {
+        receipt_response(receipt_index(files))
+      } else if (grepl("acc=GPL999", req$url)) {
+        receipt_response(receipt_gpl(), file.path(directory, "GPL999.soft.gz"))
+      } else {
+        receipt_response(
+          receipt_matrix(platform = "GPL999"),
+          file.path(directory, basename(req$url))
+        )
+      }
+    }
+    observed <- receipt_catch_mismatch(httr2::with_mocked_responses(
+      mock, getGEO("GSE10", destdir = directory)
+    ))
+    expect_length(observed$warnings, 1L)
+    expect_length(observed$value, 2L)
+    resources <- receipt_read(path)$resources
+    expect_length(resources, 3L)
+    record <- resources[[2L]]
+    expect_identical(record$requested_accession, "GPL999")
+    expect_identical(record$accession, "GPL10")
+    expect_true(record$accession_mismatch)
+  })
+})
+
+test_that("unknown parsed identity stays unknown instead of claiming a match", {
+  receipt_fixture(function(directory, path) {
+    observed <- receipt_catch_mismatch(httr2::with_mocked_responses(
+      function(req) {
+        receipt_response(
+          receipt_gpl(include_accession = FALSE),
+          file.path(directory, "GPL10.soft.gz")
+        )
+      },
+      getGEO("GPL10", destdir = directory)
+    ))
+    expect_length(observed$warnings, 0L)
+    record <- receipt_read(path)$resources[[1L]]
+    expect_identical(record$accession, "GPL10")
+    expect_identical(record$requested_accession, "GPL10")
+    expect_null(record$accession_mismatch)
+  })
+})
+
+test_that("case and surrounding whitespace do not create identity mismatches", {
+  receipt_fixture(function(directory, path) {
+    observed <- receipt_catch_mismatch(httr2::with_mocked_responses(
+      function(req) {
+        receipt_response(
+          receipt_gpl(accession = " gpl10 "),
+          file.path(directory, "GPL10.soft.gz")
+        )
+      },
+      getGEO("GPL10", destdir = directory)
+    ))
+    expect_length(observed$warnings, 0L)
+    record <- receipt_read(path)$resources[[1L]]
+    expect_identical(record$accession, "GPL10")
+    expect_identical(record$requested_accession, "GPL10")
+    expect_false(record$accession_mismatch)
+  })
+})
+
+test_that("identity checks honor disabled receipts and warning errors", {
+  receipt_fixture(function(directory, path) {
+    filename <- "GSE999_series_matrix.txt.gz"
+    writeBin(receipt_matrix(), file.path(directory, filename))
+    mock <- function(req) receipt_response(receipt_index(filename))
+    options(GEOquery.fetch.receipt = NULL)
+    observed <- receipt_catch_mismatch(httr2::with_mocked_responses(
+      mock, getGEO("GSE999", destdir = directory, getGPL = FALSE)
+    ))
+    expect_length(observed$warnings, 0L)
+    expect_false(file.exists(path))
+    options(GEOquery.fetch.receipt = path)
+    previous <- options(warn = 2)
+    on.exit(options(previous), add = TRUE)
+    expect_error(
+      httr2::with_mocked_responses(
+        mock, getGEO("GSE999", destdir = directory, getGPL = FALSE)
+      ),
+      "accession"
+    )
+    expect_false(file.exists(path))
+    expect_null(GEOquery:::.geo_receipt_state$active)
+    expect_true(file.exists(file.path(directory, filename)))
+  })
+})
+
+test_that("annotation fallback records only the successful resource", {
+  receipt_fixture(function(directory, path) {
+    requests <- 0L
+    value <- httr2::with_mocked_responses(function(req) {
+      requests <<- requests + 1L
+      if (grepl("/annot/", req$url)) {
+        httr2::response(404)
+      } else {
+        receipt_response(receipt_gpl(), file.path(directory, "GPL10.soft.gz"))
+      }
+    }, getGEO("GPL10", AnnotGPL = TRUE, destdir = directory))
+    expect_s4_class(value, "GPL")
+    expect_equal(requests, 2L)
+    resources <- receipt_read(path)$resources
+    expect_length(resources, 1L)
+    expect_identical(resources[[1L]]$file, "GPL10.soft.gz")
+    expect_false(resources[[1L]]$accession_mismatch)
+  })
+})
+
+test_that("empty supplementary selections have an empty resource array", {
+  receipt_fixture(function(directory, path) {
+    httr2::with_mocked_responses(
+      function(req) receipt_response(receipt_index("GSE10_A.txt")),
+      getGEOSuppFiles(
+        "GSE10", baseDir = directory, filter_regex = "no-match", quiet = TRUE
+      )
+    )
+    expect_length(receipt_read(path)$resources, 0L)
+    expect_null(GEOquery:::.geo_receipt_state$active)
   })
 })

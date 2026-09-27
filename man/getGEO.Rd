@@ -154,12 +154,18 @@ exist and its parent directory must be writable. The default, \code{NULL} (or
 the option to \code{NULL} when finished. Return values are unchanged.
 
 Schema version 1 records one resource per local input file, including
-nested GPL downloads: \code{accession}, \code{url}, \code{endpoint}, \code{expected_url},
+nested GPL downloads: \code{accession}, \code{requested_accession},
+\code{accession_mismatch}, \code{url}, \code{endpoint}, \code{expected_url},
 \code{file} (basename), \code{source} (\code{download}, \code{cache} or \code{local}),
 \code{bytes}, \code{md5}, \code{http_last_modified}, \code{geo_last_update},
 \code{geoquery_version} and UTC \code{timestamp}. The timestamp describes the
 current observation of the stored bytes, not a historic download time.
 Dates not available from the response or parsed object are JSON null.
+\code{accession} uses parsed GEO metadata when available, otherwise the
+retrieval URL. \code{requested_accession} retains the URL's accession.
+\code{accession_mismatch} is true or false when both are known, otherwise null.
+A disagreement raises a \code{geoquery_receipt_accession_mismatch} warning once
+per file, with \code{path}, \code{requested_accession} and \code{observed_accession} fields.
 A reused local file has no verified source URL: \code{url} and \code{endpoint}
 are null, while \code{expected_url} records the URL GEOquery would have used
 if known. Cache URLs are cache keys. Reviewer tokens, URL credentials and

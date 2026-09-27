@@ -101,12 +101,18 @@
 #' the option to `NULL` when finished. Return values are unchanged.
 #'
 #' Schema version 1 records one resource per local input file, including
-#' nested GPL downloads: `accession`, `url`, `endpoint`, `expected_url`,
+#' nested GPL downloads: `accession`, `requested_accession`,
+#' `accession_mismatch`, `url`, `endpoint`, `expected_url`,
 #' `file` (basename), `source` (`download`, `cache` or `local`),
 #' `bytes`, `md5`, `http_last_modified`, `geo_last_update`,
 #' `geoquery_version` and UTC `timestamp`. The timestamp describes the
 #' current observation of the stored bytes, not a historic download time.
 #' Dates not available from the response or parsed object are JSON null.
+#' `accession` uses parsed GEO metadata when available, otherwise the
+#' retrieval URL. `requested_accession` retains the URL's accession.
+#' `accession_mismatch` is true or false when both are known, otherwise null.
+#' A disagreement raises a `geoquery_receipt_accession_mismatch` warning once
+#' per file, with `path`, `requested_accession` and `observed_accession` fields.
 #' A reused local file has no verified source URL: `url` and `endpoint`
 #' are null, while `expected_url` records the URL GEOquery would have used
 #' if known. Cache URLs are cache keys. Reviewer tokens, URL credentials and

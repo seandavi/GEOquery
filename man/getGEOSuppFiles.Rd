@@ -58,7 +58,8 @@ Again, just a note that the files are simply downloaded.
 With \code{fetch_files = TRUE}, the \code{GEOquery.fetch.receipt} option writes
 a JSON receipt for downloaded or reused files. See \code{\link[=getGEO]{getGEO()}} for the
 schema, output-path requirements and credential handling. Supplementary
-files are not parsed, so \code{geo_last_update} is null. Listing-only calls
+files are not parsed, so \code{geo_last_update} and \code{accession_mismatch} are null.
+Listing-only calls
 (\code{fetch_files = FALSE}) do not write a receipt.
 }
 

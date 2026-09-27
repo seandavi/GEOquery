@@ -105,6 +105,8 @@
   }
   receipt$resources[[key]] <- list(
     accession = .receipt_accession(url),
+    requested_accession = .receipt_accession(url),
+    accession_mismatch = NULL,
     url = observed_url,
     endpoint = endpoint,
     expected_url = if (source == "local") url else NULL,
@@ -121,8 +123,8 @@
   invisible(NULL)
 }
 
-# Read update dates from the object already parsed by GEOquery. Supplementary
-# formats and old HTTP/cache metadata remain unknown; no extra requests.
+# Read identity and dates from the object already parsed by GEOquery.
+# Supplementary formats and old HTTP/cache metadata remain unknown.
 .receipt_metadata <- function(path, object) {
   receipt <- .geo_receipt_state$active
   if (is.null(receipt)) {
@@ -148,11 +150,32 @@
     }
   }
   record["geo_last_update"] <- list(scalar(metadata$last_update_date))
-  if (is.null(record$accession)) {
-    record["accession"] <- list(scalar(metadata$geo_accession))
+  accession <- toupper(trimws(scalar(metadata$geo_accession)))
+  already_mismatched <- isTRUE(record$accession_mismatch)
+  if (length(accession) && nzchar(accession)) {
+    record$accession <- accession
+    if (!is.null(record$requested_accession)) {
+      record$accession_mismatch <- accession != record$requested_accession
+    }
   }
   receipt$resources[[key]] <- record
+  if (isTRUE(record$accession_mismatch) && !already_mismatched) {
+    .warn_receipt_identity(
+      key, record$requested_accession, record$accession
+    )
+  }
   invisible(NULL)
+}
+
+.warn_receipt_identity <- function(path, requested, observed) {
+  rlang::warn(
+    sprintf(
+      "GEO accession mismatch for '%s': requested %s, parsed %s.",
+      path, requested, observed
+    ),
+    class = c("geoquery_receipt_accession_mismatch", "geoquery_warning"),
+    path = path, requested_accession = requested, observed_accession = observed
+  )
 }
 
 .receipt_write <- function(receipt) {

@@ -1,8 +1,9 @@
 # GEOquery (development version)
 
 * `getGEO()` and `getGEOSuppFiles()` can write optional JSON retrieval receipts
-  with `GEOquery.fetch.receipt`, including file hashes and available source
-  dates (see ADR-0009; #221, @SproutSeeds).
+  with `GEOquery.fetch.receipt`, including file hashes, available source dates
+  and a warning when parsed and requested accessions differ
+  (see ADR-0009; #221, @SproutSeeds).
 
 # GEOquery 2.81.33
 
@@ -182,4 +183,3 @@ Not an exhaustive list, but some highlights:
 
 - Using httr2 instead of curl for better control over HTTP requests.
 - Removed dead gunzip code.
-
