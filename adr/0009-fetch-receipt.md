@@ -12,6 +12,7 @@ can load multiple matrices and nested GPL files. Destdir reuse bypasses HTTP;
 BiocFileCache may supply a file without its original response headers.
 Related [#224](https://github.com/seandavi/GEOquery/issues/224) covers attaching
 provenance to returned objects and remains separate.
+The implementation is proposed in [#231](https://github.com/seandavi/GEOquery/pull/231).
 
 ADR-0003 routes transport concerns through options rather than new getGEO
 arguments. Existing checksum helpers and jsonlite suffice.
