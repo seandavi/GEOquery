@@ -30,10 +30,9 @@ test_that("getRNAQuantAnnotationURL returns character vector", {
   expect_length(result, 1)
 })
 
-links <- getGSEDownloadPageURLs("GSE83322")
-
 test_that("readRNAQuantRawCounts returns matrix", {
     skip_if_no_integration()
+  links <- getGSEDownloadPageURLs("GSE83322")
   link <- getRNAQuantRawCountsURL(links)
   result <- readRNAQuantRawCounts(link)
 
@@ -44,6 +43,7 @@ test_that("readRNAQuantRawCounts returns matrix", {
 
 test_that("readRNAQuantAnnotation returns data.frame", {
     skip_if_no_integration()
+  links <- getGSEDownloadPageURLs("GSE83322")
   link <- getRNAQuantAnnotationURL(links)
   result <- readRNAQuantAnnotation(link)
 

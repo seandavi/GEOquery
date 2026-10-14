@@ -174,6 +174,29 @@ getGEORaw <- function(GEO, destdir = tempdir()) {
     )
 }
 
+.is_html_response <- function(resp) {
+  type <- tryCatch(httr2::resp_content_type(resp), error = function(...) NA)
+  isTRUE(grepl("html", type, fixed = TRUE))
+}
+
+# First few KB of a response body as text. A streamed download leaves the body
+# on disk (gzfile() reads plain and gzipped files alike); an in-memory body
+# (e.g. a mocked response) is read directly.
+.resp_head_text <- function(resp, path, n = 4096L) {
+  body <- resp$body
+  out <- tryCatch(
+    if (is.raw(body)) {
+      rawToChar(body[seq_len(min(length(body), n))])
+    } else {
+      con <- gzfile(path, "rb")
+      on.exit(close(con))
+      readChar(con, n, useBytes = TRUE)
+    },
+    error = function(...) ""
+  )
+  if (length(out)) out else ""
+}
+
 # internal use only. `mode` is accepted for backward compatibility and ignored
 # (the response is streamed to disk in binary). On failure the partial file is
 # removed and a typed `geoquery_download_error` is raised (#170, #173).
@@ -192,7 +215,7 @@ downloadFile <- function(url, destfile, mode = "wb", quiet = TRUE,
   }
   req <- .geo_request(url, timeout) |>
     httr2::req_headers(`accept-encoding` = "gzip")
-  tryCatch(
+  resp <- tryCatch(
     httr2::req_perform(req, path = destfile),
     error = function(e) {
       if (file.exists(destfile)) {
@@ -205,6 +228,13 @@ downloadFile <- function(url, destfile, mode = "wb", quiet = TRUE,
       )
     }
   )
+  # A bot-check page must never be handed on as data or cached (#230).
+  if (.is_html_response(resp) && .is_ncbi_challenge(.resp_head_text(resp, destfile))) {
+    if (file.exists(destfile)) {
+      file.remove(destfile)
+    }
+    .abort_ncbi_challenge(url)
+  }
   # Integrity check before caching, so a corrupt download is never stored (#222).
   .verify_md5(destfile, md5)
   # Cache miss: store the freshly downloaded file for next time (#171). A cache

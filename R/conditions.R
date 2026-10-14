@@ -11,6 +11,7 @@
 #     geoquery_bad_accession    -- malformed/unrecognized accession (carries $accession)
 #     geoquery_private_accession-- non-public/HTML response (carries $accession)
 #     geoquery_download_error   -- a download failed (carries $url, $status)
+#       geoquery_ncbi_challenge -- NCBI served a bot check instead of data (#230)
 #     geoquery_parse_error      -- parsing a GEO file failed (carries $fname)
 
 #' @importFrom rlang abort
@@ -42,6 +43,26 @@
     .geoquery_abort(
         message,
         class = "geoquery_download_error", url = url, status = status, parent = parent
+    )
+}
+
+# NCBI fronts some GEO endpoints with a reCAPTCHA bot check that is served as
+# HTTP 200 text/html in place of the requested file (#230). Left undetected,
+# the page gets parsed as data and fails far from its cause (e.g. "invalid
+# 'row.names' length" in the RNA-seq readers).
+.is_ncbi_challenge <- function(text) {
+    grepl("recaptcha|Checking your browser", text, ignore.case = TRUE)
+}
+
+.abort_ncbi_challenge <- function(url) {
+    .geoquery_abort(
+        paste0(
+            "NCBI returned a bot-check (reCAPTCHA) page instead of:\n  ", url,
+            "\nThis is an NCBI-side block, not a problem with the data or ",
+            "GEOquery. See https://github.com/seandavi/GEOquery/issues/230."
+        ),
+        class = c("geoquery_ncbi_challenge", "geoquery_download_error"),
+        url = url, status = 200L
     )
 }
 
