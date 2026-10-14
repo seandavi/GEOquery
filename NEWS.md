@@ -10,6 +10,12 @@
   `nebbiolo1`, and an FTP `SSL_ERROR_SYSCALL` while `getGEO("GSE2553")` was
   downloading on `kunpeng2`. This is a backport of the precompiled-vignette
   approach from devel (2.81.28).
+- The `searchFieldsGEO()`, `hasRNASeqQuantifications()`,
+  `getRNASeqQuantGenomeInfo()`, and `getRNASeqData()` examples are now in
+  `\donttest{}`, so `R CMD check` does not depend on NCBI E-utilities or the
+  GEO download service being healthy. Devel already had the
+  `searchFieldsGEO()` failure on a builder (EInfo returned HTML instead of
+  XML).
 
 # GEOquery 2.99.1 (unreleased)
 
