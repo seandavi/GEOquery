@@ -1,3 +1,16 @@
+# GEOquery 2.80.1
+
+## Bug fixes
+
+- The `GEOquery.qmd` vignette is now precompiled, so `R CMD build` makes no
+  NCBI calls. The live source is `vignettes/GEOquery.qmd.orig`; regenerate the
+  shipped `vignettes/GEOquery.qmd` with `Rscript dev/precompute-vignettes.R`.
+  This fixes the Bioconductor 3.23 build errors in which the vignette died on
+  transient NCBI failures: an E-utilities HTTP 500 inside `searchGEO()` on
+  `nebbiolo1`, and an FTP `SSL_ERROR_SYSCALL` while `getGEO("GSE2553")` was
+  downloading on `kunpeng2`. This is a backport of the precompiled-vignette
+  approach from devel (2.81.28).
+
 # GEOquery 2.99.1 (unreleased)
 
 ## Bug Fixes

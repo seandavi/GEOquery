@@ -12,3 +12,7 @@ CODE_OF_CONDUCT.md
 Dockerfile
 ^LICENSE\.md$
 ^CITATION\.cff$
+^dev$
+^vignettes/.*\.qmd\.orig$
+^vignettes/figures$
+^vignettes/GS[EM][0-9]+$
