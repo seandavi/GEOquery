@@ -71,7 +71,9 @@ searchGEO <- function(query, step = 500L) {
 #' @seealso \code{\link{searchGEO}}
 #'
 #' @examples
+#' \donttest{
 #' searchFieldsGEO()
+#' }
 #'
 #' @importFrom rentrez entrez_db_searchable
 #' @export

@@ -1,3 +1,16 @@
+# GEOquery 2.81.34
+
+## Bug fixes
+
+- `R CMD check` no longer depends on NCBI E-utilities being healthy. The
+  `searchFieldsGEO()` and `hasRNASeqQuantifications()` examples are now in
+  `\donttest{}`, and the live `searchFieldsGEO()` test is gated with
+  `skip_if_no_integration()` like the rest of the network suite. A new offline
+  test checks how `searchFieldsGEO()` reshapes a canned EInfo result. On the
+  Bioconductor 3.24 `taishan` builder, EInfo returned an HTML error page
+  instead of XML, and the example and the test both failed with
+  `Opening and ending tag mismatch: br line 196 and p`.
+
 # GEOquery 2.81.33
 
 ## Bug fixes

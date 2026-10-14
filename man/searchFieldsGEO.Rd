@@ -15,7 +15,9 @@ in rows and their properties are in columns.
 Provide a list of possible search fields for GEO search
 }
 \examples{
+\donttest{
 searchFieldsGEO()
+}
 
 }
 \seealso{

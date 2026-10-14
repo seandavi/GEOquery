@@ -19,6 +19,8 @@ available. It does this by checking if the GEO accession number has a
 "RNA-Seq raw counts" link available on the GEO download page.
 }
 \examples{
+\donttest{
 hasRNASeqQuantifications("GSE164073")
+}
 
 }

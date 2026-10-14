@@ -267,7 +267,9 @@ browseWebsiteRNASeqSearch <- function() {
 #' available, FALSE otherwise.
 #'
 #' @examples
+#' \donttest{
 #' hasRNASeqQuantifications("GSE164073")
+#' }
 #'
 #' @export
 hasRNASeqQuantifications <- function(accession) {
