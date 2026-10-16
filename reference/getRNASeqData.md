@@ -45,9 +45,10 @@ more details.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+# \donttest{
 se <- getRNASeqData("GSE164073")
+#> Error in `.rowNamesDF<-`(x, value = value): invalid 'row.names' length
 se
-
-} # }
+#> Error: object 'se' not found
+# }
 ```
