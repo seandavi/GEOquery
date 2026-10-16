@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/seandavi/GEOquery/blob/fix/release-3.23-vignette-network/inst/CITATION)
+[`inst/CITATION`](https://github.com/seandavi/GEOquery/blob/RELEASE_3_23/inst/CITATION)
 
 Davis S, Meltzer P (2007). “GEOquery: a bridge between the Gene
 Expression Omnibus (GEO) and BioConductor.” *Bioinformatics*, **14**,

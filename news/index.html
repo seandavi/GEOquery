@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.80.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.80.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,17 +40,9 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/fix/release-3.23-vignette-network/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/RELEASE_3_23/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.80.1" id="geoquery-2801">GEOquery 2.80.1<a class="anchor" aria-label="anchor" href="#geoquery-2801"></a></h2>
-<div class="section level3">
-<h3 id="bug-fixes-2-80-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-80-1"></a></h3>
-<ul><li>The <code>GEOquery.qmd</code> vignette is now precompiled, so <code>R CMD build</code> makes no NCBI calls. The live source is <code>vignettes/GEOquery.qmd.orig</code>; regenerate the shipped <code>vignettes/GEOquery.qmd</code> with <code>Rscript dev/precompute-vignettes.R</code>. This fixes the Bioconductor 3.23 build errors in which the vignette died on transient NCBI failures: an E-utilities HTTP 500 inside <code><a href="../reference/searchGEO.html">searchGEO()</a></code> on <code>nebbiolo1</code>, and an FTP <code>SSL_ERROR_SYSCALL</code> while <code>getGEO("GSE2553")</code> was downloading on <code>kunpeng2</code>. This is a backport of the precompiled-vignette approach from devel (2.81.28).</li>
-<li>The <code><a href="../reference/searchFieldsGEO.html">searchFieldsGEO()</a></code>, <code><a href="../reference/hasRNASeqQuantifications.html">hasRNASeqQuantifications()</a></code>, <code><a href="../reference/getRNASeqQuantGenomeInfo.html">getRNASeqQuantGenomeInfo()</a></code>, and <code><a href="../reference/getRNASeqData.html">getRNASeqData()</a></code> examples are now in <code>\donttest{}</code>, so <code>R CMD check</code> does not depend on NCBI E-utilities or the GEO download service being healthy. Devel already had the <code><a href="../reference/searchFieldsGEO.html">searchFieldsGEO()</a></code> failure on a builder (EInfo returned HTML instead of XML).</li>
-</ul></div>
-</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.99.1" id="geoquery-2991-unreleased">GEOquery 2.99.1 (unreleased)<a class="anchor" aria-label="anchor" href="#geoquery-2991-unreleased"></a></h2>
 <div class="section level3">

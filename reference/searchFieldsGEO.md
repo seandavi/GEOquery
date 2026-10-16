@@ -21,16 +21,15 @@ their properties are in columns.
 ## Examples
 
 ``` r
-# \donttest{
 searchFieldsGEO()
 #>    Name     FullName  Description TermCount IsDate IsNumerical SingleToken
-#> 1   ALL   All Fields All term....  49401983      N           N           N
+#> 1   ALL   All Fields All term....  49342143      N           N           N
 #> 2   UID          UID Unique n....         0      N           Y           Y
 #> 3  FILT       Filter Limits t....        71      N           N           Y
-#> 4  ORGN     Organism exploded....     79298      N           N           Y
-#> 5  ACCN GEO Acce.... accessio....  21221535      N           N           Y
-#> 6  TITL        Title Words in....  10811861      N           N           Y
-#> 7  DESC  Description Text fro....  11948786      N           N           Y
+#> 4  ORGN     Organism exploded....     79286      N           N           Y
+#> 5  ACCN GEO Acce.... accessio....  21175307      N           N           Y
+#> 6  TITL        Title Words in....  10807470      N           N           Y
+#> 7  DESC  Description Text fro....  11940215      N           N           Y
 #> 8  SFIL Suppleme.... Suppleme....       255      N           N           Y
 #> 9  ETYP   Entry Type Entry ty....         4      N           N           Y
 #> 10 STYP  Sample Type  Sample type         9      N           N           Y
@@ -38,22 +37,22 @@ searchFieldsGEO()
 #> 12 PTYP Platform.... Platform....        17      N           N           Y
 #> 13 GTYP DataSet Type type of ....        27      N           N           Y
 #> 14 NSAM Number o.... Number o....      2181      N           Y           Y
-#> 15  SRC Sample S.... sample s....    474737      N           N           Y
-#> 16 AUTH       Author author o....   1404970      N           N           Y
-#> 17 INST Submitte.... institut....     27258      N           N           Y
+#> 15  SRC Sample S.... sample s....    474665      N           N           Y
+#> 16 AUTH       Author author o....   1404127      N           N           Y
+#> 17 INST Submitte.... institut....     27246      N           N           Y
 #> 18 NPRO Number o.... number o....      7289      N           Y           Y
 #> 19 SSTP Subset V.... subset v....        24      N           N           Y
 #> 20 SSDE Subset D.... subset d....      7535      N           N           Y
 #> 21 GEID Reporter.... name or ....   2840498      N           N           Y
-#> 22 PDAT Publicat.... publicat....      8791      Y           N           Y
-#> 23 UDAT  Update Date         date      7908      Y           N           Y
+#> 22 PDAT Publicat.... publicat....      8790      Y           N           Y
+#> 23 UDAT  Update Date         date      7907      Y           N           Y
 #> 24 TAGL   Tag Length Tag/Sign....         9      N           N           Y
-#> 25 RGSE Related .... Related ....     31249      N           N           Y
-#> 26 RGPL Related .... Related ....    302730      N           N           Y
-#> 27 MESH   MeSH Terms Medical ....     17897      N           N           Y
+#> 25 RGSE Related .... Related ....     31240      N           N           Y
+#> 26 RGPL Related .... Related ....    302571      N           N           Y
+#> 27 MESH   MeSH Terms Medical ....     17895      N           N           Y
 #> 28 PROJ      Project      Project        10      N           N           Y
-#> 29 ATNM Attribut.... Attribut....     50986      N           N           Y
-#> 30 ATTR    Attribute    Attribute   2930199      N           N           Y
+#> 29 ATNM Attribut.... Attribut....     50977      N           N           Y
+#> 30 ATTR    Attribute    Attribute   2929748      N           N           Y
 #> 31 PROP   Properties   Properties         3      N           N           Y
 #>    Hierarchy IsHidden
 #> 1          N        N
@@ -87,5 +86,4 @@ searchFieldsGEO()
 #> 29         N        N
 #> 30         N        N
 #> 31         N        N
-# }
 ```
