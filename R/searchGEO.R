@@ -72,7 +72,9 @@ searchGEO <- function(query, step = 500L) {
 #' @seealso \code{\link{searchGEO}}
 #'
 #' @examples
+#' \donttest{
 #' searchFieldsGEO()
+#' }
 #'
 #' @export
 searchFieldsGEO <- function() {
