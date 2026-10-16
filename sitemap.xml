@@ -1,10 +1,18 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>http://seandavi.github.io/GEOquery/404.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/CLAUDE.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/CONTRIBUTING.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/LICENSE-text.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/LICENSE.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/PULL_REQUEST_TEMPLATE.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/ROADMAP.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/articles/GEOquery.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/articles/downstream-analysis.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/articles/finding-and-downloading-data.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/articles/geo-data-formats.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/articles/index.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/articles/rnaseq.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/articles/single-cell.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/authors.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/index.html</loc></url>
@@ -16,13 +24,20 @@
 <url><loc>http://seandavi.github.io/GEOquery/reference/GPL-class.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/GSE-class.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/GSM-class.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/as_SummarizedExperiment.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/browseGEOAccession.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/browseWebsiteRNASeqSearch.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/clearGEOCache.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/coercion.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/extractFilenameFromDownloadURL.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/geoCache.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/geoSingleCellUnits.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/geoToSRA.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getDirListing.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEO.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEOSeriesFileListing.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEOSuppFileURL.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/getGEOfile.html</loc></url>
@@ -37,6 +52,7 @@
 <url><loc>http://seandavi.github.io/GEOquery/reference/index.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/parseGEO.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/parseGSEMatrix.html</loc></url>
+<url><loc>http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/readRNAQuantAnnotation.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/readRNAQuantRawCounts.html</loc></url>
 <url><loc>http://seandavi.github.io/GEOquery/reference/searchFieldsGEO.html</loc></url>

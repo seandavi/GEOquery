@@ -4,7 +4,9 @@ A class describing a GEO GDS entity
 
 ## Objects from the Class
 
-Objects can be created by calls of the form `new('GDS', ...)`
+Objects of this class are returned by
+[`getGEO`](http://seandavi.github.io/GEOquery/reference/getGEO.md); they
+are not normally constructed directly.
 
 ## See also
 

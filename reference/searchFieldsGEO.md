@@ -21,6 +21,7 @@ their properties are in columns.
 ## Examples
 
 ``` r
+# \donttest{
 searchFieldsGEO()
 #>    Name     FullName  Description TermCount IsDate IsNumerical SingleToken
 #> 1   ALL   All Fields All term....  49342143      N           N           N
@@ -86,4 +87,5 @@ searchFieldsGEO()
 #> 29         N        N
 #> 30         N        N
 #> 31         N        N
+# }
 ```
