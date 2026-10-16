@@ -13,6 +13,10 @@ getGSEDownloadPageURLs <- function(gse) {
     httr2::req_url_query(acc = gse) |>
     httr2::req_perform() |>
     httr2::resp_body_string()
+  # The listing page is not covered by NCBI's bot-check exception (#230).
+  if (.is_ncbi_challenge(html)) {
+    .abort_ncbi_challenge(paste0(url, "?acc=", gse))
+  }
   .extractGeoDownloadLinks(html)
 }
 
@@ -181,9 +185,23 @@ getRNASeqQuantGenomeInfo <- function(gse) {
 #'
 #' @keywords internal
 readRNAQuantAnnotation <- function(link) {
-  annotation <- as.data.frame(readr::read_tsv(link, show_col_types = FALSE))
+  path <- .downloadRNAQuantFile(link)
+  on.exit(unlink(path))
+  annotation <- as.data.frame(readr::read_tsv(path, show_col_types = FALSE))
   rownames(annotation) <- as.character(annotation$GeneID)
   return(annotation)
+}
+
+
+# Download an RNA-seq quantification file to a temp path via downloadFile(),
+# which retries transient NCBI failures and rejects bot-check pages (#230).
+# Previously readr fetched the URL itself and parsed whatever came back. The
+# extension tells readr whether to decompress.
+.downloadRNAQuantFile <- function(link) {
+  ext <- if (grepl("\\.gz($|&)", link)) ".tsv.gz" else ".tsv"
+  path <- tempfile(fileext = ext)
+  downloadFile(link, destfile = path)
+  path
 }
 
 
@@ -204,7 +222,9 @@ readRNAQuantAnnotation <- function(link) {
 #'
 #' @keywords internal
 readRNAQuantRawCounts <- function(link) {
-  quants <- readr::read_tsv(link, show_col_types = FALSE)
+  path <- .downloadRNAQuantFile(link)
+  on.exit(unlink(path))
+  quants <- readr::read_tsv(path, show_col_types = FALSE)
   gene_ids <- as.character(quants$GeneID)
   quants <- as.matrix(quants[, -1])
   rownames(quants) <- gene_ids
@@ -267,7 +287,9 @@ browseWebsiteRNASeqSearch <- function() {
 #' available, FALSE otherwise.
 #'
 #' @examples
+#' \donttest{
 #' hasRNASeqQuantifications("GSE164073")
+#' }
 #'
 #' @export
 hasRNASeqQuantifications <- function(accession) {

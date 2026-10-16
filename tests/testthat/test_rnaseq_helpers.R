@@ -110,3 +110,75 @@ test_that("a download page missing the expected file fails loudly (#229)", {
   expect_equal(GEOquery:::.requireDownloadLink("u", "GSE1", "x"), "u")
   expect_error(GEOquery:::.requireDownloadLink(no_links, "GSE1", "x"), "GSE1")
 })
+
+# NCBI's reCAPTCHA bot check is served as HTTP 200 text/html (#230). These pin
+# that it surfaces as a typed, explained error rather than being parsed as data.
+challenge_resp <- function() {
+  httr2::response(
+    200,
+    headers = list(`Content-Type` = "text/html; charset=utf-8"),
+    body = charToRaw(paste0(
+      "<!doctype html><html><head><title>Checking your browser - reCAPTCHA",
+      "</title></head><body></body></html>"
+    ))
+  )
+}
+
+test_that("downloadFile rejects an NCBI bot-check page and removes it (#230)", {
+  dest <- tempfile()
+  httr2::with_mocked_responses(function(req) challenge_resp(), {
+    expect_error(
+      GEOquery:::downloadFile("https://www.ncbi.nlm.nih.gov/geo/download/?x", dest),
+      class = "geoquery_ncbi_challenge"
+    )
+  })
+  expect_false(file.exists(dest))
+})
+
+test_that("RNA-seq readers fail clearly on a bot-check page (#230)", {
+  # Before #230 handling this was "invalid 'row.names' length".
+  annot <- paste0(
+    "https://www.ncbi.nlm.nih.gov/geo/download/?format=file&type=rnaseq_counts",
+    "&file=Human.GRCh38.p13.annot.tsv.gz"
+  )
+  httr2::with_mocked_responses(function(req) challenge_resp(), {
+    err <- expect_error(
+      GEOquery:::readRNAQuantAnnotation(annot),
+      class = "geoquery_ncbi_challenge"
+    )
+    expect_s3_class(err, "geoquery_download_error")
+    expect_match(conditionMessage(err), "issues/230")
+    expect_error(
+      GEOquery:::readRNAQuantRawCounts(annot),
+      class = "geoquery_ncbi_challenge"
+    )
+    expect_error(
+      GEOquery:::getGSEDownloadPageURLs("GSE83322"),
+      class = "geoquery_ncbi_challenge"
+    )
+  })
+})
+
+test_that("RNA-seq readers parse the gzipped TSV that downloadFile() fetches", {
+  tsv <- "GeneID\tGSM1\tGSM2\n1\t5\t7\n2\t0\t3\n"
+  gz <- tempfile(fileext = ".gz")
+  con <- gzfile(gz, "wb")
+  writeLines(tsv, con, sep = "")
+  close(con)
+  url <- paste0(
+    "https://www.ncbi.nlm.nih.gov/geo/download/?type=rnaseq_counts&acc=GSE1",
+    "&format=file&file=GSE1_raw_counts_GRCh38.p13_NCBI.tsv.gz"
+  )
+  local_mocked_bindings(downloadFile = function(url, destfile, ...) {
+    file.copy(gz, destfile, overwrite = TRUE)
+    invisible(TRUE)
+  })
+
+  quants <- GEOquery:::readRNAQuantRawCounts(url)
+  annot <- GEOquery:::readRNAQuantAnnotation(url)
+
+  expect_true(is.matrix(quants))
+  expect_identical(rownames(quants), c("1", "2"))
+  expect_identical(colnames(quants), c("GSM1", "GSM2"))
+  expect_identical(rownames(annot), c("1", "2"))
+})

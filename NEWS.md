@@ -1,3 +1,29 @@
+# GEOquery 2.81.34
+
+## Bug fixes
+
+- `R CMD check` no longer depends on NCBI E-utilities being healthy. The
+  `searchFieldsGEO()` and `hasRNASeqQuantifications()` examples are now in
+  `\donttest{}`, and the live `searchFieldsGEO()` test is gated with
+  `skip_if_no_integration()` like the rest of the network suite. A new offline
+  test checks how `searchFieldsGEO()` reshapes a canned EInfo result. On the
+  Bioconductor 3.24 `taishan` builder, EInfo returned an HTML error page
+  instead of XML, and the example and the test both failed with
+  `Opening and ending tag mismatch: br line 196 and p`.
+- NCBI's reCAPTCHA bot-check page (served as HTTP 200 HTML) is now detected and
+  reported as a `geoquery_ncbi_challenge` error (a subclass of
+  `geoquery_download_error`) that names the blocked URL and points to #230. It
+  is caught in `downloadFile()`, the RNA-seq raw-counts and annotation readers,
+  and the GEO download listing page, and the page is never cached. Before this,
+  `getRNASeqData()` failed with `invalid 'row.names' length` because the shared
+  `Human.GRCh38.p13.annot.tsv.gz` annotation URL, which has no `acc=`, is still
+  blocked. The RNA-seq readers now fetch through `downloadFile()`, so they also
+  get its retries. This makes the failure clear; it does not fix the NCBI
+  block (#230 stays open).
+- `test_geo_rnaseq.R` no longer calls NCBI at file load. A top-level
+  `getGSEDownloadPageURLs()` call ran on every `R CMD check`, outside any
+  skip; it now runs inside the gated tests.
+
 # GEOquery 2.81.33
 
 ## Bug fixes
