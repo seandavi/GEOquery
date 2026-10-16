@@ -11,7 +11,7 @@ available. It does this by checking if the GEO accession number has a
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.32</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.34</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +48,7 @@ available. It does this by checking if the GEO accession number has a
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Does a GEO accession have RNA-seq quantifications?</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/R/rnaseq.R" class="external-link"><code>R/rnaseq.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/fix/ncbi-flaky-build/R/rnaseq.R" class="external-link"><code>R/rnaseq.R</code></a></small>
       <div class="d-none name"><code>hasRNASeqQuantifications.Rd</code></div>
     </div>
 
@@ -79,8 +79,10 @@ available, FALSE otherwise.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">hasRNASeqQuantifications</span><span class="op">(</span><span class="st">"GSE164073"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="fu">hasRNASeqQuantifications</span><span class="op">(</span><span class="st">"GSE164073"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

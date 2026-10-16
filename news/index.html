@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.32</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.34</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,9 +44,28 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/fix/ncbi-flaky-build/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.81.34" id="geoquery-28134">GEOquery 2.81.34<a class="anchor" aria-label="anchor" href="#geoquery-28134"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-2-81-34">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-81-34"></a></h3>
+<ul><li>
+<code>R CMD check</code> no longer depends on NCBI E-utilities being healthy. The <code><a href="../reference/searchFieldsGEO.html">searchFieldsGEO()</a></code> and <code><a href="../reference/hasRNASeqQuantifications.html">hasRNASeqQuantifications()</a></code> examples are now in <code>\donttest{}</code>, and the live <code><a href="../reference/searchFieldsGEO.html">searchFieldsGEO()</a></code> test is gated with <code>skip_if_no_integration()</code> like the rest of the network suite. A new offline test checks how <code><a href="../reference/searchFieldsGEO.html">searchFieldsGEO()</a></code> reshapes a canned EInfo result. On the Bioconductor 3.24 <code>taishan</code> builder, EInfo returned an HTML error page instead of XML, and the example and the test both failed with <code>Opening and ending tag mismatch: br line 196 and p</code>.</li>
+<li>NCBI’s reCAPTCHA bot-check page (served as HTTP 200 HTML) is now detected and reported as a <code>geoquery_ncbi_challenge</code> error (a subclass of <code>geoquery_download_error</code>) that names the blocked URL and points to <a href="https://github.com/seandavi/GEOquery/issues/230" class="external-link">#230</a>. It is caught in <code>downloadFile()</code>, the RNA-seq raw-counts and annotation readers, and the GEO download listing page, and the page is never cached. Before this, <code><a href="../reference/getRNASeqData.html">getRNASeqData()</a></code> failed with <code>invalid 'row.names' length</code> because the shared <code>Human.GRCh38.p13.annot.tsv.gz</code> annotation URL, which has no <code>acc=</code>, is still blocked. The RNA-seq readers now fetch through <code>downloadFile()</code>, so they also get its retries. This makes the failure clear; it does not fix the NCBI block (<a href="https://github.com/seandavi/GEOquery/issues/230" class="external-link">#230</a> stays open).</li>
+<li>
+<code>test_geo_rnaseq.R</code> no longer calls NCBI at file load. A top-level <code><a href="../reference/getGSEDownloadPageURLs.html">getGSEDownloadPageURLs()</a></code> call ran on every <code>R CMD check</code>, outside any skip; it now runs inside the gated tests.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.81.33" id="geoquery-28133">GEOquery 2.81.33<a class="anchor" aria-label="anchor" href="#geoquery-28133"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-2-81-33">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-81-33"></a></h3>
+<ul><li>
+<code><a href="../reference/getRNASeqQuantGenomeInfo.html">getRNASeqQuantGenomeInfo()</a></code> and <code><a href="../reference/getRNASeqQuantResults.html">getRNASeqQuantResults()</a></code> now fail with a clear message naming the missing file and the GEO download page to check, when that page does not list the expected RNA-seq quantification files. Previously a missing gene annotation table produced a silent <code>NULL</code> genome info, or an empty URL handed to <code><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">readr::read_tsv()</a></code>, so the failure surfaced far from its cause (<a href="https://github.com/seandavi/GEOquery/issues/229" class="external-link">#229</a>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.81.32" id="geoquery-28132">GEOquery 2.81.32<a class="anchor" aria-label="anchor" href="#geoquery-28132"></a></h2>
 <div class="section level3">
