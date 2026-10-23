@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.35</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.36</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,9 +44,70 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/docs/news-2.82.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.82.0" id="geoquery-2820">GEOquery 2.82.0<a class="anchor" aria-label="anchor" href="#geoquery-2820"></a></h2>
+<p>Summary of changes since 2.80.0 (Bioconductor 3.23). Entries for each 2.81.x development version below have the details.</p>
+<div class="section level3">
+<h3 id="breaking-changes-2-82-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-2-82-0"></a></h3>
+<ul><li>
+<code><a href="../reference/getGEO.html">getGEO()</a></code> returns <code>SummarizedExperiment</code> objects by default for GSE Series Matrix records (previously <code>ExpressionSet</code>). Pass <code>returnType = "ExpressionSet"</code> for the old behavior, or convert existing results with <code><a href="../reference/as_SummarizedExperiment.html">as_SummarizedExperiment()</a></code>. SOFT-format results (<code>GSE</code>, <code>GSM</code>, <code>GPL</code>, <code>GDS</code> objects) are unchanged (<a href="https://github.com/seandavi/GEOquery/issues/168" class="external-link">#168</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-2-82-0">New features<a class="anchor" aria-label="anchor" href="#new-features-2-82-0"></a></h3>
+<ul><li>
+<strong>Single-cell data.</strong> <code><a href="../reference/getGEOSingleCell.html">getGEOSingleCell()</a></code> and <code><a href="../reference/readGEOSingleCell.html">readGEOSingleCell()</a></code> load GEO single-cell supplementary files (10x Matrix Market, 10x HDF5, AnnData <code>.h5ad</code>, and <code>.rds</code> Seurat/<code>SingleCellExperiment</code> objects) into <code>SingleCellExperiment</code>, or Seurat with <code>as = "Seurat"</code>. They work from a GSE or a GSM, find files at the series or sample level, combine samples with <code>by = "sample"</code>, <code>"platform"</code> or <code>"all"</code>, and attach each sample’s GEO metadata to <code>colData</code>. <code><a href="../reference/geoSingleCellManifest.html">geoSingleCellManifest()</a></code> and <code><a href="../reference/geoSingleCellUnits.html">geoSingleCellUnits()</a></code> show what a study contains before downloading (<a href="https://github.com/seandavi/GEOquery/issues/158" class="external-link">#158</a>, <a href="https://github.com/seandavi/GEOquery/issues/190" class="external-link">#190</a>, <a href="https://github.com/seandavi/GEOquery/issues/195" class="external-link">#195</a>-#197, <a href="https://github.com/seandavi/GEOquery/issues/210" class="external-link">#210</a>).</li>
+<li>
+<strong>Raw sequencing data.</strong> <code><a href="../reference/geoToSRA.html">geoToSRA()</a></code> maps a GSE or GSM to its SRA study, experiment, run and sample accessions (<a href="https://github.com/seandavi/GEOquery/issues/219" class="external-link">#219</a>).</li>
+<li>
+<strong>Private records.</strong> <code><a href="../reference/getGEO.html">getGEO()</a></code> and <code><a href="../reference/getGEOfile.html">getGEOfile()</a></code> take a reviewer access <code>token</code> for embargoed GEO records (<a href="https://github.com/seandavi/GEOquery/issues/154" class="external-link">#154</a>).</li>
+<li>
+<strong>Persistent cache.</strong> <code>options(GEOquery.cache = TRUE)</code> caches downloads across sessions with BiocFileCache; <code><a href="../reference/geoCache.html">geoCache()</a></code> and <code><a href="../reference/clearGEOCache.html">clearGEOCache()</a></code> manage it. Off by default (<a href="https://github.com/seandavi/GEOquery/issues/171" class="external-link">#171</a>).</li>
+<li>
+<strong>Faster search.</strong> <code><a href="../reference/searchGEO.html">searchGEO()</a></code> uses NCBI’s batched JSON esummary and returns stable, structured columns (<a href="https://github.com/seandavi/GEOquery/issues/223" class="external-link">#223</a>).</li>
+<li>
+<strong>Sturdier downloads.</strong> Files stream to disk, retry transient HTTP and connection failures, and respect <code>options(GEOquery.download.timeout)</code> (default 300 s) (<a href="https://github.com/seandavi/GEOquery/issues/147" class="external-link">#147</a>, <a href="https://github.com/seandavi/GEOquery/issues/173" class="external-link">#173</a>).</li>
+<li>
+<strong>Typed errors.</strong> Failures raise <code>geoquery_error</code> subclasses (<code>geoquery_download_error</code>, <code>geoquery_private_accession</code>, <code>geoquery_parse_error</code>, <code>geoquery_bad_accession</code>, <code>geoquery_ncbi_challenge</code>), so they can be handled with <code><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch()</a></code> (<a href="https://github.com/seandavi/GEOquery/issues/170" class="external-link">#170</a>, <a href="https://github.com/seandavi/GEOquery/issues/230" class="external-link">#230</a>).</li>
+<li>
+<code><a href="../reference/getGEO.html">getGEO()</a></code> gains <code>encoding</code> for non-UTF-8 records (<a href="https://github.com/seandavi/GEOquery/issues/148" class="external-link">#148</a>), and <code><a href="../reference/getGEOSuppFiles.html">getGEOSuppFiles()</a></code> gains <code>quiet</code> (<a href="https://github.com/seandavi/GEOquery/issues/68" class="external-link">#68</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="deprecated-2-82-0">Deprecated<a class="anchor" aria-label="anchor" href="#deprecated-2-82-0"></a></h3>
+<ul><li>
+<code><a href="../reference/coercion.html">GDS2MA()</a></code> is deprecated in favor of <code><a href="../reference/coercion.html">GDS2eSet()</a></code>. <code>limma</code> moves to <code>Suggests</code> (<a href="https://github.com/seandavi/GEOquery/issues/217" class="external-link">#217</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-2-82-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-82-0"></a></h3>
+<ul><li>
+<code><a href="../reference/getRNASeqData.html">getRNASeqData()</a></code> works again for human series: NCBI now blocks the shared gene annotation download with a reCAPTCHA page, so the annotation is read from the GEO FTP mirror. Mouse series still get a clear <code>geoquery_ncbi_challenge</code> error (<a href="https://github.com/seandavi/GEOquery/issues/230" class="external-link">#230</a>, <a href="https://github.com/seandavi/GEOquery/issues/235" class="external-link">#235</a>).</li>
+<li>Series Matrix records with duplicate feature IDs (e.g. GSE136400) no longer fail (<a href="https://github.com/seandavi/GEOquery/issues/98" class="external-link">#98</a>).</li>
+<li>
+<code><a href="../reference/getGEO.html">getGEO()</a></code> reports private or not-yet-public accessions clearly instead of mis-parsing them (<a href="https://github.com/seandavi/GEOquery/issues/58" class="external-link">#58</a>).</li>
+<li>
+<code>getGEO(parseCharacteristics = FALSE)</code> now skips characteristics parsing (<a href="https://github.com/seandavi/GEOquery/issues/60" class="external-link">#60</a>).</li>
+<li>Malformed sample lines in Series Matrix files (e.g. GSE425) parse correctly (<a href="https://github.com/seandavi/GEOquery/issues/162" class="external-link">#162</a>).</li>
+<li>
+<code><a href="../reference/coercion.html">GDS2eSet()</a></code> handles <code>NA</code> IDs (e.g. GDS3666) (<a href="https://github.com/seandavi/GEOquery/issues/21" class="external-link">#21</a>).</li>
+<li>Supplementary-file URLs are no longer mangled (<a href="https://github.com/seandavi/GEOquery/issues/131" class="external-link">#131</a>).</li>
+<li>
+<code><a href="../reference/getGSEDataTables.html">getGSEDataTables()</a></code> always returns a list (<a href="https://github.com/seandavi/GEOquery/issues/80" class="external-link">#80</a>), and metadata-only SOFT files parse (<a href="https://github.com/seandavi/GEOquery/issues/14" class="external-link">#14</a>).</li>
+<li>Printing <code>GSM</code>, <code>GPL</code> and <code>GDS</code> objects shows the data table again (<a href="https://github.com/seandavi/GEOquery/issues/215" class="external-link">#215</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-2-82-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-2-82-0"></a></h3>
+<ul><li>Six vignettes, available offline: <em>Getting started</em>, <em>Understanding GEO data formats</em>, <em>Finding and downloading data</em>, <em>RNA-seq quantifications</em>, <em>Single-cell data from GEO</em>, and <em>From GEO to downstream analysis</em>.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.81.36" id="geoquery-28136">GEOquery 2.81.36<a class="anchor" aria-label="anchor" href="#geoquery-28136"></a></h2>
+<div class="section level3">
+<h3 id="documentation-2-81-36">Documentation<a class="anchor" aria-label="anchor" href="#documentation-2-81-36"></a></h3>
+<ul><li>Added the 2.82.0 release summary above. The package <code>Description</code> now says Series Matrix files parse to <code>SummarizedExperiment</code> by default, matching <code><a href="../reference/getGEO.html">getGEO()</a></code>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.81.35" id="geoquery-28135">GEOquery 2.81.35<a class="anchor" aria-label="anchor" href="#geoquery-28135"></a></h2>
 <div class="section level3">
