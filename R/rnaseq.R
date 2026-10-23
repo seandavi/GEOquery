@@ -185,6 +185,19 @@ getRNASeqQuantGenomeInfo <- function(gse) {
 #'
 #' @keywords internal
 readRNAQuantAnnotation <- function(link) {
+  # NCBI serves the shared annotation files on the web download endpoint
+  # behind a Google reCAPTCHA page (#235). Read the FTP mirror copy instead
+  # when it exists (currently human only); otherwise downloadFile() rejects
+  # the bot-check page with a clear error (#230).
+  fname <- extractFilenameFromDownloadURL(link)
+  if (!is.null(fname)) {
+    ftp <- paste0("https://ftp.ncbi.nlm.nih.gov/geo/rnaseq_counts/annot/", fname)
+    resp <- .geo_request(ftp) |>
+      httr2::req_method("HEAD") |>
+      httr2::req_error(is_error = function(resp) FALSE) |>
+      httr2::req_perform()
+    if (httr2::resp_status(resp) == 200) link <- ftp
+  }
   path <- .downloadRNAQuantFile(link)
   on.exit(unlink(path))
   annotation <- as.data.frame(readr::read_tsv(path, show_col_types = FALSE))

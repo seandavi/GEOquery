@@ -1,3 +1,14 @@
+# GEOquery 2.81.35
+
+## Bug fixes
+
+- `getRNASeqData()` works again for human series. NCBI blocks the shared gene
+  annotation table on its web download endpoint with a reCAPTCHA page, so the
+  annotation is now read from the GEO FTP mirror
+  (`geo/rnaseq_counts/annot/`) instead. Mouse annotation is not on the mirror
+  yet, so mouse series still get the clear `geoquery_ncbi_challenge` error
+  (#230, #235).
+
 # GEOquery 2.81.34
 
 ## Bug fixes
