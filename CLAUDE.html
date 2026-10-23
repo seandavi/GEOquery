@@ -44,7 +44,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>CLAUDE.md</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/CLAUDE.md" class="external-link"><code>CLAUDE.md</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/chore/drop-jj/CLAUDE.md" class="external-link"><code>CLAUDE.md</code></a></small>
     </div>
 
 <div id="claudemd" class="section level1">
@@ -152,17 +152,12 @@
 <li>Branching follows Bioconductor: <code>devel</code> is the main working branch.</li>
 </ul></div>
 <div class="section level2">
-<h2 id="version-control-jujutsu-colocated">Version control (jujutsu, colocated)<a class="anchor" aria-label="anchor" href="#version-control-jujutsu-colocated"></a></h2>
-<p>This repo is a <strong>colocated jj + git</strong> checkout: <code>.jj/</code> and <code>.git/</code> coexist, so every normal git command still works and GitHub/Bioconductor only ever see plain git branches. Use <code>jj</code> for local work; the Bioconductor “git flavor” (branches pushed to a remote, PRs merged into <code>devel</code>) is unchanged.</p>
-<p>Essentials (full cheatsheet in the <code>jj-flow</code> skill):</p>
-<ul><li>
-<code>trunk()</code> is aliased to <code>devel@origin</code>; jj <strong>bookmarks</strong> are git branches.</li>
-<li>Start work: <code>jj new devel</code> (anonymous change on top of <code>devel</code> — no branch name needed yet).</li>
-<li>Describe/commit: <code>jj describe -m "fix: ..."</code>; the working copy <em>is</em> a commit, so there is no staging step.</li>
-<li>To open a PR: name a bookmark and push it in one step — <code>jj git push --named fix/issue-123=@</code> (creates, tracks, pushes). Then open the PR against <code>devel</code> on GitHub as usual.</li>
-<li>Sync <code>devel</code>: <code>jj git fetch</code> then <code>jj rebase -o devel</code> (or <code>jj new devel</code> for fresh work).</li>
-<li>Escape hatch: git commands still operate on the same repo if you need them (e.g. <code>git switch -c</code>).</li>
-</ul></div>
+<h2 id="version-control">Version control<a class="anchor" aria-label="anchor" href="#version-control"></a></h2>
+<p>Plain git. Bioconductor flavor: work on a branch off <code>devel</code>, push it, and open a PR against <code>devel</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">git</span> switch <span class="at">-c</span> fix/issue-123 devel</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin fix/issue-123</span></code></pre></div>
+<p>Bug fixes that matter to release users get a separate backport PR against the current <code>RELEASE_X_Y</code> branch, with a patch-version bump so Bioconductor propagates it.</p>
+</div>
 <div class="section level2">
 <h2 id="architecture-decision-records">Architecture Decision Records<a class="anchor" aria-label="anchor" href="#architecture-decision-records"></a></h2>
 <p>Significant architectural decisions are recorded as ADRs in <code>adr/</code> (<code>NNNN-title.md</code>, numbered sequentially, following <code>adr/template.md</code>). See <code>adr/0001-record-architecture-decisions.md</code> for the rationale and rules. The directory is excluded from the package build via <code>.Rbuildignore</code>.</p>
