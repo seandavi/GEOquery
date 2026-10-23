@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.34</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.35</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,14 @@
       <small>Source: <a href="https://github.com/seandavi/GEOquery/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.81.35" id="geoquery-28135">GEOquery 2.81.35<a class="anchor" aria-label="anchor" href="#geoquery-28135"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-2-81-35">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-81-35"></a></h3>
+<ul><li>
+<code><a href="../reference/getRNASeqData.html">getRNASeqData()</a></code> works again for human series. NCBI blocks the shared gene annotation table on its web download endpoint with a reCAPTCHA page, so the annotation is now read from the GEO FTP mirror (<code>geo/rnaseq_counts/annot/</code>) instead. Mouse annotation is not on the mirror yet, so mouse series still get the clear <code>geoquery_ncbi_challenge</code> error (<a href="https://github.com/seandavi/GEOquery/issues/230" class="external-link">#230</a>, <a href="https://github.com/seandavi/GEOquery/issues/235" class="external-link">#235</a>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.81.34" id="geoquery-28134">GEOquery 2.81.34<a class="anchor" aria-label="anchor" href="#geoquery-28134"></a></h2>
 <div class="section level3">
