@@ -45,17 +45,9 @@ more details.
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 se <- getRNASeqData("GSE164073")
-#> Found 1 file(s)
-#> GSE164073_series_matrix.txt.gz
 se
-#> class: SummarizedExperiment 
-#> dim: 39376 18 
-#> metadata(5): experimentData annotation protocolData genomeInfo
-#>   created_at
-#> assays(1): counts
-#> rownames(39376): 100287102 653635 ... 4576 4571
-#> rowData names(18): GeneID Symbol ... GOProcess GOComponent
-#> colnames(18): GSM4996084 GSM4996085 ... GSM4996100 GSM4996101
-#> colData names(45): title geo_accession ... time.point.ch1 tissue.ch1
+
+} # }
 ```

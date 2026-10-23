@@ -9,7 +9,7 @@ accession number given."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.80.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.35</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,7 +21,11 @@ accession number given."></head><body>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/single-cell.html">Handling single-cell RNA-seq data in GEOquery</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/geo-data-formats.html">Understanding GEO data formats</a></li>
+    <li><a class="dropdown-item" href="../articles/finding-and-downloading-data.html">Finding and downloading data</a></li>
+    <li><a class="dropdown-item" href="../articles/rnaseq.html">RNA-seq quantifications from GEO</a></li>
+    <li><a class="dropdown-item" href="../articles/single-cell.html">Single-cell data from GEO</a></li>
+    <li><a class="dropdown-item" href="../articles/downstream-analysis.html">From GEO to downstream analysis</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -42,7 +46,7 @@ accession number given."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Download a file from GEO soft file to the local machine</h1>
-      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/fix/release-3.23-issue-235/R/getGEOfile.R" class="external-link"><code>R/getGEOfile.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/seandavi/GEOquery/blob/fix/issue-235/R/getGEOfile.R" class="external-link"><code>R/getGEOfile.R</code></a></small>
       <div class="d-none name"><code>getGEOfile.Rd</code></div>
     </div>
 
@@ -57,7 +61,8 @@ accession number given.</p>
 <span>  <span class="va">GEO</span>,</span>
 <span>  destdir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  AnnotGPL <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  amount <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full"</span>, <span class="st">"brief"</span>, <span class="st">"quick"</span>, <span class="st">"data"</span><span class="op">)</span></span>
+<span>  amount <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"full"</span>, <span class="st">"brief"</span>, <span class="st">"quick"</span>, <span class="st">"data"</span><span class="op">)</span>,</span>
+<span>  token <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -86,6 +91,13 @@ for GPLs referenced by a GDS</p></dd>
 <dt id="arg-amount">amount<a class="anchor" aria-label="anchor" href="#arg-amount"></a></dt>
 <dd><p>Amount of information to pull from GEO.  Only applies to GSE,
 GPL, or GSM.  See details...</p></dd>
+
+
+<dt id="arg-token">token<a class="anchor" aria-label="anchor" href="#arg-token"></a></dt>
+<dd><p>Optional NCBI GEO reviewer access token (character(1)) for a
+private/embargoed record. Private records are not published to the GEO FTP
+tree, so a token forces the CGI (<code>acc.cgi</code>) SOFT path and appends the
+token to the request. See <code><a href="getGEO.html">getGEO</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
