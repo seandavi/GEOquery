@@ -12,7 +12,7 @@
   [`GSMList`](http://seandavi.github.io/GEOquery/reference/GEOData-accessors.md)
   [`Meta`](http://seandavi.github.io/GEOquery/reference/GEOData-accessors.md)
   [`Table`](http://seandavi.github.io/GEOquery/reference/GEOData-accessors.md)
-  : Accessors for GEOquery objects
+  : Generic functions for GEOquery
 - [`GEOData-class`](http://seandavi.github.io/GEOquery/reference/GEOData-class.md)
   [`Accession,GEOData-method`](http://seandavi.github.io/GEOquery/reference/GEOData-class.md)
   [`Columns,GEOData-method`](http://seandavi.github.io/GEOquery/reference/GEOData-class.md)
@@ -40,35 +40,20 @@
   : Class 'GSE'
 - [`GSM-class`](http://seandavi.github.io/GEOquery/reference/GSM-class.md)
   : Class 'GSM'
-- [`as_SummarizedExperiment()`](http://seandavi.github.io/GEOquery/reference/as_SummarizedExperiment.md)
-  : Coerce a GEOquery ExpressionSet to a SummarizedExperiment
 - [`browseGEOAccession()`](http://seandavi.github.io/GEOquery/reference/browseGEOAccession.md)
   : Open the GEO page for a given accession
 - [`browseWebsiteRNASeqSearch()`](http://seandavi.github.io/GEOquery/reference/browseWebsiteRNASeqSearch.md)
   : Browse GEO search website for RNA-seq datasets
-- [`clearGEOCache()`](http://seandavi.github.io/GEOquery/reference/clearGEOCache.md)
-  : Clear the GEOquery download cache
 - [`coercion`](http://seandavi.github.io/GEOquery/reference/coercion.md)
   [`GDS2MA`](http://seandavi.github.io/GEOquery/reference/coercion.md)
   [`GDS2eSet`](http://seandavi.github.io/GEOquery/reference/coercion.md)
   : Convert a GDS data structure to a BioConductor data structure
-- [`geoCache()`](http://seandavi.github.io/GEOquery/reference/geoCache.md)
-  : GEOquery download cache
-- [`geoSingleCellManifest()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellManifest.md)
-  : Inventory the single-cell supplementary files of a GEO Series or
-  Sample
-- [`geoSingleCellUnits()`](http://seandavi.github.io/GEOquery/reference/geoSingleCellUnits.md)
-  : Group a single-cell manifest into loadable units
-- [`geoToSRA()`](http://seandavi.github.io/GEOquery/reference/geoToSRA.md)
-  : Resolve a GEO accession to its SRA accessions
 - [`getDirListing()`](http://seandavi.github.io/GEOquery/reference/getDirListing.md)
   : get a directory listing from NCBI GEO
 - [`getGEO()`](http://seandavi.github.io/GEOquery/reference/getGEO.md) :
   Get a GEO object from NCBI or file
 - [`getGEOSeriesFileListing()`](http://seandavi.github.io/GEOquery/reference/getGEOSeriesFileListing.md)
   : GSE Supplemental file listing
-- [`getGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/getGEOSingleCell.md)
-  : Download and read the single-cell data of a GEO Series or Sample
 - [`getGEOSuppFileURL()`](http://seandavi.github.io/GEOquery/reference/getGEOSuppFileURL.md)
   : Get GEO supplemental file URL for a given GEO accession
 - [`getGEOSuppFiles()`](http://seandavi.github.io/GEOquery/reference/getGEOSuppFiles.md)
@@ -85,8 +70,6 @@
   : Does a GEO accession have RNA-seq quantifications?
 - [`parseGEO()`](http://seandavi.github.io/GEOquery/reference/parseGEO.md)
   : Parse GEO text
-- [`readGEOSingleCell()`](http://seandavi.github.io/GEOquery/reference/readGEOSingleCell.md)
-  : Read a single-cell file (or 10x triplet) into a SingleCellExperiment
 - [`searchFieldsGEO()`](http://seandavi.github.io/GEOquery/reference/searchFieldsGEO.md)
   : Provide a list of possible search fields for GEO search
 - [`searchGEO()`](http://seandavi.github.io/GEOquery/reference/searchGEO.md)

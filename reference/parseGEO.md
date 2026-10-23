@@ -10,8 +10,7 @@ parseGEO(
   GSElimits,
   destdir = tempdir(),
   AnnotGPL = FALSE,
-  getGPL = TRUE,
-  parseCharacteristics = TRUE
+  getGPL = TRUE
 )
 ```
 
@@ -40,12 +39,6 @@ parseGEO(
 
   Fetch the GPL associated with a GSEMatrix entity (should remain TRUE
   for all normal use cases)
-
-- parseCharacteristics:
-
-  Whether or not to parse the characteristics information (if available)
-  for a GSE Matrix file. Set to FALSE if you experience trouble parsing
-  the characteristics.
 
 ## Value
 
