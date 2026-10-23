@@ -25,8 +25,6 @@ FALSE otherwise.
 ## Examples
 
 ``` r
-# \donttest{
 hasRNASeqQuantifications("GSE164073")
 #> [1] TRUE
-# }
 ```

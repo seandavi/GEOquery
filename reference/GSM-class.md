@@ -4,9 +4,7 @@ A class containing a GEO Sample entity
 
 ## Objects from the Class
 
-Objects of this class are returned by
-[`getGEO`](http://seandavi.github.io/GEOquery/reference/getGEO.md); they
-are not normally constructed directly.
+Objects can be created by calls of the form `new('GSM', ...)`.
 
 ## See also
 
