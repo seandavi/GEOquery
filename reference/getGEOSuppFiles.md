@@ -14,7 +14,8 @@ getGEOSuppFiles(
   makeDirectory = TRUE,
   baseDir = getwd(),
   fetch_files = TRUE,
-  filter_regex = NULL
+  filter_regex = NULL,
+  quiet = getOption("GEOquery.quiet", FALSE)
 )
 ```
 
@@ -47,6 +48,12 @@ getGEOSuppFiles(
   filenames from GEO to limit those files that will be downloaded. This
   is useful to limit to, for example, bed files only.
 
+- quiet:
+
+  logical(1). If TRUE, suppress informational messages such as "No
+  supplemental files found" and "Using locally cached version". Defaults
+  to the `GEOquery.quiet` option, or FALSE.
+
 ## Value
 
 If fetch_files=TRUE, a data frame is returned invisibly with rownames
@@ -66,23 +73,14 @@ Sean Davis <sdavis2@mail.nih.gov>
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 
 a <- getGEOSuppFiles('GSM1137', fetch_files = FALSE)
 a
-#>            fname
-#> 1 GSM1137.CEL.gz
-#>                                                                              url
-#> 1 https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1nnn/GSM1137/suppl//GSM1137.CEL.gz
 
 # with a set of single-cell RNA-seq data
 a <- getGEOSuppFiles('GSE161228', fetch_files = FALSE)
 a
-#>                                               fname
-#> 1                      GSE161228_24h_PN_all.h5ad.gz
-#> 2 GSE161228_adata_all_panPN_annotated_final.h5ad.gz
-#> 3              GSE161228_knot_24h_48h_adult.h5ad.gz
-#>                                                                                                                    url
-#> 1                      https://ftp.ncbi.nlm.nih.gov/geo/series/GSE161nnn/GSE161228/suppl//GSE161228_24h_PN_all.h5ad.gz
-#> 2 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE161nnn/GSE161228/suppl//GSE161228_adata_all_panPN_annotated_final.h5ad.gz
-#> 3              https://ftp.ncbi.nlm.nih.gov/geo/series/GSE161nnn/GSE161228/suppl//GSE161228_knot_24h_48h_adult.h5ad.gz
+
+} # }
 ```
