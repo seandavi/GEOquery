@@ -1,3 +1,85 @@
+# GEOquery 2.82.0
+
+Summary of changes since 2.80.0 (Bioconductor 3.23). Entries for each 2.81.x
+development version below have the details.
+
+## Breaking changes
+
+- `getGEO()` returns `SummarizedExperiment` objects by default for GSE Series
+  Matrix records (previously `ExpressionSet`). Pass
+  `returnType = "ExpressionSet"` for the old behavior, or convert existing
+  results with `as_SummarizedExperiment()`. SOFT-format results (`GSE`,
+  `GSM`, `GPL`, `GDS` objects) are unchanged (#168).
+
+## New features
+
+- **Single-cell data.** `getGEOSingleCell()` and `readGEOSingleCell()` load GEO
+  single-cell supplementary files (10x Matrix Market, 10x HDF5, AnnData
+  `.h5ad`, and `.rds` Seurat/`SingleCellExperiment` objects) into
+  `SingleCellExperiment`, or Seurat with `as = "Seurat"`. They work from a GSE
+  or a GSM, find files at the series or sample level, combine samples with
+  `by = "sample"`, `"platform"` or `"all"`, and attach each sample's GEO
+  metadata to `colData`. `geoSingleCellManifest()` and `geoSingleCellUnits()`
+  show what a study contains before downloading (#158, #190, #195-#197, #210).
+- **Raw sequencing data.** `geoToSRA()` maps a GSE or GSM to its SRA study,
+  experiment, run and sample accessions (#219).
+- **Private records.** `getGEO()` and `getGEOfile()` take a reviewer access
+  `token` for embargoed GEO records (#154).
+- **Persistent cache.** `options(GEOquery.cache = TRUE)` caches downloads
+  across sessions with BiocFileCache; `geoCache()` and `clearGEOCache()` manage
+  it. Off by default (#171).
+- **Faster search.** `searchGEO()` uses NCBI's batched JSON esummary and returns
+  stable, structured columns (#223).
+- **Sturdier downloads.** Files stream to disk, retry transient HTTP and
+  connection failures, and respect `options(GEOquery.download.timeout)`
+  (default 300 s) (#147, #173).
+- **Typed errors.** Failures raise `geoquery_error` subclasses
+  (`geoquery_download_error`, `geoquery_private_accession`,
+  `geoquery_parse_error`, `geoquery_bad_accession`,
+  `geoquery_ncbi_challenge`), so they can be handled with `tryCatch()` (#170,
+  #230).
+- `getGEO()` gains `encoding` for non-UTF-8 records (#148), and
+  `getGEOSuppFiles()` gains `quiet` (#68).
+
+## Deprecated
+
+- `GDS2MA()` is deprecated in favor of `GDS2eSet()`. `limma` moves to
+  `Suggests` (#217).
+
+## Bug fixes
+
+- `getRNASeqData()` works again for human series: NCBI now blocks the shared
+  gene annotation download with a reCAPTCHA page, so the annotation is read
+  from the GEO FTP mirror. Mouse series still get a clear
+  `geoquery_ncbi_challenge` error (#230, #235).
+- Series Matrix records with duplicate feature IDs (e.g. GSE136400) no longer
+  fail (#98).
+- `getGEO()` reports private or not-yet-public accessions clearly instead of
+  mis-parsing them (#58).
+- `getGEO(parseCharacteristics = FALSE)` now skips characteristics parsing
+  (#60).
+- Malformed sample lines in Series Matrix files (e.g. GSE425) parse correctly
+  (#162).
+- `GDS2eSet()` handles `NA` IDs (e.g. GDS3666) (#21).
+- Supplementary-file URLs are no longer mangled (#131).
+- `getGSEDataTables()` always returns a list (#80), and metadata-only SOFT
+  files parse (#14).
+- Printing `GSM`, `GPL` and `GDS` objects shows the data table again (#215).
+
+## Documentation
+
+- Six vignettes, available offline: *Getting started*, *Understanding GEO data
+  formats*, *Finding and downloading data*, *RNA-seq quantifications*,
+  *Single-cell data from GEO*, and *From GEO to downstream analysis*.
+
+# GEOquery 2.81.36
+
+## Documentation
+
+- Added the 2.82.0 release summary above. The package `Description` now says
+  Series Matrix files parse to `SummarizedExperiment` by default, matching
+  `getGEO()`.
+
 # GEOquery 2.81.35
 
 ## Bug fixes
