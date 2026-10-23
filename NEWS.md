@@ -1,3 +1,13 @@
+# GEOquery 2.80.1
+
+## Bug Fixes
+
+- `getRNASeqData()` failed with "invalid 'row.names' length" because NCBI now
+  serves the shared gene annotation table behind a reCAPTCHA page. The
+  annotation is now read from the GEO FTP mirror
+  (`geo/rnaseq_counts/annot/`) when available, and a non-table response
+  gives a clear error instead (#235).
+
 # GEOquery 2.99.1 (unreleased)
 
 ## Bug Fixes
