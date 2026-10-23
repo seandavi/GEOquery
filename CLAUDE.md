@@ -194,29 +194,19 @@ Set on load: `download.file.method.GEOquery = "auto"` and
   files. See CONTRIBUTING.md.
 - Branching follows Bioconductor: `devel` is the main working branch.
 
-## Version control (jujutsu, colocated)
+## Version control
 
-This repo is a **colocated jj + git** checkout: `.jj/` and `.git/`
-coexist, so every normal git command still works and GitHub/Bioconductor
-only ever see plain git branches. Use `jj` for local work; the
-Bioconductor “git flavor” (branches pushed to a remote, PRs merged into
-`devel`) is unchanged.
+Plain git. Bioconductor flavor: work on a branch off `devel`, push it,
+and open a PR against `devel`:
 
-Essentials (full cheatsheet in the `jj-flow` skill):
+``` sh
+git switch -c fix/issue-123 devel
+git push -u origin fix/issue-123
+```
 
-- `trunk()` is aliased to `devel@origin`; jj **bookmarks** are git
-  branches.
-- Start work: `jj new devel` (anonymous change on top of `devel` — no
-  branch name needed yet).
-- Describe/commit: `jj describe -m "fix: ..."`; the working copy *is* a
-  commit, so there is no staging step.
-- To open a PR: name a bookmark and push it in one step —
-  `jj git push --named fix/issue-123=@` (creates, tracks, pushes). Then
-  open the PR against `devel` on GitHub as usual.
-- Sync `devel`: `jj git fetch` then `jj rebase -o devel` (or
-  `jj new devel` for fresh work).
-- Escape hatch: git commands still operate on the same repo if you need
-  them (e.g. `git switch -c`).
+Bug fixes that matter to release users get a separate backport PR
+against the current `RELEASE_X_Y` branch, with a patch-version bump so
+Bioconductor propagates it.
 
 ## Architecture Decision Records
 
