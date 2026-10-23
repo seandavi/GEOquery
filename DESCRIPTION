@@ -1,7 +1,7 @@
 Package: GEOquery
 Type: Package
 Title: Get data from NCBI Gene Expression Omnibus (GEO)
-Version: 2.81.35
+Version: 2.81.36
 Date: 2026-10-23
 Authors@R: 
   c(person(given = "Sean",
@@ -38,7 +38,7 @@ Description: The NCBI Gene Expression Omnibus (GEO) is a public repository of
     and single-cell experiments. GEOquery is the bridge between GEO and
     Bioconductor: it downloads and parses GEO Series (GSE), Sample (GSM),
     Platform (GPL), and DataSet (GDS) records. By default it parses GEO Series
-    Matrix files into Bioconductor 'ExpressionSet' objects; it can also parse
+    Matrix files into Bioconductor 'SummarizedExperiment' objects; it can also parse
     the full SOFT format into GEOquery's own S4 classes, retrieve NCBI-computed
     RNA-seq quantifications, download supplementary files, and search GEO.
 License: MIT + file LICENSE
