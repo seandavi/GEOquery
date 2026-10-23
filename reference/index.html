@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">GEOquery</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.81.35</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.80.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,11 +19,7 @@
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/geo-data-formats.html">Understanding GEO data formats</a></li>
-    <li><a class="dropdown-item" href="../articles/finding-and-downloading-data.html">Finding and downloading data</a></li>
-    <li><a class="dropdown-item" href="../articles/rnaseq.html">RNA-seq quantifications from GEO</a></li>
-    <li><a class="dropdown-item" href="../articles/single-cell.html">Single-cell data from GEO</a></li>
-    <li><a class="dropdown-item" href="../articles/downstream-analysis.html">From GEO to downstream analysis</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/single-cell.html">Handling single-cell RNA-seq data in GEOquery</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -68,7 +64,7 @@
           <code><a href="GEOData-accessors.html">GEOData-accessors</a></code> <code><a href="GEOData-accessors.html">dataTable</a></code> <code><a href="GEOData-accessors.html">Accession</a></code> <code><a href="GEOData-accessors.html">Columns</a></code> <code><a href="GEOData-accessors.html">GPLList</a></code> <code><a href="GEOData-accessors.html">GSMList</a></code> <code><a href="GEOData-accessors.html">Meta</a></code> <code><a href="GEOData-accessors.html">Table</a></code>
 
         </dt>
-        <dd>Accessors for GEOquery objects</dd>
+        <dd>Generic functions for GEOquery</dd>
 
         <dt>
 
@@ -107,13 +103,6 @@
 
         <dt>
 
-          <code><a href="as_SummarizedExperiment.html">as_SummarizedExperiment()</a></code>
-
-        </dt>
-        <dd>Coerce a GEOquery ExpressionSet to a SummarizedExperiment</dd>
-
-        <dt>
-
           <code><a href="browseGEOAccession.html">browseGEOAccession()</a></code>
 
         </dt>
@@ -128,45 +117,10 @@
 
         <dt>
 
-          <code><a href="clearGEOCache.html">clearGEOCache()</a></code>
-
-        </dt>
-        <dd>Clear the GEOquery download cache</dd>
-
-        <dt>
-
           <code><a href="coercion.html">coercion</a></code> <code><a href="coercion.html">GDS2MA</a></code> <code><a href="coercion.html">GDS2eSet</a></code>
 
         </dt>
         <dd>Convert a GDS data structure to a BioConductor data structure</dd>
-
-        <dt>
-
-          <code><a href="geoCache.html">geoCache()</a></code>
-
-        </dt>
-        <dd>GEOquery download cache</dd>
-
-        <dt>
-
-          <code><a href="geoSingleCellManifest.html">geoSingleCellManifest()</a></code>
-
-        </dt>
-        <dd>Inventory the single-cell supplementary files of a GEO Series or Sample</dd>
-
-        <dt>
-
-          <code><a href="geoSingleCellUnits.html">geoSingleCellUnits()</a></code>
-
-        </dt>
-        <dd>Group a single-cell manifest into loadable units</dd>
-
-        <dt>
-
-          <code><a href="geoToSRA.html">geoToSRA()</a></code>
-
-        </dt>
-        <dd>Resolve a GEO accession to its SRA accessions</dd>
 
         <dt>
 
@@ -188,13 +142,6 @@
 
         </dt>
         <dd>GSE Supplemental file listing</dd>
-
-        <dt>
-
-          <code><a href="getGEOSingleCell.html">getGEOSingleCell()</a></code>
-
-        </dt>
-        <dd>Download and read the single-cell data of a GEO Series or Sample</dd>
 
         <dt>
 
@@ -251,13 +198,6 @@
 
         </dt>
         <dd>Parse GEO text</dd>
-
-        <dt>
-
-          <code><a href="readGEOSingleCell.html">readGEOSingleCell()</a></code>
-
-        </dt>
-        <dd>Read a single-cell file (or 10x triplet) into a SingleCellExperiment</dd>
 
         <dt>
 
