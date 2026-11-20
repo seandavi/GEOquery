@@ -7,7 +7,7 @@
 #' 
 #' getGEO functions to download and parse information available from NCBI GEO
 #' (\url{http://www.ncbi.nlm.nih.gov/geo}).  Here are some details about what
-#' is avaible from GEO.  All entity types are handled by getGEO and essentially
+#' is available from GEO.  All entity types are handled by getGEO and essentially
 #' any information in the GEO SOFT format is reflected in the resulting data
 #' structure.
 #' 
